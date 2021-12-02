@@ -1,4 +1,4 @@
-from downloader import Downloader
+from .downloader import Downloader
 
 
 class HKEX(Downloader):

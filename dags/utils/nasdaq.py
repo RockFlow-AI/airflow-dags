@@ -1,5 +1,5 @@
-from downloader import Downloader
-from utils import user_agent
+from .downloader import Downloader
+from .utils import user_agent
 
 
 class Nasdaq(Downloader):

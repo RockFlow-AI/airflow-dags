@@ -1,6 +1,6 @@
 import requests as _requests
 
-from utils import user_agent_headers
+from .utils import user_agent_headers
 
 
 class Downloader(object):
