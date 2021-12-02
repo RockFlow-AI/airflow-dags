@@ -22,6 +22,7 @@ dag = DAG(
 
 
 def get_all_nasdaq():
+    print("call Nasdaq")
     Nasdaq()._get()
 
 
