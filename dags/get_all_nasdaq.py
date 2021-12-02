@@ -6,8 +6,8 @@ from airflow.models import DAG
 from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 
-from nasdaq import Nasdaq
-from proxy import Proxy
+from utils.hkex import HKEX
+from utils.proxy import Proxy
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
@@ -29,7 +29,8 @@ def get_all_nasdaq():
         Variable.get("PROXY_PORT"),
     ).proxies
     print(f"call Nasdaq, proxy: {proxy}")
-    Nasdaq(proxy=proxy)._get()
+    # Nasdaq(proxy=proxy)._get()
+    HKEX(proxy=proxy)._get()
 
 
 run_this = PythonOperator(
