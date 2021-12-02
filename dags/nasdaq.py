@@ -2,8 +2,8 @@ import json
 
 import pandas as pd
 
-from dags.downloader import Downloader
-from dags.utils import user_agent
+from downloader import Downloader
+from utils import user_agent
 
 
 class Nasdaq(Downloader):
