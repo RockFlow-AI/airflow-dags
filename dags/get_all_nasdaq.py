@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import os
+import sys
 import time
 from builtins import range
 from datetime import datetime, timedelta
@@ -9,6 +11,8 @@ from airflow.models import DAG
 from airflow.operators.python_operator import PythonOperator
 
 from dags.nasdaq import Nasdaq
+
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 seven_days_ago = datetime.combine(
     datetime.today() - timedelta(7), datetime.min.time())
