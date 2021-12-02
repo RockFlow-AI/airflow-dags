@@ -4,6 +4,7 @@ import os
 import sys
 import time
 from builtins import range
+from datetime import datetime
 
 from airflow.models import DAG
 from airflow.operators.python_operator import PythonOperator
@@ -19,7 +20,8 @@ args = {
 dag = DAG(
     dag_id='get_all_nasdaq',
     default_args=args,
-    schedule_interval=None
+    schedule_interval=None,
+    start_date=datetime(2021, 1, 1),
 )
 
 
