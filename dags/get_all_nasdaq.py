@@ -24,13 +24,12 @@ dag = DAG(
 
 
 def get_all_nasdaq():
-    print("call Nasdaq")
-    Nasdaq(
-        proxy=Proxy(
-            Variable.get("PROXY_URL"),
-            Variable.get("PROXY_PORT"),
-        ).proxies
-    )._get()
+    proxy = Proxy(
+        Variable.get("PROXY_URL"),
+        Variable.get("PROXY_PORT"),
+    ).proxies
+    print(f"call Nasdaq, proxy: {proxy}")
+    Nasdaq(proxy=proxy)._get()
 
 
 run_this = PythonOperator(
