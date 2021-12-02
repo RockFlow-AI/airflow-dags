@@ -3,9 +3,11 @@ import sys
 from datetime import datetime
 
 from airflow.models import DAG
+from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 
 from nasdaq import Nasdaq
+from proxy import Proxy
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
@@ -23,7 +25,12 @@ dag = DAG(
 
 def get_all_nasdaq():
     print("call Nasdaq")
-    Nasdaq()._get()
+    Nasdaq(
+        proxy=Proxy(
+            Variable.get("PROXY_URL"),
+            Variable.get("PROXY_PORT"),
+        ).proxies
+    )._get()
 
 
 run_this = PythonOperator(
