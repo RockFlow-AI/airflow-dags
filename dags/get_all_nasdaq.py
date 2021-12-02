@@ -8,6 +8,8 @@ from pprint import pprint
 from airflow.models import DAG
 from airflow.operators.python_operator import PythonOperator
 
+from dags.nasdaq import Nasdaq
+
 seven_days_ago = datetime.combine(
     datetime.today() - timedelta(7), datetime.min.time())
 
@@ -21,9 +23,10 @@ dag = DAG(
     schedule_interval=None)
 
 
-def my_sleeping_function(random_base):
+def get_all_nasdaq(random_base):
     """This is a function that will run within the DAG execution"""
     time.sleep(random_base)
+    Nasdaq()._get()
 
 
 def print_context(ds, **kwargs):
@@ -39,10 +42,10 @@ run_this = PythonOperator(
     dag=dag)
 
 # Generate 10 sleeping tasks, sleeping from 0 to 9 seconds respectively
-for i in range(10):
+for i in range(2):
     task = PythonOperator(
         task_id='sleep_for_' + str(i),
-        python_callable=my_sleeping_function,
+        python_callable=get_all_nasdaq,
         op_kwargs={'random_base': float(i) / 10},
         dag=dag)
 
