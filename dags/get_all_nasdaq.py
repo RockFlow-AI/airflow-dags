@@ -10,7 +10,7 @@ from pprint import pprint
 from airflow.models import DAG
 from airflow.operators.python_operator import PythonOperator
 
-from dags.nasdaq import Nasdaq
+from nasdaq import Nasdaq
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
