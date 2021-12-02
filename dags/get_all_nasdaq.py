@@ -12,12 +12,12 @@ seven_days_ago = datetime.combine(
     datetime.today() - timedelta(7), datetime.min.time())
 
 args = {
-    'owner': 'airflow',
+    'owner': 'daijunkai',
     'start_date': seven_days_ago,
 }
 
 dag = DAG(
-    dag_id='example_python_operator', default_args=args,
+    dag_id='get_all_nasdaq', default_args=args,
     schedule_interval=None)
 
 
