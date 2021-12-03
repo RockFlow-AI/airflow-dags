@@ -30,7 +30,7 @@ def get_all_nasdaq():
     ).proxies
     print(f"call Nasdaq, proxy: {proxy}")
     # Nasdaq(proxy=proxy)._get()
-    HKEX()._get()
+    HKEX(proxy=proxy)._get()
 
 
 run_this = PythonOperator(
