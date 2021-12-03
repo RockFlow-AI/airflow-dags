@@ -1,34 +1,13 @@
-from .downloader import Downloader
-from .utils import user_agent
+from rockflow.common.downloader import Downloader
 
 
-class Nasdaq(Downloader):
+class HKEX(Downloader):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     @property
     def url(self):
-        return "https://api.nasdaq.com/api/screener/stocks"
-
-    @property
-    def params(self):
-        return {
-            'tableonly': 'false',
-            'limit': 0,
-            'offset': 0,
-            'download': 'true',
-        }
-
-    @property
-    def headers(self):
-        return {
-            "Accept": "application/json, text/plain, */*",
-            "DNT": "1",
-            "Origin": "https://www.nasdaq.com",
-            "Referer": "www.google.com",
-            "Sec-Fetch-Mode": "cors",
-            "User-Agent": user_agent,
-        }
+        return "https://www.hkex.com.hk/chi/services/trading/securities/securitieslists/ListOfSecurities_c.xlsx"
 
     # def _to_tickers(self) -> pd.DataFrame:
     #     result = pd.DataFrame()
