@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from airflow.models import DAG
 
+from rockflow.common.proxy import default_proxy
 from rockflow.operators.symbol import NasdaqSymbolDownloadOperator, HkexSymbolDownloadOperator
 
 default_args = {
@@ -18,11 +19,13 @@ default_args = {
 
 with DAG("symbol_download", default_args=default_args) as dag:
     Nasdaq = NasdaqSymbolDownloadOperator(
-        task_id="download_nasdaq_symbol_to_local"
+        task_id="download_nasdaq_symbol_to_local",
+        proxy=default_proxy()
     )
 
     Hkex = HkexSymbolDownloadOperator(
-        task_id="download_hkex_symbol_to_local"
+        task_id="download_hkex_symbol_to_local",
+        proxy=default_proxy()
     )
 
 [Nasdaq, Hkex]

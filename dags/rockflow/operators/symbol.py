@@ -4,13 +4,12 @@ from airflow.models import BaseOperator
 
 from rockflow.common.hkex import HKEX
 from rockflow.common.nasdaq import Nasdaq
-from rockflow.common.proxy import default_proxy
 
 
 class NasdaqSymbolDownloadOperator(BaseOperator):
     def __init__(
             self,
-            proxy: Optional[dict] = default_proxy,
+            proxy: Optional[dict] = None,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
@@ -24,7 +23,7 @@ class NasdaqSymbolDownloadOperator(BaseOperator):
 class HkexSymbolDownloadOperator(BaseOperator):
     def __init__(
             self,
-            proxy: Optional[dict] = default_proxy,
+            proxy: Optional[dict] = None,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
