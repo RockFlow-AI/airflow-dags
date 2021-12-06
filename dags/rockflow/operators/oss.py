@@ -20,9 +20,9 @@ class OSSOperator(BaseOperator):
         self.region = region
         self.bucket_name = bucket_name
 
-    @property
-    def oss_hook(self):
-        return OSSHook(oss_conn_id=self.oss_conn_id, region=self.region)
+        self.oss_hook = OSSHook(oss_conn_id=self.oss_conn_id, region=self.region)
+
+        print(f"OSSOperator __dict__: {self.__dict__}")
 
     def get_object(self, key):
         try:
