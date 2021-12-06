@@ -61,3 +61,22 @@ class HkexSymbolToCSV(OSSOperator):
     def execute(self, context):
         raw_df = HKEX().to_df(self.get_object(self.from_key))
         self.oss_hook.load_string(self.to_key, raw_df.to_csv())
+
+
+class MergeSymbolList(OSSOperator):
+    def __init__(
+            self,
+            from_key: str,
+            to_key: str,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.from_key = from_key
+        self.to_key = to_key
+
+    def execute(self, context):
+        pass
+        # call tickers
+        # save to oss
+        # raw_df = HKEX().to_df(self.get_object(self.from_key))
+        # self.oss_hook.load_string(self.to_key, raw_df.to_csv())
