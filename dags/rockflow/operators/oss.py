@@ -26,7 +26,7 @@ class OSSOperator(BaseOperator):
 
     def get_object(self, key):
         try:
-            self.oss_hook.get_bucket(self.bucket_name).get_object(key)
+            return self.oss_hook.get_bucket(self.bucket_name).get_object(key)
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
 
