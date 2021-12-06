@@ -1,5 +1,6 @@
 from rockflow.common.hkex import HKEX
 from rockflow.common.nasdaq import Nasdaq
+from rockflow.common.tickers import Tickers
 from rockflow.operators.oss import OSSOperator
 
 
@@ -66,16 +67,18 @@ class HkexSymbolToCSV(OSSOperator):
 class MergeSymbolList(OSSOperator):
     def __init__(
             self,
-            from_key: str,
+            from_key_list: list,
             to_key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.from_key = from_key
+        self.from_key_list = from_key_list
         self.to_key = to_key
 
     def execute(self, context):
         pass
+        merged_df=Tickers.merge(self.from_key_list)
+        self.oss_hook.load_string(self.to_key, merged_df.to_csv())
         # call tickers
         # save to oss
         # raw_df = HKEX().to_df(self.get_object(self.from_key))
