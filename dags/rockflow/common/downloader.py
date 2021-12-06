@@ -1,6 +1,6 @@
 import requests as _requests
 
-from rockflow.common.utils import user_agent_headers
+from rockflow.common.header import user_agent_headers
 
 
 class Downloader(object):
