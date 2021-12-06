@@ -14,7 +14,7 @@ default_args = {
     "email_on_retry": False,
     "retries": 0,
     "retry_delay": timedelta(minutes=1),
-    "schedule_interval": "@daily",
+    # "schedule_interval": "@daily",
 }
 
 with DAG("symbol_download", default_args=default_args) as dag:
