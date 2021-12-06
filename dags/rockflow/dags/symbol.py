@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from airflow.models import DAG, Variable
 
 from rockflow.common.proxy import default_proxy
-from rockflow.operators.symbol import NasdaqSymbolDownloadOperator, HkexSymbolDownloadOperator
+from rockflow.operators.symbol import *
 
 default_args = {
     "owner": "daijunkai",
@@ -34,4 +34,23 @@ with DAG("symbol_download", default_args=default_args) as dag:
         proxy=default_proxy()
     )
 
-[Nasdaq, Hkex]
+    Nasdaq_csv = NasdaqSymbolToCSV(
+        task_id="download_nasdaq_symbol_to_csv",
+        from_key='airflow-symbol-raw-nasdaq/nasdaq.json',
+        to_key='airflow-symbol-csv-nasdaq/nasdaq.csv',
+        region=Variable.get("REGION"),
+        bucket_name=Variable.get("BUCKET_NAME"),
+        proxy=default_proxy()
+    )
+
+    Hkex_csv = HkexSymbolToCSV(
+        task_id="download_hkex_symbol_to_csv",
+        from_key='airflow-symbol-raw-hkex/hkex.xlsx',
+        to_key='airflow-symbol-csv-hkex/hkex.csv',
+        region=Variable.get("REGION"),
+        bucket_name=Variable.get("BUCKET_NAME"),
+        proxy=default_proxy()
+    )
+
+Nasdaq >> Nasdaq_csv
+Hkex >> Hkex_csv
