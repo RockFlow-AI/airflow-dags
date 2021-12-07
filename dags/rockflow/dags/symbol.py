@@ -53,14 +53,26 @@ with DAG("symbol_download", default_args=default_args) as dag:
     )
 
     merge_csv = MergeCsvList(
+<<<<<<< HEAD
         task_id="merge_csvs_together",
         from_key_list=['airflow-symbol-csv-nasdaq/nasdaq.csv', 'airflow-symbol-csv-hkex/hkex.csv'],
+=======
+        task_id="merge_csvs",
+        from_key_list=['airflow-symbol-csv-nasdaq/nasdaq.csv','airflow-symbol-csv-hkex/hkex.csv'],
+>>>>>>> dev
         to_key='airflow-symbol-csv-merge/Merged.csv',
         region=Variable.get("REGION"),
         bucket_name=Variable.get("BUCKET_NAME"),
         proxy=default_proxy()
     )
 
+<<<<<<< HEAD
 Nasdaq_csv.set_upstream(Nasdaq)
 Hkex_csv.set_upstream(Hkex)
 merge_csv.set_upstream([Nasdaq_csv, Hkex_csv])
+=======
+# Nasdaq_csv.set_upstream(Nasdaq)
+Hkex_csv.set_upstream(Hkex)
+# merge_csv.set_upstream([Nasdaq_csv,Hkex_csv])
+merge_csv.set_upstream(Hkex_csv)
+>>>>>>> dev

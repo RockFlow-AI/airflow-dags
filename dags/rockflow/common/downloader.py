@@ -33,11 +33,13 @@ class Downloader(object):
         return user_agent_headers
 
     def get(self) -> _requests.Response:
+        print(self.url)
         r = self._session.get(
             url=self.url,
             params=self.params,
             proxies=self.proxy,
             headers=self.headers,
+            timeout=5
         )
         print(f"status_code: {r.status_code}, url: {self.url}, params: {self.params}")
         return r
