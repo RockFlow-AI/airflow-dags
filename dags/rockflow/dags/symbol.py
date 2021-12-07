@@ -8,7 +8,7 @@ from rockflow.operators.symbol import *
 default_args = {
     "owner": "daijunkai",
     "depends_on_past": False,
-    "start_date": datetime(2021, 12, 6),
+    "start_date": datetime.now(),  # TODO for debug 正式上线需要切换成正式时间
     "email": ["daijunkai@flowcapai.com"],
     "email_on_failure": False,
     "email_on_retry": False,
@@ -54,7 +54,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     merge_csv = MergeSymbolList(
         task_id="merge_csvs_together",
-        from_key_list=['airflow-symbol-csv-nasdaq/nasdaq.csv','airflow-symbol-csv-hkex/hkex.csv'],
+        from_key_list=['airflow-symbol-csv-nasdaq/nasdaq.csv', 'airflow-symbol-csv-hkex/hkex.csv'],
         to_key='airflow-symbol-csv/Merged.csv',
         region=Variable.get("REGION"),
         bucket_name=Variable.get("BUCKET_NAME"),
@@ -63,4 +63,4 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
 Nasdaq_csv.set_upstream(Nasdaq)
 Hkex_csv.set_upstream(Hkex)
-merge_csv.set_upstream([Nasdaq_csv,Hkex_csv])
+merge_csv.set_upstream([Nasdaq_csv, Hkex_csv])
