@@ -1,8 +1,6 @@
-import json
 from typing import Optional
 
 import pandas as pd
-
 from rockflow.common.downloader import Downloader
 
 
@@ -28,9 +26,9 @@ class HKEX(Downloader):
         return result
 
     def to_df(self, fp) -> pd.DataFrame:
-        response = json.load(fp)
-        return pd.DataFrame(
-            response.get('data').get(
-                'table', response.get('data')
-            ).get('rows')
+        return pd.read_excel(
+            fp,
+            sheet_name='ListOfSecurities',
+            header=[2],
+            engine='openpyxl',
         )

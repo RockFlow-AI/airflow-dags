@@ -76,10 +76,5 @@ class MergeSymbolList(OSSOperator):
         self.to_key = to_key
 
     def execute(self, context):
-        pass
-        merged_df=Tickers.merge(self.from_key_list)
+        merged_df = Tickers.merge(self.from_key_list)
         self.oss_hook.load_string(self.to_key, merged_df.to_csv())
-        # call tickers
-        # save to oss
-        # raw_df = HKEX().to_df(self.get_object(self.from_key))
-        # self.oss_hook.load_string(self.to_key, raw_df.to_csv())
