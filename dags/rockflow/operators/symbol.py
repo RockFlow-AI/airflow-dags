@@ -1,8 +1,4 @@
 import pandas as pd
-<<<<<<< HEAD
-=======
-from rockflow.common.pandas_helper import DataFrameMerger
->>>>>>> dev
 
 from rockflow.common.hkex import HKEX
 from rockflow.common.nasdaq import Nasdaq

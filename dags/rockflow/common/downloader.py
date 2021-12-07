@@ -33,7 +33,7 @@ class Downloader(object):
         return user_agent_headers
 
     def get(self) -> _requests.Response:
-        print(self.url)
+        print(f"url: {self.url}")
         r = self._session.get(
             url=self.url,
             params=self.params,
