@@ -1,8 +1,8 @@
 import pandas as pd
-from rockflow.common.tickers import Tickers
 
 from rockflow.common.hkex import HKEX
 from rockflow.common.nasdaq import Nasdaq
+from rockflow.common.pandas_helper import DataFrameMerger
 from rockflow.operators.oss import OSSOperator
 
 
@@ -84,5 +84,5 @@ class MergeCsvList(OSSOperator):
         return result
 
     def execute(self, context):
-        merged_df = Tickers.merge(self.get_data_frames())
+        merged_df = DataFrameMerger.merge(self.get_data_frames())
         self.oss_hook.load_string(self.to_key, merged_df.to_csv())
