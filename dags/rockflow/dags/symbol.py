@@ -52,10 +52,10 @@ with DAG("symbol_download", default_args=default_args) as dag:
         proxy=default_proxy()
     )
 
-    merge_csv = MergeSymbolList(
+    merge_csv = MergeCsvList(
         task_id="merge_csvs_together",
         from_key_list=['airflow-symbol-csv-nasdaq/nasdaq.csv', 'airflow-symbol-csv-hkex/hkex.csv'],
-        to_key='airflow-symbol-csv/Merged.csv',
+        to_key='airflow-symbol-csv-merge/Merged.csv',
         region=Variable.get("REGION"),
         bucket_name=Variable.get("BUCKET_NAME"),
         proxy=default_proxy()
