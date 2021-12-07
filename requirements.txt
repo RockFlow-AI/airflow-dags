@@ -1,0 +1,5 @@
+apache-airflow-providers-alibaba
+openpyxl
+lxml
+html5lib
+beautifulsoup4
