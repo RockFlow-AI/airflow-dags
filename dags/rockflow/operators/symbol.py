@@ -8,7 +8,7 @@ from rockflow.common.szse import SZSE1
 from rockflow.operators.oss import OSSOperator
 
 
-class NasdaqSymbolDownloadOperator(OSSOperator):
+class SymbolDownloadOperator(OSSOperator):
     def __init__(
             self,
             key: str,
@@ -16,6 +16,10 @@ class NasdaqSymbolDownloadOperator(OSSOperator):
     ) -> None:
         super().__init__(**kwargs)
         self.key = key
+
+    @property
+    def exchange(self):
+        raise NotImplementedError()
 
     def execute(self, context):
         self.oss_hook.load_string(
@@ -25,7 +29,55 @@ class NasdaqSymbolDownloadOperator(OSSOperator):
         )
 
 
-class NasdaqSymbolToCsv(OSSOperator):
+class NasdaqSymbolDownloadOperator(SymbolDownloadOperator):
+    def __init__(
+            self,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def exchange(self):
+        return Nasdaq(proxy=self.proxy)
+
+
+class HkexSymbolDownloadOperator(SymbolDownloadOperator):
+    def __init__(
+            self,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def exchange(self):
+        return HKEX(proxy=self.proxy)
+
+
+class SseSymbolDownloadOperator(SymbolDownloadOperator):
+    def __init__(
+            self,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def exchange(self):
+        return SSE1(proxy=self.proxy)
+
+
+class SzseSymbolDownloadOperator(SymbolDownloadOperator):
+    def __init__(
+            self,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def exchange(self):
+        return SZSE1(proxy=self.proxy)
+
+
+class SymbolToCsv(OSSOperator):
     def __init__(
             self,
             from_key: str,
@@ -36,55 +88,69 @@ class NasdaqSymbolToCsv(OSSOperator):
         self.from_key = from_key
         self.to_key = to_key
 
+    @property
+    def exchange(self):
+        raise NotImplementedError()
+
     def execute(self, context):
         self.oss_hook.load_string(
             bucket_name=self.bucket_name,
             key=self.to_key,
-            content=Nasdaq().to_df(
+            content=self.exchange.to_df(
                 self.get_object(self.from_key).read()
             ).to_csv()
         )
 
 
-class HkexSymbolDownloadOperator(OSSOperator):
+class NasdaqSymbolToCsv(SymbolToCsv):
     def __init__(
             self,
-            key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.key = key
 
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.key,
-            content=HKEX(proxy=self.proxy).get().content
-        )
+    @property
+    def exchange(self):
+        return Nasdaq()
 
 
 class HkexSymbolToCsv(OSSOperator):
     def __init__(
             self,
-            from_key: str,
-            to_key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.from_key = from_key
-        self.to_key = to_key
 
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.to_key,
-            content=HKEX().to_df(
-                self.get_object(self.from_key).read()
-            ).to_csv()
-        )
+    @property
+    def exchange(self):
+        return HKEX()
 
 
-class NasdaqSymbolParser(OSSOperator):
+class SseSymbolToCsv(SymbolToCsv):
+    def __init__(
+            self,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def exchange(self):
+        return SSE1()
+
+
+class SzseSymbolToCsv(SymbolToCsv):
+    def __init__(
+            self,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def exchange(self):
+        return SZSE1()
+
+
+class SymbolParser(OSSOperator):
     def __init__(
             self,
             from_key: str,
@@ -95,203 +161,66 @@ class NasdaqSymbolParser(OSSOperator):
         self.from_key = from_key
         self.to_key = to_key
 
+    @property
+    def exchange(self):
+        raise NotImplementedError()
+
     def execute(self, context):
         self.oss_hook.load_string(
             bucket_name=self.bucket_name,
             key=self.to_key,
-            content=Nasdaq().to_tickers(
+            content=self.exchange.to_tickers(
                 pd.read_csv(self.get_object(self.from_key))
             ).to_csv()
         )
 
 
-class HkexSymbolParser(OSSOperator):
+class NasdaqSymbolParser(SymbolParser):
     def __init__(
             self,
-            from_key: str,
-            to_key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.from_key = from_key
-        self.to_key = to_key
 
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.to_key,
-            content=HKEX().to_tickers(
-                pd.read_csv(self.get_object(self.from_key))
-            ).to_csv()
-        )
+    @property
+    def exchange(self):
+        return Nasdaq()
 
 
-class SseSymbolDownloadOperator(OSSOperator):
+class HkexSymbolParser(SymbolParser):
     def __init__(
             self,
-            key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.key = key
 
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.key,
-            content=SSE1(proxy=self.proxy).get().content
-        )
+    @property
+    def exchange(self):
+        return HKEX()
 
 
-class SseSymbolToCsv(OSSOperator):
+class SseSymbolParser(SymbolParser):
     def __init__(
             self,
-            from_key: str,
-            to_key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.from_key = from_key
-        self.to_key = to_key
 
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.to_key,
-            content=SSE1().to_df(
-                self.get_object(self.from_key).read()
-            ).to_csv()
-        )
+    @property
+    def exchange(self):
+        return SSE1()
 
 
-class SseSymbolParser(OSSOperator):
+class SzseSymbolParser(SymbolParser):
     def __init__(
             self,
-            from_key: str,
-            to_key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.from_key = from_key
-        self.to_key = to_key
 
-
-class SzseSymbolDownloadOperator(OSSOperator):
-    def __init__(
-            self,
-            key: str,
-            **kwargs,
-    ) -> None:
-        super().__init__(**kwargs)
-        self.key = key
-
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.key,
-            content=SZSE1(proxy=self.proxy).get().content
-        )
-
-
-class SzseSymbolToCsv(OSSOperator):
-    def __init__(
-            self,
-            from_key: str,
-            to_key: str,
-            **kwargs,
-    ) -> None:
-        super().__init__(**kwargs)
-        self.from_key = from_key
-        self.to_key = to_key
-
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.to_key,
-            content=SZSE1().to_df(
-                self.get_object(self.from_key).read()
-            ).to_csv()
-        )
-
-
-class SzseSymbolParser(OSSOperator):
-    def __init__(
-            self,
-            from_key: str,
-            to_key: str,
-            **kwargs,
-    ) -> None:
-        super().__init__(**kwargs)
-        self.from_key = from_key
-        self.to_key = to_key
-
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.to_key,
-            content=SZSE1().to_tickers(
-                pd.read_csv(self.get_object(self.from_key))
-            ).to_csv()
-        )
-
-
-class SseSymbolDownloadOperator(OSSOperator):
-    def __init__(
-            self,
-            key: str,
-            **kwargs,
-    ) -> None:
-        super().__init__(**kwargs)
-        self.key = key
-
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.key,
-            content=SSE1(proxy=self.proxy).get().content
-        )
-
-
-class SseSymbolToCsv(OSSOperator):
-    def __init__(
-            self,
-            from_key: str,
-            to_key: str,
-            **kwargs,
-    ) -> None:
-        super().__init__(**kwargs)
-        self.from_key = from_key
-        self.to_key = to_key
-
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.to_key,
-            content=SSE1().to_df(
-                self.get_object(self.from_key).read()
-            ).to_csv()
-        )
-
-
-class SseSymbolParser(OSSOperator):
-    def __init__(
-            self,
-            from_key: str,
-            to_key: str,
-            **kwargs,
-    ) -> None:
-        super().__init__(**kwargs)
-        self.from_key = from_key
-        self.to_key = to_key
-
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.to_key,
-            content=SSE1().to_tickers(
-                pd.read_csv(self.get_object(self.from_key))
-            ).to_csv()
-        )
+    @property
+    def exchange(self):
+        return SZSE1()
 
 
 class MergeCsvList(OSSOperator):
