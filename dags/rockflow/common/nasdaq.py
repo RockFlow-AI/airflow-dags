@@ -4,7 +4,6 @@ from typing import Optional
 import pandas as pd
 
 from rockflow.common.downloader import Downloader
-from rockflow.common.header import user_agent
 
 
 class Nasdaq(Downloader):
@@ -27,12 +26,15 @@ class Nasdaq(Downloader):
     @property
     def headers(self):
         return {
-            "Accept": "application/json, text/plain, */*",
-            "DNT": "1",
-            "Origin": "https://www.nasdaq.com",
-            "Referer": "www.google.com",
-            "Sec-Fetch-Mode": "cors",
-            "User-Agent": user_agent,
+            'authority': 'api.nasdaq.com',
+            'accept': 'application/json, text/plain, */*',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36',
+            'origin': 'https://www.nasdaq.com',
+            'sec-fetch-site': 'same-site',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-dest': 'empty',
+            'referer': 'https://www.nasdaq.com/',
+            'accept-language': 'en-US,en;q=0.9',
         }
 
     @property
