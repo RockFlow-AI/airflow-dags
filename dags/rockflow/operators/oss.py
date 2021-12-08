@@ -35,3 +35,20 @@ class OSSOperator(BaseOperator):
 
     def execute(self, context: Any):
         raise NotImplementedError()
+
+
+class OSSSaveOperator(OSSOperator):
+    def __init__(
+            self,
+            key: str,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.key = key
+
+    @property
+    def content(self):
+        raise NotImplementedError()
+
+    def execute(self, context):
+        self.oss_hook.load_string(bucket_name=self.bucket_name, key=self.key, content=self.content)

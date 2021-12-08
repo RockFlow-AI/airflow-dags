@@ -5,10 +5,10 @@ from rockflow.common.nasdaq import Nasdaq
 from rockflow.common.pandas_helper import DataFrameMerger
 from rockflow.common.sse import SSE1
 from rockflow.common.szse import SZSE1
-from rockflow.operators.oss import OSSOperator
+from rockflow.operators.oss import OSSOperator, OSSSaveOperator
 
 
-class SymbolDownloadOperator(OSSOperator):
+class SymbolDownloadOperator(OSSSaveOperator):
     def __init__(
             self,
             key: str,
@@ -21,12 +21,9 @@ class SymbolDownloadOperator(OSSOperator):
     def exchange(self):
         raise NotImplementedError()
 
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.key,
-            content=Nasdaq(proxy=self.proxy).get().content
-        )
+    @property
+    def content(self):
+        return self.exchange.get().content
 
 
 class NasdaqSymbolDownloadOperator(SymbolDownloadOperator):
@@ -77,29 +74,24 @@ class SzseSymbolDownloadOperator(SymbolDownloadOperator):
         return SZSE1(proxy=self.proxy)
 
 
-class SymbolToCsv(OSSOperator):
+class SymbolToCsv(OSSSaveOperator):
     def __init__(
             self,
             from_key: str,
-            to_key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
-        self.to_key = to_key
 
     @property
     def exchange(self):
         raise NotImplementedError()
 
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.to_key,
-            content=self.exchange.to_df(
-                self.get_object(self.from_key).read()
-            ).to_csv()
-        )
+    @property
+    def content(self):
+        return self.exchange.to_df(
+            self.get_object(self.from_key).read()
+        ).to_csv()
 
 
 class NasdaqSymbolToCsv(SymbolToCsv):
@@ -150,29 +142,24 @@ class SzseSymbolToCsv(SymbolToCsv):
         return SZSE1()
 
 
-class SymbolParser(OSSOperator):
+class SymbolParser(OSSSaveOperator):
     def __init__(
             self,
             from_key: str,
-            to_key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
-        self.to_key = to_key
 
     @property
     def exchange(self):
         raise NotImplementedError()
 
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.to_key,
-            content=self.exchange.to_tickers(
-                pd.read_csv(self.get_object(self.from_key))
-            ).to_csv()
-        )
+    @property
+    def content(self):
+        return self.exchange.to_tickers(
+            pd.read_csv(self.get_object(self.from_key))
+        ).to_csv()
 
 
 class NasdaqSymbolParser(SymbolParser):
@@ -223,16 +210,14 @@ class SzseSymbolParser(SymbolParser):
         return SZSE1()
 
 
-class MergeCsvList(OSSOperator):
+class MergeCsvList(OSSSaveOperator):
     def __init__(
             self,
             from_key_list: list,
-            to_key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.from_key_list = from_key_list
-        self.to_key = to_key
 
     def get_data_frames(self):
         result = []
@@ -240,9 +225,6 @@ class MergeCsvList(OSSOperator):
             result.append(pd.read_csv(self.get_object(from_key)))
         return result
 
-    def execute(self, context):
-        self.oss_hook.load_string(
-            bucket_name=self.bucket_name,
-            key=self.to_key,
-            content=DataFrameMerger().merge(self.get_data_frames()).to_csv()
-        )
+    @property
+    def content(self):
+        return DataFrameMerger().merge(self.get_data_frames()).to_csv()
