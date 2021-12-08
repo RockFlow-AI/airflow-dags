@@ -32,7 +32,7 @@ class NasdaqSymbolToCSV(OSSOperator):
         self.to_key = to_key
 
     def execute(self, context):
-        raw_df = Nasdaq().to_df(self.get_object(self.from_key))
+        raw_df = Nasdaq().to_df(self.get_object(self.from_key).read())
         self.oss_hook.load_string(bucket_name=self.bucket_name, key=self.to_key, content=raw_df.to_csv())
 
 
