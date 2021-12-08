@@ -1,14 +1,12 @@
 from rockflow.common.downloader import Downloader
+from rockflow.common.header import user_agent
 
 
-# from rockflow.common.header import user_agent
+import warnings
+from io import BytesIO
+from typing import Optional
 
-# import warnings
-# from io import BytesIO
-#
-# import pandas as pd
-#
-# from exchange import Exchange
+import pandas as pd
 
 
 class SZSE(Downloader):
@@ -35,28 +33,28 @@ class SZSE(Downloader):
             "TABKEY": self.stock_type,
         }
 
-    # def _to_df(self) -> pd.DataFrame:
-    #     with warnings.catch_warnings(record=True):
-    #         warnings.simplefilter("always")
-    #         return pd.read_excel(
-    #             BytesIO(self.oss().read()),
-    #             engine="openpyxl",
-    #         )
-    #
-    # def _to_tickers(self) -> pd.DataFrame:
-    #     result = pd.DataFrame()
-    #     result['raw'] = self.csv_df().iloc[:, 5]
-    #     result['symbol'] = result['raw'].apply(
-    #         lambda x: "%06d" % x
-    #     )
-    #     result['yahoo'] = result['raw'].apply(
-    #         lambda x: "%06d.SZ" % x
-    #     )
-    #     result['futu'] = result['raw'].apply(
-    #         lambda x: "%06d-SZ" % x
-    #     )
-    #     result['market'] = pd.Series(["SZ" for _ in range(len(result.index))])
-    #     return result
+    def to_df(self, fp) -> pd.DataFrame:
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("always")
+            return pd.read_excel(
+                BytesIO(fp),
+                engine="openpyxl",
+            )
+    
+    def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
+        result = pd.DataFrame()
+        result['raw'] = df.iloc[:, 5]
+        result['symbol'] = result['raw'].apply(
+            lambda x: "%06d" % x
+        )
+        result['yahoo'] = result['raw'].apply(
+            lambda x: "%06d.SZ" % x
+        )
+        result['futu'] = result['raw'].apply(
+            lambda x: "%06d-SZ" % x
+        )
+        result['market'] = pd.Series(["SZ" for _ in range(len(result.index))])
+        return result
 
 
 class SZSE1(SZSE):

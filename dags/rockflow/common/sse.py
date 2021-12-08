@@ -6,6 +6,7 @@ import pandas as pd
 from rockflow.common.downloader import Downloader
 from rockflow.common.header import user_agent
 
+import pandas as pd
 
 class SSE(Downloader):
     def __init__(self, *args, **kwargs):

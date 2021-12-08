@@ -37,6 +37,9 @@ with DAG("symbol_download", default_args=default_args) as dag:
     sse_raw_key = 'airflow-symbol-raw-sse/sse.xlsx'
     sse_csv_key = 'airflow-symbol-csv-sse/sse.csv'
     sse_parse_key = 'airflow-symbol-parse-sse/sse.csv'
+    szse_raw_key = 'airflow-symbol-raw-szse/szse.xlsx'
+    szse_csv_key = 'airflow-symbol-csv-szse/szse.csv'
+    szse_parse_key = 'airflow-symbol-parse-szse/szse.csv'
     merge_csv_key = 'airflow-symbol-csv-merge/merge.csv'
 
     nasdaq = NasdaqSymbolDownloadOperator(
@@ -55,6 +58,13 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     sse = SseSymbolDownloadOperator(
         key=sse_raw_key,
+        region=region,
+        bucket_name=bucket_name,
+        proxy=proxy
+    )
+
+    szse = SzseSymbolDownloadOperator(
+        key=szse_raw_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -84,6 +94,14 @@ with DAG("symbol_download", default_args=default_args) as dag:
         proxy=proxy
     )
 
+    szse_csv = SzseSymbolToCsv(
+        from_key=szse_raw_key,
+        to_key=szse_csv_key,
+        region=region,
+        bucket_name=bucket_name,
+        proxy=proxy
+    )
+
     nasdaq_parse = NasdaqSymbolParser(
         from_key=nasdaq_csv_key,
         to_key=nasdaq_parse_key,
@@ -108,8 +126,16 @@ with DAG("symbol_download", default_args=default_args) as dag:
         proxy=proxy
     )
 
+    szse_parse = SzseSymbolParser(
+        from_key=szse_csv_key,
+        to_key=szse_parse_key,
+        region=region,
+        bucket_name=bucket_name,
+        proxy=proxy
+    )
+
     merge_csv = MergeCsvList(
-        from_key_list=[nasdaq_parse_key, hkex_parse_key, sse_parse_key],
+        from_key_list=[nasdaq_parse_key, hkex_parse_key, sse_parse_key, szse_parse_key],
         to_key=merge_csv_key,
         region=region,
         bucket_name=bucket_name,
@@ -119,7 +145,9 @@ with DAG("symbol_download", default_args=default_args) as dag:
 nasdaq_csv.set_upstream(nasdaq)
 hkex_csv.set_upstream(hkex)
 sse_csv.set_upstream(sse)
+szse_csv.set_upstream(szse)
 nasdaq_parse.set_upstream(nasdaq_csv)
 hkex_parse.set_upstream(hkex_csv)
 sse_parse.set_upstream(sse_csv)
-merge_csv.set_upstream([nasdaq_parse, hkex_parse, sse_parse])
+szse_parse.set_upstream(szse_csv)
+merge_csv.set_upstream([nasdaq_parse, hkex_parse, sse_parse, szse_parse])
