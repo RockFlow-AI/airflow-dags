@@ -14,7 +14,7 @@ class HKEX(Downloader):
 
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()
-        result['raw'] = df['symbol']
+        result['raw'] = df.iloc[:, 0]
         result['symbol'] = result['raw'].astype(str)
         result['yahoo'] = result['raw'].apply(
             lambda x: x.strip().replace("^", "-P").replace("/", "-").upper()
