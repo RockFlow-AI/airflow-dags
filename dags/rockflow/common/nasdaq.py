@@ -58,8 +58,9 @@ class Nasdaq(Downloader):
 
 
 if __name__ == '__main__':
-    from rockflow.common.proxy import default_proxy
+    # from rockflow.common.proxy import default_proxy
 
-    r = Nasdaq(proxy=default_proxy()).get()
+    r = Nasdaq().get()
+    # r = Nasdaq(proxy=default_proxy()).get()
     print(r)
     print(r.content)
