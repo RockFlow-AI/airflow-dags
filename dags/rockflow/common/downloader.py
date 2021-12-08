@@ -32,6 +32,10 @@ class Downloader(object):
     def headers(self):
         return user_agent_headers
 
+    @property
+    def timeout(self):
+        return 5
+
     def get(self) -> _requests.Response:
         print(f"url: {self.url}, proxy: {self.proxy}")
         r = self._session.get(
@@ -39,7 +43,7 @@ class Downloader(object):
             params=self.params,
             proxies=self.proxy,
             headers=self.headers,
-            timeout=5
+            timeout=self.timeout
         )
         print(f"status_code: {r.status_code}, url: {self.url}, params: {self.params}")
         return r

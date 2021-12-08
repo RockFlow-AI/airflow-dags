@@ -35,6 +35,10 @@ class Nasdaq(Downloader):
             "User-Agent": user_agent,
         }
 
+    @property
+    def timeout(self):
+        return 30
+
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()
         result['raw'] = df['symbol']
