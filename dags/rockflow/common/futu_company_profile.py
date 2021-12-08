@@ -76,7 +76,8 @@ class FutuCompanyProfileEn(FutuCompanyProfile):
         new_table["name"] = table_dict.get("Company Name")
         new_table["profile"] = table_dict.get("Profile")
         new_table["business"] = table_dict.get("Business")
-        new_table["exchange"] = table_dict.get("Market")
+        new_table["exchange"] = table_dict.get("Market") if table_dict.get("Market") else table_dict.get(
+            "Listed exchange")
         return new_table
 
 
@@ -116,6 +117,6 @@ class FutuCompanyProfileCn(FutuCompanyProfile):
         new_table["short_name_h"] = table_dict.get("H股证券简称")
         new_table["name"] = table_dict.get("公司名称")
         new_table["profile"] = table_dict.get("公司简介")
-        new_table["business"] = table_dict.get("公司业务") or table_dict.get("公司主营")
-        new_table["exchange"] = table_dict.get("所属市场") or table_dict.get("上市交易所")
+        new_table["business"] = table_dict.get("公司业务") if table_dict.get("公司业务") else table_dict.get("公司主营")
+        new_table["exchange"] = table_dict.get("所属市场") if table_dict.get("所属市场") else table_dict.get("上市交易所")
         return new_table

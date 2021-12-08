@@ -2,8 +2,8 @@ import pandas as pd
 
 from rockflow.common.hkex import HKEX
 from rockflow.common.nasdaq import Nasdaq
-from rockflow.common.sse import SSE1
 from rockflow.common.pandas_helper import DataFrameMerger
+from rockflow.common.sse import SSE1
 from rockflow.operators.oss import OSSOperator
 
 
@@ -124,6 +124,7 @@ class HkexSymbolParser(OSSOperator):
             ).to_csv()
         )
 
+
 class SseSymbolDownloadOperator(OSSOperator):
     def __init__(
             self,
@@ -161,6 +162,7 @@ class SseSymbolToCsv(OSSOperator):
             ).to_csv()
         )
 
+
 class SseSymbolParser(OSSOperator):
     def __init__(
             self,
@@ -180,6 +182,7 @@ class SseSymbolParser(OSSOperator):
                 pd.read_csv(self.get_object(self.from_key))
             ).to_csv()
         )
+
 
 class MergeCsvList(OSSOperator):
     def __init__(

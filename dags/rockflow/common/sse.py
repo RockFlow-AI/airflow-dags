@@ -1,9 +1,11 @@
-from rockflow.common.downloader import Downloader
-from rockflow.common.header import user_agent
 from io import StringIO
 from typing import Optional
 
 import pandas as pd
+
+from rockflow.common.downloader import Downloader
+from rockflow.common.header import user_agent
+
 
 class SSE(Downloader):
     def __init__(self, *args, **kwargs):
@@ -43,12 +45,12 @@ class SSE(Downloader):
             "User-Agent": user_agent,
         }
 
-    def to_df(self,fp) -> pd.DataFrame:
+    def to_df(self, fp) -> pd.DataFrame:
         return pd.read_csv(
             StringIO(fp.decode('gb18030')),
             sep='\t'
         )
-    
+
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()
         result['raw'] = df.iloc[:, 0]
