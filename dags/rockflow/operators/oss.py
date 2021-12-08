@@ -26,26 +26,27 @@ class OSSOperator(BaseOperator):
 
         self.oss_hook = OSSHook(oss_conn_id=self.oss_conn_id, region=self.region)
 
-        print(f"OSSOperator __dict__: {self.__dict__}")
-
     @property
     def bucket(self):
         return self.oss_hook.get_bucket(self.bucket_name)
 
     def object_iterator(self, prefix: str):
         try:
+            print(f"object_iterator: {prefix}")
             return oss2.ObjectIterator(self.bucket, prefix=prefix, delimiter='/')
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
 
     def get_object(self, key: str):
         try:
+            print(f"get_object: {key}")
             return self.bucket.get_object(key)
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
 
     def put_object(self, key: str, content):
         try:
+            print(f"put_object: {key}")
             self.bucket.put_object(key, content)
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
