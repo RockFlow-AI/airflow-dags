@@ -10,13 +10,14 @@ from rockflow.operators.symbol import *
 default_args = {
     "owner": "daijunkai",
     "depends_on_past": False,
-    "start_date": datetime(2021, 12, 8),
+    # "start_date": datetime(2021, 12, 8),
+    "start_date": datetime.now(),
     "email": ["daijunkai@flowcapai.com"],
     "email_on_failure": False,
     "email_on_retry": False,
     "retries": 0,
     "retry_delay": timedelta(minutes=1),
-    "schedule_interval": "0 */12 * * *",
+    # "schedule_interval": "0 */12 * * *",
 }
 
 
