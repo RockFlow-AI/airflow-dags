@@ -23,7 +23,7 @@ class NasdaqSymbolDownloadOperator(OSSOperator):
         )
 
 
-class NasdaqSymbolToCSV(OSSOperator):
+class NasdaqSymbolToCsv(OSSOperator):
     def __init__(
             self,
             from_key: str,
@@ -61,7 +61,7 @@ class HkexSymbolDownloadOperator(OSSOperator):
         )
 
 
-class HkexSymbolToCSV(OSSOperator):
+class HkexSymbolToCsv(OSSOperator):
     def __init__(
             self,
             from_key: str,
