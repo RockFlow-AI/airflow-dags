@@ -5,7 +5,7 @@ from rockflow.common.nasdaq import Nasdaq
 from rockflow.common.pandas_helper import DataFrameMerger
 from rockflow.common.sse import SSE1
 from rockflow.common.szse import SZSE1
-from rockflow.operators.oss import OSSOperator, OSSSaveOperator
+from rockflow.operators.oss import OSSSaveOperator
 
 
 class SymbolDownloadOperator(OSSSaveOperator):
@@ -106,7 +106,7 @@ class NasdaqSymbolToCsv(SymbolToCsv):
         return Nasdaq()
 
 
-class HkexSymbolToCsv(OSSOperator):
+class HkexSymbolToCsv(SymbolToCsv):
     def __init__(
             self,
             **kwargs,
