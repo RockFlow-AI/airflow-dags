@@ -130,7 +130,7 @@ class SymbolParser(OSSSaveOperator):
 
     @property
     def key(self):
-        return os.path.join(self._key, f"{self.exchange.__name__.lower()}.csv")
+        return os.path.join(self._key, f"{self.exchange.__class__.__name__.lower()}.csv")
 
     def read_csv(self):
         return pd.read_csv(self.get_object(self.from_key).read())
