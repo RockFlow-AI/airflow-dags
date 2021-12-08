@@ -11,10 +11,7 @@ from rockflow.operators.oss import OSSSaveOperator
 
 
 class SymbolDownloadOperator(OSSSaveOperator):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -27,10 +24,7 @@ class SymbolDownloadOperator(OSSSaveOperator):
 
 
 class NasdaqSymbolDownloadOperator(SymbolDownloadOperator):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -39,10 +33,7 @@ class NasdaqSymbolDownloadOperator(SymbolDownloadOperator):
 
 
 class HkexSymbolDownloadOperator(SymbolDownloadOperator):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -51,10 +42,7 @@ class HkexSymbolDownloadOperator(SymbolDownloadOperator):
 
 
 class SseSymbolDownloadOperator(SymbolDownloadOperator):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -63,10 +51,7 @@ class SseSymbolDownloadOperator(SymbolDownloadOperator):
 
 
 class SzseSymbolDownloadOperator(SymbolDownloadOperator):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -95,10 +80,7 @@ class SymbolToCsv(OSSSaveOperator):
 
 
 class NasdaqSymbolToCsv(SymbolToCsv):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -107,10 +89,7 @@ class NasdaqSymbolToCsv(SymbolToCsv):
 
 
 class HkexSymbolToCsv(SymbolToCsv):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -119,10 +98,7 @@ class HkexSymbolToCsv(SymbolToCsv):
 
 
 class SseSymbolToCsv(SymbolToCsv):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -131,10 +107,7 @@ class SseSymbolToCsv(SymbolToCsv):
 
 
 class SzseSymbolToCsv(SymbolToCsv):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -167,10 +140,7 @@ class SymbolParser(OSSSaveOperator):
 
 
 class NasdaqSymbolParser(SymbolParser):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -179,10 +149,7 @@ class NasdaqSymbolParser(SymbolParser):
 
 
 class HkexSymbolParser(SymbolParser):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -191,10 +158,7 @@ class HkexSymbolParser(SymbolParser):
 
 
 class SseSymbolParser(SymbolParser):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
@@ -203,10 +167,7 @@ class SseSymbolParser(SymbolParser):
 
 
 class SzseSymbolParser(SymbolParser):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
