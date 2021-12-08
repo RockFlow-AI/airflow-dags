@@ -37,7 +37,7 @@ class Nasdaq(Downloader):
 
     @property
     def timeout(self):
-        return 30
+        return 60
 
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()
@@ -53,7 +53,7 @@ class Nasdaq(Downloader):
         return result
 
     def to_df(self, fp) -> pd.DataFrame:
-        response = json.load(fp)
+        response = json.loads(fp)
         return pd.DataFrame(
             response.get('data').get(
                 'table', response.get('data')
