@@ -1,12 +1,10 @@
-from rockflow.common.downloader import Downloader
-from rockflow.common.header import user_agent
-
-
 import warnings
 from io import BytesIO
 from typing import Optional
 
 import pandas as pd
+
+from rockflow.common.downloader import Downloader
 
 
 class SZSE(Downloader):
@@ -40,7 +38,7 @@ class SZSE(Downloader):
                 BytesIO(fp),
                 engine="openpyxl",
             )
-    
+
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()
         result['raw'] = df.iloc[:, 5]
