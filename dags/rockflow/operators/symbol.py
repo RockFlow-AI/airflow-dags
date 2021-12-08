@@ -186,6 +186,12 @@ class MergeCsvList(OSSSaveOperator):
         self.from_key = from_key
 
     def get_data_frames(self):
+        result = []
+        for obj in self.object_iterator(self.from_key):
+            print(f"key: {obj.key}")
+            csv = pd.read_csv(self.get_object(obj.key))
+            result.append(csv)
+        return result
         return [
             pd.read_csv(self.get_object(obj.key)) for obj in self.object_iterator(self.from_key)
         ]
