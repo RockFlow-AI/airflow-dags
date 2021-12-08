@@ -38,6 +38,10 @@ class Nasdaq(Downloader):
         }
 
     @property
+    def proxy(self):
+        return None
+
+    @property
     def timeout(self):
         return 60
 
