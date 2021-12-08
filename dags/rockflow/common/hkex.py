@@ -15,14 +15,16 @@ class HKEX(Downloader):
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()
         result['raw'] = df.iloc[:, 0]
-        result['symbol'] = result['raw'].astype(str)
+        result['symbol'] = result['raw'].apply(
+            lambda x: "%05d" % x
+        )
         result['yahoo'] = result['raw'].apply(
-            lambda x: x.strip().replace("^", "-P").replace("/", "-").upper()
+            lambda x: "%04d.HK" % x
         )
-        result['futu'] = result['yahoo'].apply(
-            lambda x: "%s-US" % x
+        result['futu'] = result['raw'].apply(
+            lambda x: "%05d-HK" % x
         )
-        result['market'] = pd.Series(["US" for _ in range(len(result.index))])
+        result['market'] = pd.Series(["HK" for _ in range(len(result.index))])
         return result
 
     def to_df(self, fp) -> pd.DataFrame:
