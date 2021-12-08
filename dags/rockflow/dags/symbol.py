@@ -44,7 +44,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
         proxy=proxy
     )
 
-    nasdaq_csv = NasdaqSymbolToCSV(
+    nasdaq_csv = NasdaqSymbolToCsv(
         from_key=nasdaq_raw_key,
         to_key=nasdaq_csv_key,
         region=region,
@@ -52,7 +52,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
         proxy=proxy
     )
 
-    hkex_csv = HkexSymbolToCSV(
+    hkex_csv = HkexSymbolToCsv(
         from_key=hkex_raw_key,
         to_key=hkex_csv_key,
         region=region,

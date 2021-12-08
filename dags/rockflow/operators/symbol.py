@@ -106,7 +106,7 @@ class NasdaqSymbolParser(OSSOperator):
 class HkexSymbolParser(OSSOperator):
     def __init__(
             self,
-            from_key: list,
+            from_key: str,
             to_key: str,
             **kwargs,
     ) -> None:
