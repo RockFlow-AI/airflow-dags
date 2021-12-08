@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
+from typing import Optional
 
 from airflow.models import DAG, Variable
 
-from rockflow.common.proxy import default_proxy
+from rockflow.common.proxy import Proxy
 from rockflow.operators.symbol import *
 
 default_args = {
@@ -16,6 +17,11 @@ default_args = {
     "retry_delay": timedelta(minutes=1),
     "schedule_interval": "0 */12 * * *",
 }
+
+
+def default_proxy() -> Optional[dict]:
+    return Proxy(Variable.get("PROXY_URL"), Variable.get("PROXY_PORT")).proxies
+
 
 region = Variable.get("REGION")
 bucket_name = Variable.get("BUCKET_NAME")

@@ -1,7 +1,5 @@
 from typing import Optional
 
-from airflow.models import Variable
-
 
 class Proxy:
     def __init__(self, host, port) -> None:
@@ -17,5 +15,5 @@ class Proxy:
         return proxies
 
 
-def default_proxy() -> Optional[dict]:
-    return Proxy(Variable.get("PROXY_URL"), Variable.get("PROXY_PORT")).proxies
+def local_proxy() -> Optional[dict]:
+    return Proxy("127.0.0.1", "7890").proxies
