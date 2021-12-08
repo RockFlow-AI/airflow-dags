@@ -15,9 +15,9 @@ class OSSOperator(BaseOperator):
             proxy: Optional[dict] = None,
             **kwargs,
     ) -> None:
+        if 'task_id' not in kwargs:
+            kwargs['task_id'] = snakecase(self.__class__.__name__)
         super().__init__(**kwargs)
-        if not self.task_id:
-            self.task_id = snakecase(self.__class__.__name__)
         self.proxy = proxy
         self.oss_conn_id = oss_conn_id
         self.region = region
