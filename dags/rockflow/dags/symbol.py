@@ -72,7 +72,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     nasdaq_csv = NasdaqSymbolToCsv(
         from_key=nasdaq_raw_key,
-        to_key=nasdaq_csv_key,
+        key=nasdaq_csv_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -80,7 +80,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     hkex_csv = HkexSymbolToCsv(
         from_key=hkex_raw_key,
-        to_key=hkex_csv_key,
+        key=hkex_csv_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -88,7 +88,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     sse_csv = SseSymbolToCsv(
         from_key=sse_raw_key,
-        to_key=sse_csv_key,
+        key=sse_csv_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -96,7 +96,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     szse_csv = SzseSymbolToCsv(
         from_key=szse_raw_key,
-        to_key=szse_csv_key,
+        key=szse_csv_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -104,7 +104,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     nasdaq_parse = NasdaqSymbolParser(
         from_key=nasdaq_csv_key,
-        to_key=nasdaq_parse_key,
+        key=nasdaq_parse_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -112,7 +112,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     hkex_parse = HkexSymbolParser(
         from_key=hkex_csv_key,
-        to_key=hkex_parse_key,
+        key=hkex_parse_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -120,7 +120,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     sse_parse = SseSymbolParser(
         from_key=sse_csv_key,
-        to_key=sse_parse_key,
+        key=sse_parse_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -128,7 +128,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     szse_parse = SzseSymbolParser(
         from_key=szse_csv_key,
-        to_key=szse_parse_key,
+        key=szse_parse_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -136,7 +136,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     merge_csv = MergeCsvList(
         from_key_list=[nasdaq_parse_key, hkex_parse_key, sse_parse_key, szse_parse_key],
-        to_key=merge_csv_key,
+        key=merge_csv_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
