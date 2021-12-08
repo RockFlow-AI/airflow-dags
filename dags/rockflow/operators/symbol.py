@@ -130,13 +130,14 @@ class SymbolParser(OSSSaveOperator):
 
     @property
     def key(self):
-        return os.path.join(self._key, f"{self.exchange.__name__}.csv")
+        return os.path.join(self._key, f"{self.exchange.__name__.lower()}.csv")
+
+    def read_csv(self):
+        return pd.read_csv(self.get_object(self.from_key).read())
 
     @property
     def content(self):
-        return self.exchange.to_tickers(
-            pd.read_csv(self.get_object(self.from_key))
-        ).to_csv()
+        return self.exchange.to_tickers(self.read_csv()).to_csv()
 
 
 class NasdaqSymbolParser(SymbolParser):
