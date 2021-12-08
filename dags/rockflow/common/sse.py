@@ -1,12 +1,9 @@
 from rockflow.common.downloader import Downloader
 from rockflow.common.header import user_agent
-# from io import StringIO
-#
-# import pandas as pd
-#
-# from exchange import Exchange
-# from utils import user_agent
+from io import StringIO
+from typing import Optional
 
+import pandas as pd
 
 class SSE(Downloader):
     def __init__(self, *args, **kwargs):
@@ -46,24 +43,24 @@ class SSE(Downloader):
             "User-Agent": user_agent,
         }
 
-    # def _to_df(self) -> pd.DataFrame:
-    #     return pd.read_csv(
-    #         StringIO(self.oss().read().decode('gb18030')),
-    #         sep='\t'
-    #     )
-    #
-    # def _to_tickers(self) -> pd.DataFrame:
-    #     result = pd.DataFrame()
-    #     result['raw'] = self.csv_df().iloc[:, 0]
-    #     result['symbol'] = result['raw'].astype(str)
-    #     result['yahoo'] = result['raw'].apply(
-    #         lambda x: "%d.SS" % x
-    #     )
-    #     result['futu'] = result['raw'].apply(
-    #         lambda x: "%d-SH" % x
-    #     )
-    #     result['market'] = pd.Series(["SH" for _ in range(len(result.index))])
-    #     return result
+    def to_df(self,fp) -> pd.DataFrame:
+        return pd.read_csv(
+            StringIO(fp.decode('gb18030')),
+            sep='\t'
+        )
+    
+    def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
+        result = pd.DataFrame()
+        result['raw'] = df.iloc[:, 0]
+        result['symbol'] = result['raw'].astype(str)
+        result['yahoo'] = result['raw'].apply(
+            lambda x: "%d.SS" % x
+        )
+        result['futu'] = result['raw'].apply(
+            lambda x: "%d-SH" % x
+        )
+        result['market'] = pd.Series(["SH" for _ in range(len(result.index))])
+        return result
 
 
 class SSE1(SSE):
