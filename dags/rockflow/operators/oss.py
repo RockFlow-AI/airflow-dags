@@ -61,11 +61,15 @@ class OSSSaveOperator(OSSOperator):
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.key = key
+        self._key = key
 
     @property
     def content(self):
         raise NotImplementedError()
+
+    @property
+    def key(self):
+        return self._key
 
     def execute(self, context):
         self.put_object(key=self.key, content=self.content)

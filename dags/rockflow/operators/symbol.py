@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 
 from rockflow.common.hkex import HKEX
@@ -11,11 +13,9 @@ from rockflow.operators.oss import OSSSaveOperator
 class SymbolDownloadOperator(OSSSaveOperator):
     def __init__(
             self,
-            key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.key = key
 
     @property
     def exchange(self):
@@ -156,6 +156,10 @@ class SymbolParser(OSSSaveOperator):
         raise NotImplementedError()
 
     @property
+    def key(self):
+        return os.path.join(self._key, f"{self.exchange.__name__}.csv")
+
+    @property
     def content(self):
         return self.exchange.to_tickers(
             pd.read_csv(self.get_object(self.from_key))
@@ -213,17 +217,14 @@ class SzseSymbolParser(SymbolParser):
 class MergeCsvList(OSSSaveOperator):
     def __init__(
             self,
-            from_key_list: list,
+            from_key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.from_key_list = from_key_list
+        self.from_key = from_key
 
     def get_data_frames(self):
-        result = []
-        for from_key in self.from_key_list:
-            result.append(pd.read_csv(self.get_object(from_key)))
-        return result
+        return [pd.read_csv(oss.read()) for oss in self.object_iterator(self.from_key)]
 
     @property
     def content(self):

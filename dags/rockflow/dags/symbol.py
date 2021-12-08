@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from airflow.models import DAG, Variable
+from airflow.models.baseoperator import chain
 
 from rockflow.common.proxy import Proxy
 from rockflow.operators.symbol import *
@@ -30,16 +31,13 @@ proxy = default_proxy()
 with DAG("symbol_download", default_args=default_args) as dag:
     nasdaq_raw_key = 'airflow-symbol-raw-nasdaq/nasdaq.json'
     nasdaq_csv_key = 'airflow-symbol-csv-nasdaq/nasdaq.csv'
-    nasdaq_parse_key = 'airflow-symbol-parse-nasdaq/nasdaq.csv'
+    symbol_parse_key = 'airflow-symbol-parse'
     hkex_raw_key = 'airflow-symbol-raw-hkex/hkex.xlsx'
     hkex_csv_key = 'airflow-symbol-csv-hkex/hkex.csv'
-    hkex_parse_key = 'airflow-symbol-parse-hkex/hkex.csv'
     sse_raw_key = 'airflow-symbol-raw-sse/sse.xlsx'
     sse_csv_key = 'airflow-symbol-csv-sse/sse.csv'
-    sse_parse_key = 'airflow-symbol-parse-sse/sse.csv'
     szse_raw_key = 'airflow-symbol-raw-szse/szse.xlsx'
     szse_csv_key = 'airflow-symbol-csv-szse/szse.csv'
-    szse_parse_key = 'airflow-symbol-parse-szse/szse.csv'
     merge_csv_key = 'airflow-symbol-csv-merge/merge.csv'
 
     nasdaq = NasdaqSymbolDownloadOperator(
@@ -104,7 +102,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     nasdaq_parse = NasdaqSymbolParser(
         from_key=nasdaq_csv_key,
-        key=nasdaq_parse_key,
+        key=symbol_parse_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -112,7 +110,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     hkex_parse = HkexSymbolParser(
         from_key=hkex_csv_key,
-        key=hkex_parse_key,
+        key=symbol_parse_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -120,7 +118,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     sse_parse = SseSymbolParser(
         from_key=sse_csv_key,
-        key=sse_parse_key,
+        key=symbol_parse_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
@@ -128,26 +126,23 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     szse_parse = SzseSymbolParser(
         from_key=szse_csv_key,
-        key=szse_parse_key,
+        key=symbol_parse_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
     )
 
     merge_csv = MergeCsvList(
-        from_key_list=[nasdaq_parse_key, hkex_parse_key, sse_parse_key, szse_parse_key],
+        from_key=symbol_parse_key,
         key=merge_csv_key,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
     )
 
-nasdaq_csv.set_upstream(nasdaq)
-hkex_csv.set_upstream(hkex)
-sse_csv.set_upstream(sse)
-szse_csv.set_upstream(szse)
-nasdaq_parse.set_upstream(nasdaq_csv)
-hkex_parse.set_upstream(hkex_csv)
-sse_parse.set_upstream(sse_csv)
-szse_parse.set_upstream(szse_csv)
-merge_csv.set_upstream([nasdaq_parse, hkex_parse, sse_parse, szse_parse])
+chain(
+    [nasdaq, hkex, sse, szse],
+    [nasdaq_csv, hkex_csv, sse_csv, szse_csv],
+    [nasdaq_parse, hkex_parse, sse_parse, szse_parse],
+    merge_csv
+)
