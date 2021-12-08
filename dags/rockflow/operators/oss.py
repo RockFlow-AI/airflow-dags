@@ -1,5 +1,6 @@
 from typing import Optional, Any
 
+import oss2
 from airflow import AirflowException
 from airflow.models import BaseOperator
 from airflow.providers.alibaba.cloud.hooks.oss import OSSHook
@@ -27,9 +28,25 @@ class OSSOperator(BaseOperator):
 
         print(f"OSSOperator __dict__: {self.__dict__}")
 
-    def get_object(self, key):
+    @property
+    def bucket(self):
+        return self.oss_hook.get_bucket(self.bucket_name)
+
+    def object_iterator(self, prefix: str):
         try:
-            return self.oss_hook.get_bucket(self.bucket_name).get_object(key)
+            return oss2.ObjectIterator(self.bucket, prefix=prefix, delimiter='/')
+        except Exception as e:
+            raise AirflowException(f"Errors: {e}")
+
+    def get_object(self, key: str):
+        try:
+            return self.bucket.get_object(key)
+        except Exception as e:
+            raise AirflowException(f"Errors: {e}")
+
+    def put_object(self, key: str, content):
+        try:
+            self.bucket.put_object(key, content)
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
 
@@ -51,4 +68,4 @@ class OSSSaveOperator(OSSOperator):
         raise NotImplementedError()
 
     def execute(self, context):
-        self.oss_hook.load_string(bucket_name=self.bucket_name, key=self.key, content=self.content)
+        self.put_object(key=self.key, content=self.content)
