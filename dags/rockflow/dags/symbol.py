@@ -17,51 +17,55 @@ default_args = {
     # "schedule_interval": "@daily",
 }
 
+region = Variable.get("REGION")
+bucket_name = Variable.get("BUCKET_NAME")
+proxy = default_proxy()
+
 with DAG("symbol_download", default_args=default_args) as dag:
-    Nasdaq = NasdaqSymbolDownloadOperator(
-        task_id="download_nasdaq_symbol_to_local",
-        key='airflow-symbol-raw-nasdaq/nasdaq.json',
-        region=Variable.get("REGION"),
-        bucket_name=Variable.get("BUCKET_NAME"),
-        proxy=default_proxy()
+    nasdaq_raw_key = 'airflow-symbol-raw-nasdaq/nasdaq.json'
+    nasdaq_csv_key = 'airflow-symbol-csv-nasdaq/nasdaq.csv'
+    hkex_raw_key = 'airflow-symbol-raw-hkex/hkex.xlsx'
+    hkex_csv_key = 'airflow-symbol-csv-hkex/hkex.csv'
+    merge_csv_key = 'airflow-symbol-csv-merge/merge.csv'
+
+    nasdaq = NasdaqSymbolDownloadOperator(
+        key=nasdaq_raw_key,
+        region=region,
+        bucket_name=bucket_name,
+        proxy=proxy
     )
 
-    Hkex = HkexSymbolDownloadOperator(
-        task_id="download_hkex_symbol_to_local",
-        key='airflow-symbol-raw-hkex/hkex.xlsx',
-        region=Variable.get("REGION"),
-        bucket_name=Variable.get("BUCKET_NAME"),
-        proxy=default_proxy()
+    hkex = HkexSymbolDownloadOperator(
+        key=hkex_raw_key,
+        region=region,
+        bucket_name=bucket_name,
+        proxy=proxy
     )
 
-    Nasdaq_csv = NasdaqSymbolToCSV(
-        task_id="download_nasdaq_symbol_to_csv",
-        from_key='airflow-symbol-raw-nasdaq/nasdaq.json',
-        to_key='airflow-symbol-csv-nasdaq/nasdaq.csv',
-        region=Variable.get("REGION"),
-        bucket_name=Variable.get("BUCKET_NAME"),
-        proxy=default_proxy()
+    nasdaq_csv = NasdaqSymbolToCSV(
+        from_key=nasdaq_raw_key,
+        to_key=nasdaq_csv_key,
+        region=region,
+        bucket_name=bucket_name,
+        proxy=proxy
     )
 
-    Hkex_csv = HkexSymbolToCSV(
-        task_id="download_hkex_symbol_to_csv",
-        from_key='airflow-symbol-raw-hkex/hkex.xlsx',
-        to_key='airflow-symbol-csv-hkex/hkex.csv',
-        region=Variable.get("REGION"),
-        bucket_name=Variable.get("BUCKET_NAME"),
-        proxy=default_proxy()
+    hkex_csv = HkexSymbolToCSV(
+        from_key=hkex_raw_key,
+        to_key=hkex_csv_key,
+        region=region,
+        bucket_name=bucket_name,
+        proxy=proxy
     )
 
     merge_csv = MergeCsvList(
-        task_id="merge_csvs",
-        from_key_list=['airflow-symbol-csv-nasdaq/nasdaq.csv', 'airflow-symbol-csv-hkex/hkex.csv'],
-        to_key='airflow-symbol-csv-merge/Merged.csv',
-        region=Variable.get("REGION"),
-        bucket_name=Variable.get("BUCKET_NAME"),
-        proxy=default_proxy()
+        from_key_list=[nasdaq_csv_key, hkex_csv_key],
+        to_key=merge_csv_key,
+        region=region,
+        bucket_name=bucket_name,
+        proxy=proxy
     )
 
-# Nasdaq_csv.set_upstream(Nasdaq)
-Hkex_csv.set_upstream(Hkex)
-# merge_csv.set_upstream([Nasdaq_csv,Hkex_csv])
-merge_csv.set_upstream(Hkex_csv)
+nasdaq_csv.set_upstream(nasdaq)
+hkex_csv.set_upstream(hkex)
+merge_csv.set_upstream([nasdaq_csv, hkex_csv])

@@ -3,6 +3,7 @@ from typing import Optional, Any
 from airflow import AirflowException
 from airflow.models import BaseOperator
 from airflow.providers.alibaba.cloud.hooks.oss import OSSHook
+from stringcase import snakecase
 
 
 class OSSOperator(BaseOperator):
@@ -15,6 +16,8 @@ class OSSOperator(BaseOperator):
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
+        if not self.task_id:
+            self.task_id = snakecase(self.__class__.__name__)
         self.proxy = proxy
         self.oss_conn_id = oss_conn_id
         self.region = region
