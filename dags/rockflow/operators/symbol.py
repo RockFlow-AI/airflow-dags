@@ -16,8 +16,11 @@ class NasdaqSymbolDownloadOperator(OSSOperator):
         self.key = key
 
     def execute(self, context):
-        r = Nasdaq(proxy=self.proxy).get()
-        self.oss_hook.load_string(bucket_name=self.bucket_name, key=self.key, content=r.content)
+        self.oss_hook.load_string(
+            bucket_name=self.bucket_name,
+            key=self.key,
+            content=Nasdaq(proxy=self.proxy).get().content
+        )
 
 
 class NasdaqSymbolToCSV(OSSOperator):
@@ -32,8 +35,13 @@ class NasdaqSymbolToCSV(OSSOperator):
         self.to_key = to_key
 
     def execute(self, context):
-        raw_df = Nasdaq().to_df(self.get_object(self.from_key).read())
-        self.oss_hook.load_string(bucket_name=self.bucket_name, key=self.to_key, content=raw_df.to_csv())
+        self.oss_hook.load_string(
+            bucket_name=self.bucket_name,
+            key=self.to_key,
+            content=Nasdaq().to_df(
+                self.get_object(self.from_key).read()
+            ).to_csv()
+        )
 
 
 class HkexSymbolDownloadOperator(OSSOperator):
@@ -46,8 +54,11 @@ class HkexSymbolDownloadOperator(OSSOperator):
         self.key = key
 
     def execute(self, context):
-        r = HKEX(proxy=self.proxy).get()
-        self.oss_hook.load_string(bucket_name=self.bucket_name, key=self.key, content=r.content)
+        self.oss_hook.load_string(
+            bucket_name=self.bucket_name,
+            key=self.key,
+            content=HKEX(proxy=self.proxy).get().content
+        )
 
 
 class HkexSymbolToCSV(OSSOperator):
@@ -62,8 +73,55 @@ class HkexSymbolToCSV(OSSOperator):
         self.to_key = to_key
 
     def execute(self, context):
-        raw_df = HKEX().to_df(self.get_object(self.from_key).read())
-        self.oss_hook.load_string(bucket_name=self.bucket_name, key=self.to_key, content=raw_df.to_csv())
+        self.oss_hook.load_string(
+            bucket_name=self.bucket_name,
+            key=self.to_key,
+            content=HKEX().to_df(
+                self.get_object(self.from_key).read()
+            ).to_csv()
+        )
+
+
+class NasdaqSymbolParser(OSSOperator):
+    def __init__(
+            self,
+            from_key: str,
+            to_key: str,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.from_key = from_key
+        self.to_key = to_key
+
+    def execute(self, context):
+        self.oss_hook.load_string(
+            bucket_name=self.bucket_name,
+            key=self.to_key,
+            content=Nasdaq().to_tickers(
+                pd.read_csv(self.get_object(self.from_key))
+            ).to_csv()
+        )
+
+
+class HkexSymbolParser(OSSOperator):
+    def __init__(
+            self,
+            from_key: list,
+            to_key: str,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.from_key = from_key
+        self.to_key = to_key
+
+    def execute(self, context):
+        self.oss_hook.load_string(
+            bucket_name=self.bucket_name,
+            key=self.to_key,
+            content=HKEX().to_tickers(
+                pd.read_csv(self.get_object(self.from_key))
+            ).to_csv()
+        )
 
 
 class MergeCsvList(OSSOperator):
@@ -84,5 +142,8 @@ class MergeCsvList(OSSOperator):
         return result
 
     def execute(self, context):
-        merged_df = DataFrameMerger().merge(self.get_data_frames())
-        self.oss_hook.load_string(bucket_name=self.bucket_name, key=self.to_key, content=merged_df.to_csv())
+        self.oss_hook.load_string(
+            bucket_name=self.bucket_name,
+            key=self.to_key,
+            content=DataFrameMerger().merge(self.get_data_frames()).to_csv()
+        )

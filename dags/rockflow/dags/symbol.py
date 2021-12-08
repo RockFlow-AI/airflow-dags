@@ -24,8 +24,10 @@ proxy = default_proxy()
 with DAG("symbol_download", default_args=default_args) as dag:
     nasdaq_raw_key = 'airflow-symbol-raw-nasdaq/nasdaq.json'
     nasdaq_csv_key = 'airflow-symbol-csv-nasdaq/nasdaq.csv'
+    nasdaq_parse_key = 'airflow-symbol-parse-nasdaq/nasdaq.csv'
     hkex_raw_key = 'airflow-symbol-raw-hkex/hkex.xlsx'
     hkex_csv_key = 'airflow-symbol-csv-hkex/hkex.csv'
+    hkex_parse_key = 'airflow-symbol-parse-hkex/hkex.csv'
     merge_csv_key = 'airflow-symbol-csv-merge/merge.csv'
 
     nasdaq = NasdaqSymbolDownloadOperator(
@@ -58,8 +60,24 @@ with DAG("symbol_download", default_args=default_args) as dag:
         proxy=proxy
     )
 
+    nasdaq_parse = NasdaqSymbolParser(
+        from_key=nasdaq_csv_key,
+        to_key=nasdaq_parse_key,
+        region=region,
+        bucket_name=bucket_name,
+        proxy=proxy
+    )
+
+    hkex_parse = HkexSymbolParser(
+        from_key=hkex_csv_key,
+        to_key=hkex_parse_key,
+        region=region,
+        bucket_name=bucket_name,
+        proxy=proxy
+    )
+
     merge_csv = MergeCsvList(
-        from_key_list=[nasdaq_csv_key, hkex_csv_key],
+        from_key_list=[nasdaq_parse_key, hkex_parse_key],
         to_key=merge_csv_key,
         region=region,
         bucket_name=bucket_name,
@@ -68,4 +86,6 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
 nasdaq_csv.set_upstream(nasdaq)
 hkex_csv.set_upstream(hkex)
-merge_csv.set_upstream([nasdaq_csv, hkex_csv])
+nasdaq_parse.set_upstream(nasdaq_csv)
+hkex_parse.set_upstream(hkex_csv)
+merge_csv.set_upstream([nasdaq_parse, hkex_parse])
