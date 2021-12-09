@@ -129,8 +129,12 @@ class SymbolParser(OSSSaveOperator):
         raise NotImplementedError()
 
     @property
+    def exchange_name(self):
+        return self.exchange.__class__.__name__.lower()
+
+    @property
     def key(self):
-        return os.path.join(self._key, f"{self.exchange.__class__.__name__.lower()}.csv")
+        return os.path.join(self._key, f"{self.exchange_name}.csv")
 
     def read_csv(self):
         return pd.read_csv(self.get_object(self.from_key))
