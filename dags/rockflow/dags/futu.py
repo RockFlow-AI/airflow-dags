@@ -3,8 +3,8 @@ from typing import Optional
 
 from airflow.models import DAG, Variable
 
-from rockflow.operators.futu import FutuCnOperator, FutuEnOperator
 from rockflow.common.proxy import Proxy
+from rockflow.operators.futu import FutuCnOperator, FutuEnOperator
 
 default_args = {
     "owner": "daijunkai",
@@ -32,7 +32,7 @@ proxy = default_proxy()
 with DAG("company_profile_cn_download", default_args=default_args) as cn_dag:
     futu_html_cn_prefix = "company_profile_cn_download"
     futu_cn = FutuCnOperator(
-        prefix=futu_html_cn_prefix,
+        key=futu_html_cn_prefix,
         ticker="00700-HK",
         region=region,
         bucket_name=bucket_name,
@@ -42,7 +42,7 @@ with DAG("company_profile_cn_download", default_args=default_args) as cn_dag:
 with DAG("company_profile_en_download", default_args=default_args) as en_dag:
     futu_html_en_prefix = "company_profile_en_download"
     futu_en = FutuEnOperator(
-        prefix=futu_html_en_prefix,
+        key=futu_html_en_prefix,
         ticker="00700-HK",
         region=region,
         bucket_name=bucket_name,

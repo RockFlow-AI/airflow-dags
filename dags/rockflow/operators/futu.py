@@ -9,17 +9,15 @@ from rockflow.operators.oss import OSSSaveOperator
 class FutuOperator(OSSSaveOperator):
     def __init__(self,
                  ticker: str,
-                 prefix: str,
                  **kwargs) -> None:
         if 'task_id' not in kwargs:
             kwargs['task_id'] = f"{snakecase(self.__class__.__name__)}_{ticker}"
         super().__init__(**kwargs)
         self.ticker = ticker
-        self.prefix = prefix
 
     @property
     def key(self):
-        return os.path.join(self.prefix, f"{self.ticker}.html")
+        return os.path.join(self._key, f"{self.ticker}.html")
 
     @property
     def page(self):
