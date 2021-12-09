@@ -2,14 +2,17 @@ import os
 from typing import Any
 
 import pandas as pd
+from pandarallel import pandarallel
 from stringcase import snakecase
 
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
 
+pandarallel.initialize()
+
 
 def parallel_func(line: pd.Series, prefix, proxy, bucket):
-    symbol = line['symbol']
+    symbol = line['yahoo']
     futu_ticker = line['futu']
     cn = FutuCompanyProfileCn(
         symbol=symbol,
@@ -17,6 +20,7 @@ def parallel_func(line: pd.Series, prefix, proxy, bucket):
         prefix=prefix,
         proxy=proxy
     )
+    print(f"put_object: {cn.oss_key}")
     bucket.put_object(cn.oss_key, cn.get().content)
     en = FutuCompanyProfileEn(
         symbol=symbol,
@@ -24,6 +28,7 @@ def parallel_func(line: pd.Series, prefix, proxy, bucket):
         prefix=prefix,
         proxy=proxy
     )
+    print(f"put_object: {en.oss_key}")
     bucket.put_object(en.oss_key, en.get().content)
 
 
@@ -42,7 +47,7 @@ class FutuBatchOperator(OSSOperator):
 
     def execute(self, context: Any):
         print(f"symbol: {self.symbols}")
-        self.symbols.apply(
+        self.symbols.parallel_apply(
             parallel_func,
             axis=1,
             args=(self.key, self.proxy, self.bucket)
