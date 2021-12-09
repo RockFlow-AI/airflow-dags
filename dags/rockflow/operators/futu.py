@@ -83,7 +83,7 @@ class FutuExtractHtml(OSSSaveOperator):
 
     @property
     def content(self):
-        result = {}
+        result = []
         for obj in self.object_iterator(self.from_key):
             if obj.is_prefix():
                 def task(bucket, obj):
