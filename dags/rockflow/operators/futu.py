@@ -80,10 +80,16 @@ class FutuExtractHtml(OSSSaveOperator):
 
     @property
     def content(self):
-        return json.dumps({
-            self.symbol(obj): self.extract_data(obj)
-            for obj in self.object_iterator(self.from_key) if not obj.is_prefix()
-        }, ensure_ascii=False)
+        result = {}
+        for obj in self.object_iterator(self.from_key):
+            if obj.is_prefix():
+                result.update({
+                    self.symbol(sub_obj): self.extract_data(sub_obj)
+                    for sub_obj in self.object_iterator(obj.key) if not sub_obj.is_prefix()
+                })
+            else:
+                result[self.symbol(obj)] = self.extract_data(obj)
+        return json.dumps(result, ensure_ascii=False)
 
 
 class FutuOperator(OSSSaveOperator):
