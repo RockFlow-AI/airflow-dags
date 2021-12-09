@@ -43,10 +43,10 @@ class FutuBatchOperator(OSSOperator):
 
     @property
     def symbols(self) -> pd.DataFrame:
-        return pd.read_csv(self.get_object(self.from_key))[:10]
+        return pd.read_csv(self.get_object(self.from_key))
 
     def execute(self, context: Any):
-        print(f"symbol: {self.symbols}")
+        print(f"symbol: {self.symbols[:10]}")
         self.symbols.parallel_apply(
             parallel_func,
             axis=1,
