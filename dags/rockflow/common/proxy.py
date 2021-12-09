@@ -9,8 +9,8 @@ class Proxy:
     @property
     def proxies(self) -> Optional[dict]:
         proxies = {
-            'http': f"http://{self.host}:{self.port}",
-            'https': f"http://{self.host}:{self.port}"
+            "http://": f"http://{self.host}:{self.port}",
+            "https://": f"http://{self.host}:{self.port}"
         }
         return proxies
 
