@@ -1,5 +1,6 @@
 import json
 import os
+from multiprocessing import Pool
 from pathlib import Path
 from typing import Any
 
@@ -70,12 +71,14 @@ class FutuExtractHtml(OSSSaveOperator):
         super().__init__(**kwargs)
         self.from_key = from_key
 
-    def symbol(self, obj):
+    @staticmethod
+    def symbol(obj):
         return Path(obj.key).stem
 
-    def extract_data(self, obj):
+    @staticmethod
+    def extract_data(bucket, obj):
         return FutuCompanyProfile.extract_data(
-            self.get_object(obj.key), self.symbol(obj)
+            FutuExtractHtml.get_object_(bucket, obj.key), FutuExtractHtml.symbol(obj)
         )
 
     @property
@@ -83,12 +86,15 @@ class FutuExtractHtml(OSSSaveOperator):
         result = {}
         for obj in self.object_iterator(self.from_key):
             if obj.is_prefix():
-                result.update({
-                    self.symbol(sub_obj): self.extract_data(sub_obj)
-                    for sub_obj in self.object_iterator(obj.key) if not sub_obj.is_prefix()
-                })
-            else:
-                result[self.symbol(obj)] = self.extract_data(obj)
+                def task(bucket, obj):
+                    if obj.is_prefix():
+                        return
+                    return FutuExtractHtml.extract_data(bucket, obj)
+
+                with Pool(processes=8) as pool:
+                    result = result.append(
+                        pool.map(lambda x: task(self.bucket, x), self.object_iterator_(self.bucket, obj.key))
+                    )
         return json.dumps(result, ensure_ascii=False)
 
 
