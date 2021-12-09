@@ -27,11 +27,11 @@ class OSSOperator(BaseOperator):
         self.oss_hook = OSSHook(oss_conn_id=self.oss_conn_id, region=self.region)
 
     @property
-    def bucket(self):
+    def bucket(self) -> oss2.api.Bucket:
         return self.oss_hook.get_bucket(self.bucket_name)
 
     @staticmethod
-    def object_iterator_(bucket, prefix: str):
+    def object_iterator_(bucket: oss2.api.Bucket, prefix: str):
         try:
             print(f"object_iterator: {prefix}")
             return oss2.ObjectIterator(bucket, prefix=prefix, delimiter='/')
@@ -42,7 +42,7 @@ class OSSOperator(BaseOperator):
         return self.object_iterator_(self.bucket, prefix)
 
     @staticmethod
-    def get_object_(bucket, key: str):
+    def get_object_(bucket: oss2.api.Bucket, key: str):
         try:
             print(f"get_object: {key}")
             return bucket.get_object(key)
@@ -53,7 +53,7 @@ class OSSOperator(BaseOperator):
         return self.get_object_(self.bucket, key)
 
     @staticmethod
-    def put_object_(bucket, key: str, content):
+    def put_object_(bucket: oss2.api.Bucket, key: str, content):
         try:
             print(f"put_object: {key}")
             bucket.put_object(key, content)
@@ -64,15 +64,49 @@ class OSSOperator(BaseOperator):
         self.put_object_(self.bucket, key, content)
 
     @staticmethod
-    def object_exists_(bucket, key: str):
+    def object_exists_(bucket: oss2.api.Bucket, key: str):
         try:
             print(f"object_exists: {key}")
-            bucket.object_exists(key)
+            return bucket.object_exists(key)
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
 
     def object_exists(self, key: str):
-        self.object_exists_(self.bucket, key)
+        return self.object_exists_(self.bucket, key)
+
+    @staticmethod
+    def get_object_meta_(bucket: oss2.api.Bucket, key: str):
+        try:
+            print(f"get_object_meta: {key}")
+            return bucket.get_object_meta(key)
+        except Exception as e:
+            raise AirflowException(f"Errors: {e}")
+
+    def get_object_meta(self, key: str):
+        return self.get_object_meta_(self.bucket, key)
+
+    @staticmethod
+    def head_object_(bucket: oss2.api.Bucket, key: str):
+        try:
+            print(f"head_object: {key}")
+            return bucket.head_object(key)
+        except Exception as e:
+            raise AirflowException(f"Errors: {e}")
+
+    def head_object(self, key: str):
+        return self.head_object_(self.bucket, key)
+
+    @staticmethod
+    def last_modified_(bucket: oss2.api.Bucket, key: str):
+        try:
+            lm = OSSOperator.get_object_meta_(bucket, key).headers['Last-Modified']
+            print(f"last_modified: {lm}")
+            return lm
+        except Exception as e:
+            raise AirflowException(f"Errors: {e}")
+
+    def last_modified(self, key: str):
+        return self.last_modified_(self.bucket, key)
 
     def execute(self, context: Any):
         raise NotImplementedError()

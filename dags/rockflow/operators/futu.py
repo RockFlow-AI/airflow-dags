@@ -29,8 +29,9 @@ class FutuBatchOperator(OSSOperator):
             prefix=prefix,
             proxy=proxy
         )
-        if not FutuBatchOperator.object_exists(bucket, obj.oss_key):
-            FutuBatchOperator.put_object(bucket, obj.oss_key, obj.get().content)
+        FutuBatchOperator.last_modified_(bucket, obj.oss_key)
+        if not FutuBatchOperator.object_exists_(bucket, obj.oss_key):
+            FutuBatchOperator.put_object_(bucket, obj.oss_key, obj.get().content)
 
     @staticmethod
     def call(line: pd.Series, prefix, proxy, bucket):
