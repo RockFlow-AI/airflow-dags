@@ -96,9 +96,7 @@ class OSSOperator(BaseOperator):
     @staticmethod
     def last_modified_(bucket: oss2.api.Bucket, key: str):
         try:
-            lm = OSSOperator.get_object_meta_(bucket, key).headers['Last-Modified']
-            print(f"last_modified: {lm}")
-            return lm
+            return OSSOperator.get_object_meta_(bucket, key).headers['Last-Modified']
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
 
