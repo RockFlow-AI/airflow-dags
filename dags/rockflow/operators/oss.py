@@ -65,11 +65,8 @@ class OSSOperator(BaseOperator):
 
     @staticmethod
     def object_exists_(bucket: oss2.api.Bucket, key: str):
-        try:
-            print(f"object_exists: {key}")
-            return bucket.object_exists(key)
-        except Exception as e:
-            raise AirflowException(f"Errors: {e}")
+        print(f"object_exists: {key}")
+        return bucket.object_exists(key)
 
     def object_exists(self, key: str):
         return self.object_exists_(self.bucket, key)
