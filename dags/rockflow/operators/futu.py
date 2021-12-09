@@ -39,7 +39,6 @@ class FutuBatchOperator(OSSOperator):
             prefix=prefix,
             proxy=proxy
         )
-        FutuBatchOperator.last_modified_(bucket, obj.oss_key)
         if not FutuBatchOperator.object_not_update_for_a_week(bucket, obj.oss_key):
             FutuBatchOperator.put_object_(bucket, obj.oss_key, obj.get().content)
 
