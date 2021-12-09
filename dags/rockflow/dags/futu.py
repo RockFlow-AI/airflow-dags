@@ -3,7 +3,7 @@ from typing import Optional
 
 from airflow.models import DAG, Variable
 
-from operators.futu import FutuCnOperator, FutuEnOperator
+from rockflow.operators.futu import FutuCnOperator, FutuEnOperator
 from rockflow.common.proxy import Proxy
 
 default_args = {
