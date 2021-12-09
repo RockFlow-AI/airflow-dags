@@ -29,7 +29,8 @@ class FutuCompanyProfile(Downloader):
     def type(self):
         return "html"
 
-    def raw_data(self, fp):
+    @staticmethod
+    def extract_data(fp, symbol):
         soup = BeautifulSoup(fp, features="lxml")
         table_dict = {}
         for row in soup.findAll(name="div", attrs={"class": "company-item"}):
@@ -42,15 +43,14 @@ class FutuCompanyProfile(Downloader):
             except:
                 continue
             table_dict[name] = value
-        table_dict["symbol"] = self.symbol
-        table_dict["futu_ticker"] = self.futu_ticker
+        table_dict["symbol"] = symbol
         return table_dict
 
     def format(self, table_dict):
         raise NotImplementedError()
 
     def to_json(self, fp):
-        raw_table = self.raw_data(fp)
+        raw_table = self.extract_data(fp, self.symbol)
         # print(json.dumps(raw_table, ensure_ascii=False))
         table_dict = self.format(raw_table)
         print(json.dumps(table_dict, ensure_ascii=False))

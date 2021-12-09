@@ -1,4 +1,6 @@
+import json
 import os
+from pathlib import Path
 from typing import Any
 
 import oss2
@@ -6,7 +8,7 @@ import pandas as pd
 from stringcase import snakecase
 
 from rockflow.common.datatime_helper import GmtDatetimeCheck
-from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn
+from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
 
 
@@ -57,6 +59,30 @@ class FutuBatchOperator(OSSOperator):
             axis=1,
             args=(self.key, self.proxy, self.bucket)
         )
+
+
+class FutuExtractHtml(OSSSaveOperator):
+    def __init__(
+            self,
+            from_key: str,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.from_key = from_key
+
+    def symbol(self, obj):
+        return Path(obj.key).stem
+
+    def extract_data(self, obj):
+        return FutuCompanyProfile.extract_data(
+            self.get_object(obj.key), self.symbol(obj)
+        )
+
+    @property
+    def content(self):
+        return json.dumps({
+            self.symbol(obj): self.extract_data(obj) for obj in self.object_iterator(self.from_key)
+        }, ensure_ascii=False)
 
 
 class FutuOperator(OSSSaveOperator):
