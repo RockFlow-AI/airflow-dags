@@ -20,16 +20,20 @@ def parallel_func(line: pd.Series, prefix, proxy, bucket):
         prefix=prefix,
         proxy=proxy
     )
-    print(f"put_object: {cn.oss_key}")
-    bucket.put_object(cn.oss_key, cn.get().content)
+    print(f"exists: {cn.oss_key}")
+    if not bucket.exists(cn.oss_key):
+        print(f"put_object: {cn.oss_key}")
+        bucket.put_object(cn.oss_key, cn.get().content)
     en = FutuCompanyProfileEn(
         symbol=symbol,
         futu_ticker=futu_ticker,
         prefix=prefix,
         proxy=proxy
     )
-    print(f"put_object: {en.oss_key}")
-    bucket.put_object(en.oss_key, en.get().content)
+    print(f"exists: {en.oss_key}")
+    if not bucket.exists(en.oss_key):
+        print(f"put_object: {en.oss_key}")
+        bucket.put_object(en.oss_key, en.get().content)
 
 
 class FutuBatchOperator(OSSOperator):
