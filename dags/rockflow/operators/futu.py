@@ -26,6 +26,8 @@ class FutuOperator(OSSSaveOperator):
     @property
     def instance(self):
         return self.page(
+            symbol=self.ticker,
+            futu_ticker=self.ticker,
             proxy=self.proxy,
         )
 
