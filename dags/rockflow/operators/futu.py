@@ -1,9 +1,11 @@
 import os
 from typing import Any
 
+import oss2
 import pandas as pd
 from stringcase import snakecase
 
+from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
 
@@ -22,6 +24,14 @@ class FutuBatchOperator(OSSOperator):
         return pd.read_csv(self.get_object(self.from_key))
 
     @staticmethod
+    def object_not_update_for_a_week(bucket: oss2.api.Bucket, key: str):
+        if not FutuBatchOperator.object_exists_(bucket, key):
+            return False
+        return GmtDatetimeCheck(
+            FutuBatchOperator.last_modified_(bucket, key), weeks=1
+        )
+
+    @staticmethod
     def call_one(cls, line: pd.Series, prefix: str, proxy, bucket):
         obj = cls(
             symbol=line['yahoo'],
@@ -30,7 +40,7 @@ class FutuBatchOperator(OSSOperator):
             proxy=proxy
         )
         FutuBatchOperator.last_modified_(bucket, obj.oss_key)
-        if not FutuBatchOperator.object_exists_(bucket, obj.oss_key):
+        if not FutuBatchOperator.object_not_update_for_a_week(bucket, obj.oss_key):
             FutuBatchOperator.put_object_(bucket, obj.oss_key, obj.get().content)
 
     @staticmethod
