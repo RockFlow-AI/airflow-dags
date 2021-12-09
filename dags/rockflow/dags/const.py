@@ -1,0 +1,1 @@
+MERGE_CSV_KEY = 'airflow-symbol-csv-merge/merge.csv'
