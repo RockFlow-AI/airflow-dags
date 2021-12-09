@@ -1,6 +1,6 @@
 import json
 import os
-from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool as Pool
 from pathlib import Path
 from typing import Any
 
@@ -91,7 +91,7 @@ class FutuExtractHtml(OSSSaveOperator):
                         return
                     return FutuExtractHtml.extract_data(bucket, obj)
 
-                with Pool(processes=8) as pool:
+                with Pool(processes=12) as pool:
                     result = result.append(
                         pool.map(lambda x: task(self.bucket, x), self.object_iterator_(self.bucket, obj.key))
                     )
