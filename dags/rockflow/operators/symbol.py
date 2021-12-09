@@ -85,7 +85,7 @@ class NasdaqSymbolToCsv(SymbolToCsv):
 
     @property
     def exchange(self):
-        return Nasdaq()
+        return Nasdaq(proxy=self.proxy)
 
 
 class HkexSymbolToCsv(SymbolToCsv):
@@ -94,7 +94,7 @@ class HkexSymbolToCsv(SymbolToCsv):
 
     @property
     def exchange(self):
-        return HKEX()
+        return HKEX(proxy=self.proxy)
 
 
 class SseSymbolToCsv(SymbolToCsv):
@@ -103,7 +103,7 @@ class SseSymbolToCsv(SymbolToCsv):
 
     @property
     def exchange(self):
-        return SSE1()
+        return SSE1(proxy=self.proxy)
 
 
 class SzseSymbolToCsv(SymbolToCsv):
@@ -112,7 +112,7 @@ class SzseSymbolToCsv(SymbolToCsv):
 
     @property
     def exchange(self):
-        return SZSE1()
+        return SZSE1(proxy=self.proxy)
 
 
 class SymbolParser(OSSSaveOperator):
@@ -150,7 +150,7 @@ class NasdaqSymbolParser(SymbolParser):
 
     @property
     def exchange(self):
-        return Nasdaq()
+        return Nasdaq(proxy=self.proxy)
 
 
 class HkexSymbolParser(SymbolParser):
@@ -159,7 +159,7 @@ class HkexSymbolParser(SymbolParser):
 
     @property
     def exchange(self):
-        return HKEX()
+        return HKEX(proxy=self.proxy)
 
 
 class SseSymbolParser(SymbolParser):
@@ -168,7 +168,7 @@ class SseSymbolParser(SymbolParser):
 
     @property
     def exchange(self):
-        return SSE1()
+        return SSE1(proxy=self.proxy)
 
 
 class SzseSymbolParser(SymbolParser):
@@ -177,7 +177,7 @@ class SzseSymbolParser(SymbolParser):
 
     @property
     def exchange(self):
-        return SZSE1()
+        return SZSE1(proxy=self.proxy)
 
 
 class MergeCsvList(OSSSaveOperator):
