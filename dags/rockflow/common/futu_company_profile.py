@@ -1,4 +1,5 @@
 import json
+import os
 
 from bs4 import BeautifulSoup
 
@@ -6,10 +7,15 @@ from rockflow.common.downloader import Downloader
 
 
 class FutuCompanyProfile(Downloader):
-    def __init__(self, symbol, futu_ticker, *args, **kwargs):
+    def __init__(self, symbol: str, futu_ticker: str, prefix: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.symbol = symbol
         self.futu_ticker = futu_ticker
+        self.prefix = prefix
+
+    @property
+    def oss_key(self):
+        return os.path.join(self.prefix, self.snakecase_class_name, f"{self.symbol}.{self.type}")
 
     @property
     def language(self):
