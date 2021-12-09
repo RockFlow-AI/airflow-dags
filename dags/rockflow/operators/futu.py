@@ -43,7 +43,7 @@ class FutuBatchOperator(OSSOperator):
 
     def execute(self, context: Any):
         print(f"symbol: {self.symbols[:10]}")
-        self.symbols.parallel_apply(
+        self.symbols.apply(
             FutuBatchOperator.call,
             axis=1,
             args=(self.key, self.proxy, self.bucket)
