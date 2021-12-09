@@ -21,7 +21,7 @@ def parallel_func(line: pd.Series, prefix, proxy, bucket):
         proxy=proxy
     )
     print(f"exists: {cn.oss_key}")
-    if not bucket.exists(cn.oss_key):
+    if not bucket.object_exists(cn.oss_key):
         print(f"put_object: {cn.oss_key}")
         bucket.put_object(cn.oss_key, cn.get().content)
     en = FutuCompanyProfileEn(
@@ -31,7 +31,7 @@ def parallel_func(line: pd.Series, prefix, proxy, bucket):
         proxy=proxy
     )
     print(f"exists: {en.oss_key}")
-    if not bucket.exists(en.oss_key):
+    if not bucket.object_exists(en.oss_key):
         print(f"put_object: {en.oss_key}")
         bucket.put_object(en.oss_key, en.get().content)
 
