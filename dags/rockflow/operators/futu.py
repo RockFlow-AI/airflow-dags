@@ -2,38 +2,10 @@ import os
 from typing import Any
 
 import pandas as pd
-from pandarallel import pandarallel
 from stringcase import snakecase
 
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
-
-pandarallel.initialize()
-
-
-def parallel_func(line: pd.Series, prefix, proxy, bucket):
-    symbol = line['yahoo']
-    futu_ticker = line['futu']
-    cn = FutuCompanyProfileCn(
-        symbol=symbol,
-        futu_ticker=futu_ticker,
-        prefix=prefix,
-        proxy=proxy
-    )
-    print(f"exists: {cn.oss_key}")
-    if not bucket.object_exists(cn.oss_key):
-        print(f"put_object: {cn.oss_key}")
-        bucket.put_object(cn.oss_key, cn.get().content)
-    en = FutuCompanyProfileEn(
-        symbol=symbol,
-        futu_ticker=futu_ticker,
-        prefix=prefix,
-        proxy=proxy
-    )
-    print(f"exists: {en.oss_key}")
-    if not bucket.object_exists(en.oss_key):
-        print(f"put_object: {en.oss_key}")
-        bucket.put_object(en.oss_key, en.get().content)
 
 
 class FutuBatchOperator(OSSOperator):
@@ -49,10 +21,29 @@ class FutuBatchOperator(OSSOperator):
     def symbols(self) -> pd.DataFrame:
         return pd.read_csv(self.get_object(self.from_key))
 
+    @staticmethod
+    def call_one(cls, line: pd.Series, prefix: str, proxy, bucket):
+        obj = cls(
+            symbol=line['yahoo'],
+            futu_ticker=line['futu'],
+            prefix=prefix,
+            proxy=proxy
+        )
+        if not FutuBatchOperator.object_exists(bucket, obj.oss_key):
+            FutuBatchOperator.put_object(bucket, obj.oss_key, obj.get().content)
+
+    @staticmethod
+    def call(line: pd.Series, prefix, proxy, bucket):
+        cls_list = [
+            FutuCompanyProfileCn,
+            FutuCompanyProfileEn,
+        ]
+        [FutuBatchOperator.call_one(cls, line, prefix, proxy, bucket) for cls in cls_list]
+
     def execute(self, context: Any):
         print(f"symbol: {self.symbols[:10]}")
         self.symbols.parallel_apply(
-            parallel_func,
+            FutuBatchOperator.call,
             axis=1,
             args=(self.key, self.proxy, self.bucket)
         )

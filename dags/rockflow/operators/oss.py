@@ -30,26 +30,49 @@ class OSSOperator(BaseOperator):
     def bucket(self):
         return self.oss_hook.get_bucket(self.bucket_name)
 
-    def object_iterator(self, prefix: str):
+    @staticmethod
+    def object_iterator_(bucket, prefix: str):
         try:
             print(f"object_iterator: {prefix}")
-            return oss2.ObjectIterator(self.bucket, prefix=prefix, delimiter='/')
+            return oss2.ObjectIterator(bucket, prefix=prefix, delimiter='/')
+        except Exception as e:
+            raise AirflowException(f"Errors: {e}")
+
+    def object_iterator(self, prefix: str):
+        return self.object_iterator_(self.bucket, prefix)
+
+    @staticmethod
+    def get_object_(bucket, key: str):
+        try:
+            print(f"get_object: {key}")
+            return bucket.get_object(key)
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
 
     def get_object(self, key: str):
+        return self.get_object_(self.bucket, key)
+
+    @staticmethod
+    def put_object_(bucket, key: str, content):
         try:
-            print(f"get_object: {key}")
-            return self.bucket.get_object(key)
+            print(f"put_object: {key}")
+            bucket.put_object(key, content)
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
 
     def put_object(self, key: str, content):
+        self.put_object_(self.bucket, key, content)
+
+    @staticmethod
+    def object_exists_(bucket, key: str):
         try:
-            print(f"put_object: {key}")
-            self.bucket.put_object(key, content)
+            print(f"object_exists: {key}")
+            bucket.object_exists(key)
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
+
+    def object_exists(self, key: str):
+        self.object_exists_(self.bucket, key)
 
     def execute(self, context: Any):
         raise NotImplementedError()
