@@ -17,6 +17,7 @@ default_args = {
     "email_on_retry": False,
     "retries": 0,
     "retry_delay": timedelta(minutes=1),
+    "schedule_interval": "@once",  # for debug
     # "schedule_interval": "0 */12 * * *",
 }
 
