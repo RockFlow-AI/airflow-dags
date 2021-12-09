@@ -5,6 +5,7 @@ from airflow.models import DAG, Variable
 from airflow.models.baseoperator import chain
 
 from rockflow.common.proxy import Proxy
+from rockflow.dags.const import MERGE_CSV_KEY
 from rockflow.operators.symbol import *
 
 default_args = {
@@ -40,7 +41,6 @@ with DAG("symbol_download", default_args=default_args) as dag:
     sse_csv_key = 'airflow-symbol-csv-sse/sse.csv'
     szse_raw_key = 'airflow-symbol-raw-szse/szse.xlsx'
     szse_csv_key = 'airflow-symbol-csv-szse/szse.csv'
-    merge_csv_key = 'airflow-symbol-csv-merge/merge.csv'
 
     nasdaq = NasdaqSymbolDownloadOperator(
         key=nasdaq_raw_key,
@@ -136,7 +136,7 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     merge_csv = MergeCsvList(
         from_key=symbol_parse_key,
-        key=merge_csv_key,
+        key=MERGE_CSV_KEY,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy

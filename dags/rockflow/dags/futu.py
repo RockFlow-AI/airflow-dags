@@ -4,6 +4,7 @@ from typing import Optional
 from airflow.models import DAG, Variable
 
 from rockflow.common.proxy import Proxy
+from rockflow.dags.const import MERGE_CSV_KEY
 from rockflow.operators.futu import FutuCnOperator, FutuEnOperator, FutuBatchOperator
 
 default_args = {
@@ -14,8 +15,8 @@ default_args = {
     "email": ["daijunkai@flowcapai.com"],
     "email_on_failure": False,
     "email_on_retry": False,
-    "retries": 0,
-    "retry_delay": timedelta(minutes=1),
+    "retries": 12,
+    "retry_delay": timedelta(minutes=5),
     "schedule_interval": "@once",  # for debug
     # "schedule_interval": "0 */12 * * *",
 }
@@ -52,7 +53,7 @@ with DAG("company_profile_en_download", default_args=default_args) as en_dag:
 with DAG("company_profile_batch_download", default_args=default_args) as batch_dag:
     futu_html_batch_prefix = "company_profile_batch_download"
     futu_batch = FutuBatchOperator(
-        from_key='airflow-symbol-csv-merge/merge.csv',
+        from_key=MERGE_CSV_KEY,
         key=futu_html_batch_prefix,
         region=region,
         bucket_name=bucket_name,
