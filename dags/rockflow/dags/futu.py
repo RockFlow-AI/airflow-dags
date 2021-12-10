@@ -41,8 +41,8 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
     )
 
     chain(
-        [futu_cn, extract_cn],
-        [futu_en, extract_en],
+        [futu_cn, futu_en],
+        [extract_cn, extract_en],
     )
 
 with DAG("company_profile_batch_download_debug",
@@ -82,6 +82,6 @@ with DAG("company_profile_batch_download_debug",
     )
 
     chain(
-        [futu_cn, extract_cn],
-        [futu_en, extract_en],
+        [futu_cn, futu_en],
+        [extract_cn, extract_en],
     )
