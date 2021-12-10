@@ -144,8 +144,8 @@ class MergeCsvList(OSSSaveOperator):
         self.from_key = from_key
 
     @property
-    def key(self):
-        return self._key
+    def oss_key(self):
+        return self.key
 
     def get_data_frames(self):
         return [

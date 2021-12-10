@@ -81,7 +81,7 @@ class FutuExtractHtml(OSSSaveOperator):
         self.from_key = from_key
 
     @property
-    def key(self):
+    def oss_key(self):
         return os.path.join(self._key, f"{self._key}.json")
 
     @staticmethod
