@@ -7,6 +7,7 @@ from typing import Any
 
 import oss2
 import pandas as pd
+from stringcase import snakecase
 
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
@@ -52,6 +53,10 @@ class FutuBatchOperator(OSSOperator):
     def cls(self):
         raise NotImplementedError()
 
+    @property
+    def oss_key(self):
+        return f"{self.key}_{snakecase(self.cls().__class__.__name__)}",
+
     def execute(self, context: Any):
         print(f"symbol: {self.symbols[:10]}")
         self.symbols.apply(
@@ -59,6 +64,7 @@ class FutuBatchOperator(OSSOperator):
             axis=1,
             args=(self.cls, self.key, self.proxy, self.bucket)
         )
+        return self.oss_key
 
 
 class FutuBatchOperatorCn(FutuBatchOperator):
@@ -135,7 +141,7 @@ class FutuExtractHtml(OSSSaveOperator):
     def content(self):
         with Pool(processes=24) as pool:
             result = pool.map(
-                lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(self.bucket, self.from_key)
+                lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(self.bucket, f"{self.from_key}/")
             )
             return json.dumps(result, ensure_ascii=False)
 
