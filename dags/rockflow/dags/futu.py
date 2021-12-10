@@ -39,7 +39,7 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
 
 with DAG("company_profile_batch_download_debug",
          default_args=DEFAULT_DEBUG_ARGS) as company_profile_batch_download_debug:
-    futu_cn = FutuBatchOperatorCnDebug(
+    futu_cn_debug = FutuBatchOperatorCnDebug(
         from_key=MERGE_CSV_KEY,
         key=company_profile_batch_download_debug.dag_id,
         region=DEFAULT_REGION,
@@ -48,14 +48,14 @@ with DAG("company_profile_batch_download_debug",
     )
 
     FutuExtractHtmlDebug(
-        from_key="{{ task_instance.xcom_pull('" + futu_cn.task_id + "') }}",
+        from_key="{{ task_instance.xcom_pull('" + futu_cn_debug.task_id + "') }}",
         key=company_profile_batch_download_debug.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
     )
 
-    futu_en = FutuBatchOperatorEnDebug(
+    futu_en_debug = FutuBatchOperatorEnDebug(
         from_key=MERGE_CSV_KEY,
         key=company_profile_batch_download_debug.dag_id,
         region=DEFAULT_REGION,
@@ -64,7 +64,7 @@ with DAG("company_profile_batch_download_debug",
     )
 
     FutuExtractHtmlDebug(
-        from_key="{{ task_instance.xcom_pull('" + futu_en.task_id + "') }}",
+        from_key="{{ task_instance.xcom_pull('" + futu_en_debug.task_id + "') }}",
         key=company_profile_batch_download_debug.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
