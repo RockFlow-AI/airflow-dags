@@ -122,7 +122,7 @@ class OSSSaveOperator(OSSOperator):
 
     @property
     def key(self):
-        return self._key
+        raise NotImplementedError()
 
     def execute(self, context):
         self.put_object(key=self.key, content=self.content)

@@ -1,4 +1,5 @@
 import json
+import os
 from itertools import islice
 from multiprocessing.pool import ThreadPool as Pool
 from pathlib import Path
@@ -78,6 +79,10 @@ class FutuExtractHtml(OSSSaveOperator):
     ) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
+
+    @property
+    def key(self):
+        return os.path.join(self._key, f"{self._key}.json")
 
     @staticmethod
     def symbol(obj):

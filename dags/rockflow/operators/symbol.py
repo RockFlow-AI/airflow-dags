@@ -16,6 +16,10 @@ class NasdaqSymbolDownloadOperator(DownloadOperator):
         super().__init__(**kwargs)
 
     @property
+    def key(self):
+        return self._key
+
+    @property
     def downloader_cls(self):
         return Nasdaq
 
@@ -23,6 +27,10 @@ class NasdaqSymbolDownloadOperator(DownloadOperator):
 class HkexSymbolDownloadOperator(DownloadOperator):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
+
+    @property
+    def key(self):
+        return self._key
 
     @property
     def downloader_cls(self):
@@ -34,6 +42,10 @@ class SseSymbolDownloadOperator(DownloadOperator):
         super().__init__(**kwargs)
 
     @property
+    def key(self):
+        return self._key
+
+    @property
     def downloader_cls(self):
         return SSE1
 
@@ -43,69 +55,11 @@ class SzseSymbolDownloadOperator(DownloadOperator):
         super().__init__(**kwargs)
 
     @property
+    def key(self):
+        return self._key
+
+    @property
     def downloader_cls(self):
-        return SZSE1
-
-
-class SymbolToCsv(OSSSaveOperator):
-    def __init__(
-            self,
-            from_key: str,
-            **kwargs,
-    ) -> None:
-        super().__init__(**kwargs)
-        self.from_key = from_key
-
-    @property
-    def instance(self):
-        return self.exchange(
-            proxy=self.proxy
-        )
-
-    @property
-    def exchange(self):
-        raise NotImplementedError()
-
-    @property
-    def content(self):
-        return self.instance.to_df(
-            self.get_object(self.from_key).read()
-        ).to_csv()
-
-
-class NasdaqSymbolToCsv(SymbolToCsv):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-    @property
-    def exchange(self):
-        return Nasdaq
-
-
-class HkexSymbolToCsv(SymbolToCsv):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-    @property
-    def exchange(self):
-        return HKEX
-
-
-class SseSymbolToCsv(SymbolToCsv):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-    @property
-    def exchange(self):
-        return SSE1
-
-
-class SzseSymbolToCsv(SymbolToCsv):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-    @property
-    def exchange(self):
         return SZSE1
 
 
@@ -136,12 +90,12 @@ class SymbolParser(OSSSaveOperator):
     def key(self):
         return os.path.join(self._key, f"{self.exchange_name}.csv")
 
-    def read_csv(self):
-        return pd.read_csv(self.get_object(self.from_key))
+    def read_raw(self):
+        return self.instance.to_df(self.get_object(self.from_key).read())
 
     @property
     def content(self):
-        return self.instance.to_tickers(self.read_csv()).to_csv()
+        return self.instance.to_tickers(self.read_raw()).to_csv()
 
 
 class NasdaqSymbolParser(SymbolParser):
@@ -188,6 +142,10 @@ class MergeCsvList(OSSSaveOperator):
     ) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
+
+    @property
+    def key(self):
+        return self._key
 
     def get_data_frames(self):
         return [
