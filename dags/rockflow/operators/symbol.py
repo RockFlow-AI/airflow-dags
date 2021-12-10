@@ -117,7 +117,6 @@ class SzseSymbolParser(SymbolParser):
 
 
 class MergeCsvList(OSSSaveOperator):
-
     def __init__(
             self,
             from_key: str,

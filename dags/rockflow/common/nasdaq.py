@@ -1,4 +1,5 @@
 import json
+from io import StringIO
 from typing import Optional
 
 import pandas as pd
@@ -63,7 +64,7 @@ class Nasdaq(Downloader):
         return result
 
     def to_df(self, fp) -> pd.DataFrame:
-        response = json.loads(fp)
+        response = json.load(StringIO(fp))
         return pd.DataFrame(
             response.get('data').get(
                 'table', response.get('data')
