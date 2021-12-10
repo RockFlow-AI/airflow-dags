@@ -46,3 +46,17 @@ class YahooBatchOperator(OSSOperator):
             axis=1,
             args=(self.key, self.proxy, self.bucket)
         )
+
+
+class YahooBatchOperatorDebug(OSSOperator):
+    def __init__(self,
+                 from_key: str,
+                 key: str,
+                 **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.from_key = from_key
+        self.key = key
+
+    @property
+    def symbols(self) -> pd.DataFrame:
+        return pd.read_csv(self.get_object(self.from_key))[:100]
