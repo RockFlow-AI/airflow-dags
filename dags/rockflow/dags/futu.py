@@ -13,8 +13,8 @@ default_args = {
     # "start_date": datetime(2021, 12, 8),
     "start_date": datetime.now(),
     "email": ["daijunkai@flowcapai.com"],
-    "email_on_failure": False,
-    "email_on_retry": False,
+    "email_on_failure": True,
+    "email_on_retry": True,
     "retries": 12,
     "retry_delay": timedelta(minutes=5),
     "schedule_interval": "@once",  # for debug
