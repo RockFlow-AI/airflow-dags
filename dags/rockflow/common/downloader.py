@@ -20,6 +20,14 @@ class Downloader(object):
         return self.__class__.__name__.lower()
 
     @property
+    def type(self):
+        raise NotImplementedError()
+
+    @property
+    def file_name(self):
+        return f"{self.snakecase_class_name}.{self.type}"
+
+    @property
     def url(self):
         raise NotImplementedError()
 

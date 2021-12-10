@@ -16,8 +16,8 @@ class NasdaqSymbolDownloadOperator(DownloadOperator):
         super().__init__(**kwargs)
 
     @property
-    def key(self):
-        return self._key
+    def oss_key(self):
+        return self.key
 
     @property
     def downloader_cls(self):
@@ -29,8 +29,8 @@ class HkexSymbolDownloadOperator(DownloadOperator):
         super().__init__(**kwargs)
 
     @property
-    def key(self):
-        return self._key
+    def oss_key(self):
+        return self.key
 
     @property
     def downloader_cls(self):
@@ -42,8 +42,8 @@ class SseSymbolDownloadOperator(DownloadOperator):
         super().__init__(**kwargs)
 
     @property
-    def key(self):
-        return self._key
+    def oss_key(self):
+        return self.key
 
     @property
     def downloader_cls(self):
@@ -55,8 +55,8 @@ class SzseSymbolDownloadOperator(DownloadOperator):
         super().__init__(**kwargs)
 
     @property
-    def key(self):
-        return self._key
+    def oss_key(self):
+        return self.key
 
     @property
     def downloader_cls(self):
@@ -87,8 +87,8 @@ class SymbolParser(OSSSaveOperator):
         return self.instance.__class__.__name__.lower()
 
     @property
-    def key(self):
-        return os.path.join(self._key, f"{self.exchange_name}.csv")
+    def oss_key(self):
+        return os.path.join(self.key, f"{self.exchange_name}.csv")
 
     def read_raw(self):
         return self.instance.to_df(self.get_object(self.from_key).read())
