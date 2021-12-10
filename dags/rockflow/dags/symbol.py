@@ -1,7 +1,7 @@
 from airflow.models import DAG
 from airflow.models.baseoperator import chain
 
-from rockflow.dags.const import MERGE_CSV_KEY, DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_PROXY, DEFAULT_DEBUG_ARGS
+from rockflow.dags.const import *
 from rockflow.operators.symbol import *
 
 with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:

@@ -1,7 +1,7 @@
 from airflow.models import DAG
 
-from rockflow.dags.const import DEFAULT_PROXY, DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_DEBUG_ARGS
-from rockflow.operators.mic import MicDownloadOperator
+from rockflow.dags.const import *
+from rockflow.operators.mic import *
 
 with DAG("mic_download", default_args=DEFAULT_DEBUG_ARGS) as mic:
     MicDownloadOperator(

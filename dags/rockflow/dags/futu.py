@@ -1,6 +1,6 @@
 from airflow.models import DAG
 
-from rockflow.dags.const import MERGE_CSV_KEY, DEFAULT_PROXY, DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_DEBUG_ARGS
+from rockflow.dags.const import *
 from rockflow.operators.futu import *
 
 with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as batch_dag:

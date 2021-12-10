@@ -61,6 +61,15 @@ class PublicLogoBatchOperator(LogoBatchOperator):
         return Public
 
 
+class PublicLogoBatchOperatorDebug(PublicLogoBatchOperator):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def symbols(self) -> pd.DataFrame:
+        return pd.read_csv(self.get_object(self.from_key))[:100]
+
+
 class EtoroLogoBatchOperator(LogoBatchOperator):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
@@ -68,3 +77,12 @@ class EtoroLogoBatchOperator(LogoBatchOperator):
     @property
     def cls(self):
         return Etoro
+
+
+class EtoroLogoBatchOperatorDebug(EtoroLogoBatchOperator):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def symbols(self) -> pd.DataFrame:
+        return pd.read_csv(self.get_object(self.from_key))[:100]
