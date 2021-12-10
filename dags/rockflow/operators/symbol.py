@@ -7,61 +7,43 @@ from rockflow.common.nasdaq import Nasdaq
 from rockflow.common.pandas_helper import DataFrameMerger
 from rockflow.common.sse import SSE1
 from rockflow.common.szse import SZSE1
+from rockflow.operators.downloader import DownloadOperator
 from rockflow.operators.oss import OSSSaveOperator
 
 
-class SymbolDownloadOperator(OSSSaveOperator):
+class NasdaqSymbolDownloadOperator(DownloadOperator):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
-    def instance(self):
-        return self.exchange(
-            proxy=self.proxy
-        )
-
-    @property
-    def exchange(self):
-        raise NotImplementedError()
-
-    @property
-    def content(self):
-        return self.instance.get().content
-
-
-class NasdaqSymbolDownloadOperator(SymbolDownloadOperator):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-    @property
-    def exchange(self):
+    def downloader_cls(self):
         return Nasdaq
 
 
-class HkexSymbolDownloadOperator(SymbolDownloadOperator):
+class HkexSymbolDownloadOperator(DownloadOperator):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
-    def exchange(self):
+    def downloader_cls(self):
         return HKEX
 
 
-class SseSymbolDownloadOperator(SymbolDownloadOperator):
+class SseSymbolDownloadOperator(DownloadOperator):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
-    def exchange(self):
+    def downloader_cls(self):
         return SSE1
 
 
-class SzseSymbolDownloadOperator(SymbolDownloadOperator):
+class SzseSymbolDownloadOperator(DownloadOperator):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     @property
-    def exchange(self):
+    def downloader_cls(self):
         return SZSE1
 
 

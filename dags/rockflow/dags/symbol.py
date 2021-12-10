@@ -1,11 +1,9 @@
 from datetime import datetime, timedelta
-from typing import Optional
 
-from airflow.models import DAG, Variable
+from airflow.models import DAG
 from airflow.models.baseoperator import chain
 
-from rockflow.common.proxy import Proxy
-from rockflow.dags.const import MERGE_CSV_KEY
+from rockflow.dags.const import MERGE_CSV_KEY, DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_PROXY
 from rockflow.operators.symbol import *
 
 default_args = {
@@ -22,15 +20,6 @@ default_args = {
     # "schedule_interval": "0 */12 * * *",
 }
 
-
-def default_proxy() -> Optional[dict]:
-    return Proxy(Variable.get("PROXY_URL"), Variable.get("PROXY_PORT")).proxies
-
-
-region = Variable.get("REGION")
-bucket_name = Variable.get("BUCKET_NAME")
-proxy = default_proxy()
-
 with DAG("symbol_download", default_args=default_args) as dag:
     nasdaq_raw_key = 'airflow-symbol-raw-nasdaq/nasdaq.json'
     nasdaq_csv_key = 'airflow-symbol-csv-nasdaq/nasdaq.csv'
@@ -44,102 +33,102 @@ with DAG("symbol_download", default_args=default_args) as dag:
 
     nasdaq = NasdaqSymbolDownloadOperator(
         key=nasdaq_raw_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     hkex = HkexSymbolDownloadOperator(
         key=hkex_raw_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     sse = SseSymbolDownloadOperator(
         key=sse_raw_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     szse = SzseSymbolDownloadOperator(
         key=szse_raw_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     nasdaq_csv = NasdaqSymbolToCsv(
         from_key=nasdaq_raw_key,
         key=nasdaq_csv_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     hkex_csv = HkexSymbolToCsv(
         from_key=hkex_raw_key,
         key=hkex_csv_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     sse_csv = SseSymbolToCsv(
         from_key=sse_raw_key,
         key=sse_csv_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     szse_csv = SzseSymbolToCsv(
         from_key=szse_raw_key,
         key=szse_csv_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     nasdaq_parse = NasdaqSymbolParser(
         from_key=nasdaq_csv_key,
         key=symbol_parse_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     hkex_parse = HkexSymbolParser(
         from_key=hkex_csv_key,
         key=symbol_parse_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     sse_parse = SseSymbolParser(
         from_key=sse_csv_key,
         key=symbol_parse_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     szse_parse = SzseSymbolParser(
         from_key=szse_csv_key,
         key=symbol_parse_key,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
     merge_csv = MergeCsvList(
         from_key=symbol_parse_key,
         key=MERGE_CSV_KEY,
-        region=region,
-        bucket_name=bucket_name,
-        proxy=proxy
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
     )
 
 chain(
