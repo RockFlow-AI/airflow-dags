@@ -32,7 +32,7 @@ with DAG("company_profile_batch_extract", default_args=DEFAULT_DEBUG_ARGS) as ex
 
 with DAG("company_profile_batch_extract_debug", default_args=DEFAULT_DEBUG_ARGS) as extract_dag_debug:
     FutuExtractHtmlDebug(
-        from_key="company_profile_batch_download/",
+        from_key="company_profile_batch_download_debug/",
         key=extract_dag_debug.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,

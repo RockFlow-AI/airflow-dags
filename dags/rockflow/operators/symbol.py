@@ -16,10 +16,6 @@ class NasdaqSymbolDownloadOperator(DownloadOperator):
         super().__init__(**kwargs)
 
     @property
-    def oss_key(self):
-        return self.key
-
-    @property
     def downloader_cls(self):
         return Nasdaq
 
@@ -27,10 +23,6 @@ class NasdaqSymbolDownloadOperator(DownloadOperator):
 class HkexSymbolDownloadOperator(DownloadOperator):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-
-    @property
-    def oss_key(self):
-        return self.key
 
     @property
     def downloader_cls(self):
@@ -42,10 +34,6 @@ class SseSymbolDownloadOperator(DownloadOperator):
         super().__init__(**kwargs)
 
     @property
-    def oss_key(self):
-        return self.key
-
-    @property
     def downloader_cls(self):
         return SSE1
 
@@ -55,15 +43,13 @@ class SzseSymbolDownloadOperator(DownloadOperator):
         super().__init__(**kwargs)
 
     @property
-    def oss_key(self):
-        return self.key
-
-    @property
     def downloader_cls(self):
         return SZSE1
 
 
 class SymbolParser(OSSSaveOperator):
+    template_fields = ["from_key"]
+
     def __init__(
             self,
             from_key: str,
@@ -83,12 +69,8 @@ class SymbolParser(OSSSaveOperator):
         raise NotImplementedError()
 
     @property
-    def exchange_name(self):
-        return self.instance.__class__.__name__.lower()
-
-    @property
     def oss_key(self):
-        return os.path.join(self.key, f"{self.exchange_name}.csv")
+        return os.path.join(self.key, f"{self.instance.lowercase_class_name}.csv")
 
     def read_raw(self):
         return self.instance.to_df(self.get_object(self.from_key).read())
@@ -135,6 +117,7 @@ class SzseSymbolParser(SymbolParser):
 
 
 class MergeCsvList(OSSSaveOperator):
+
     def __init__(
             self,
             from_key: str,

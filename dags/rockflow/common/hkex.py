@@ -13,6 +13,10 @@ class HKEX(Downloader):
     def url(self):
         return "https://www.hkex.com.hk/chi/services/trading/securities/securitieslists/ListOfSecurities_c.xlsx"
 
+    @property
+    def type(self):
+        return "xlsx"
+
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()
         result['raw'] = df.iloc[:, 0]

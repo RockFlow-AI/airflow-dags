@@ -126,3 +126,4 @@ class OSSSaveOperator(OSSOperator):
 
     def execute(self, context):
         self.put_object(key=self.oss_key, content=self.content)
+        return self.oss_key

@@ -5,11 +5,12 @@ from rockflow.dags.const import *
 from rockflow.operators.symbol import *
 
 with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
-    nasdaq_raw_key = 'airflow-symbol-raw-nasdaq/nasdaq.json'
     symbol_parse_key = 'airflow-symbol-parse/'
-    hkex_raw_key = 'airflow-symbol-raw-hkex/hkex.xlsx'
-    sse_raw_key = 'airflow-symbol-raw-sse/sse.xlsx'
-    szse_raw_key = 'airflow-symbol-raw-szse/szse.xlsx'
+
+    nasdaq_raw_key = 'airflow-symbol-raw-nasdaq'
+    hkex_raw_key = 'airflow-symbol-raw-hkex'
+    sse_raw_key = 'airflow-symbol-raw-sse'
+    szse_raw_key = 'airflow-symbol-raw-szse'
 
     nasdaq = NasdaqSymbolDownloadOperator(
         key=nasdaq_raw_key,
@@ -40,7 +41,7 @@ with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
     )
 
     nasdaq_parse = NasdaqSymbolParser(
-        from_key=nasdaq_raw_key,
+        from_key="{{ task_instance.xcom_pull('" + hkex.task_id + "') }}",
         key=symbol_parse_key,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
@@ -48,7 +49,7 @@ with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
     )
 
     hkex_parse = HkexSymbolParser(
-        from_key=hkex_raw_key,
+        from_key="{{ task_instance.xcom_pull('" + hkex.task_id + "') }}",
         key=symbol_parse_key,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
@@ -56,7 +57,7 @@ with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
     )
 
     sse_parse = SseSymbolParser(
-        from_key=sse_raw_key,
+        from_key="{{ task_instance.xcom_pull('" + sse.task_id + "') }}",
         key=symbol_parse_key,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
@@ -64,7 +65,7 @@ with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
     )
 
     szse_parse = SzseSymbolParser(
-        from_key=szse_raw_key,
+        from_key="{{ task_instance.xcom_pull('" + szse.task_id + "') }}",
         key=symbol_parse_key,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,

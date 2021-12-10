@@ -15,6 +15,10 @@ class Nasdaq(Downloader):
         return "https://api.nasdaq.com/api/screener/stocks"
 
     @property
+    def type(self):
+        return "json"
+
+    @property
     def params(self):
         return {
             'tableonly': 'false',
