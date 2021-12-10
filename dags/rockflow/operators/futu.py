@@ -81,20 +81,24 @@ class FutuExtractHtml(OSSSaveOperator):
             FutuExtractHtml.get_object_(bucket, obj.key), FutuExtractHtml.symbol(obj)
         )
 
+    @staticmethod
+    def task(bucket, obj):
+        if obj.is_prefix():
+            return
+        return FutuExtractHtml.extract_data(bucket, obj)
+
     @property
     def content(self):
         result = []
         for obj in self.object_iterator(self.from_key):
-            if obj.is_prefix():
-                def task(bucket, obj):
-                    if obj.is_prefix():
-                        return
-                    return FutuExtractHtml.extract_data(bucket, obj)
-
-                with Pool(processes=12) as pool:
-                    result = result.append(
-                        pool.map(lambda x: task(self.bucket, x), self.object_iterator_(self.bucket, obj.key))
+            if not obj.is_prefix():
+                continue
+            with Pool(processes=24) as pool:
+                result.append(
+                    pool.map(
+                        lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(self.bucket, obj.key)
                     )
+                )
         return json.dumps(result, ensure_ascii=False)
 
 
