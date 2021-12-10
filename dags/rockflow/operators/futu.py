@@ -7,6 +7,7 @@ from typing import Any
 
 import oss2
 import pandas as pd
+from stringcase import snakecase
 
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
@@ -105,6 +106,9 @@ class FutuExtractHtml(OSSSaveOperator):
             from_key: str,
             **kwargs,
     ) -> None:
+        # TODO(fix task id)
+        if 'task_id' not in kwargs:
+            kwargs['task_id'] = f"{snakecase(self.__class__.__name__)}_{from_key}"
         super().__init__(**kwargs)
         self.from_key = from_key
 
