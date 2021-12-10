@@ -98,6 +98,8 @@ class FutuBatchOperatorEnDebug(FutuBatchOperatorEn):
 
 
 class FutuExtractHtml(OSSSaveOperator):
+    template_fields = ["from_key"]
+
     def __init__(
             self,
             from_key: str,
@@ -108,7 +110,10 @@ class FutuExtractHtml(OSSSaveOperator):
 
     @property
     def oss_key(self):
-        return os.path.join(self.key, f"{self.key}.json")
+        return os.path.join(
+            f"{self.key}_{self.from_key}",
+            f"{self.key}.json"
+        )
 
     @staticmethod
     def symbol(obj):
@@ -128,17 +133,11 @@ class FutuExtractHtml(OSSSaveOperator):
 
     @property
     def content(self):
-        result = []
-        for obj in self.object_iterator(self.from_key):
-            if not obj.is_prefix():
-                continue
-            with Pool(processes=24) as pool:
-                result.append(
-                    pool.map(
-                        lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(self.bucket, obj.key)
-                    )
-                )
-        return json.dumps(result, ensure_ascii=False)
+        with Pool(processes=24) as pool:
+            result = pool.map(
+                lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(self.bucket, self.from_key)
+            )
+            return json.dumps(result, ensure_ascii=False)
 
 
 class FutuExtractHtmlDebug(FutuExtractHtml):
@@ -150,15 +149,9 @@ class FutuExtractHtmlDebug(FutuExtractHtml):
 
     @property
     def content(self):
-        result = []
-        for obj in self.object_iterator(self.from_key):
-            if not obj.is_prefix():
-                continue
-            with Pool(processes=24) as pool:
-                result.append(
-                    pool.map(
-                        lambda x: FutuExtractHtml.task(self.bucket, x),
-                        islice(self.object_iterator_(self.bucket, obj.key), 24)
-                    )
-                )
-        return json.dumps(result, ensure_ascii=False)
+        with Pool(processes=24) as pool:
+            result = pool.map(
+                lambda x: FutuExtractHtml.task(self.bucket, x),
+                islice(self.object_iterator_(self.bucket, self.from_key), 100)
+            )
+            return json.dumps(result, ensure_ascii=False)
