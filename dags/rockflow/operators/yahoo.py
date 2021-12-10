@@ -49,13 +49,8 @@ class YahooBatchOperator(OSSOperator):
 
 
 class YahooBatchOperatorDebug(YahooBatchOperator):
-    def __init__(self,
-                 from_key: str,
-                 key: str,
-                 **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.from_key = from_key
-        self.key = key
 
     @property
     def symbols(self) -> pd.DataFrame:
