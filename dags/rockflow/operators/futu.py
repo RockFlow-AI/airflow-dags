@@ -7,7 +7,6 @@ from typing import Any
 
 import oss2
 import pandas as pd
-from stringcase import snakecase
 
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile

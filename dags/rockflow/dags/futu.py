@@ -40,10 +40,10 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
         proxy=DEFAULT_PROXY
     )
 
-    chain(
-        [futu_cn, futu_en],
-        [extract_cn, extract_en],
-    )
+chain(
+    [futu_cn, futu_en],
+    [extract_cn, extract_en],
+)
 
 with DAG("company_profile_batch_download_debug",
          default_args=DEFAULT_DEBUG_ARGS) as company_profile_batch_download_debug:
@@ -55,7 +55,7 @@ with DAG("company_profile_batch_download_debug",
         proxy=DEFAULT_PROXY
     )
 
-    extract_cn = FutuExtractHtmlDebug(
+    extract_cn_debug = FutuExtractHtmlDebug(
         task_id="futu_extract_html_cn",
         from_key="{{ task_instance.xcom_pull('" + futu_cn_debug.task_id + "') }}",
         key=company_profile_batch_download_debug.dag_id,
@@ -72,7 +72,7 @@ with DAG("company_profile_batch_download_debug",
         proxy=DEFAULT_PROXY
     )
 
-    extract_en = FutuExtractHtmlDebug(
+    extract_en_debug = FutuExtractHtmlDebug(
         task_id="futu_extract_html_en",
         from_key="{{ task_instance.xcom_pull('" + futu_en_debug.task_id + "') }}",
         key=company_profile_batch_download_debug.dag_id,
@@ -81,7 +81,7 @@ with DAG("company_profile_batch_download_debug",
         proxy=DEFAULT_PROXY
     )
 
-    chain(
-        [futu_cn, futu_en],
-        [extract_cn, extract_en],
-    )
+chain(
+    [futu_cn_debug, futu_en_debug],
+    [extract_cn_debug, extract_en_debug],
+)
