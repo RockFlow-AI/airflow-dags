@@ -48,7 +48,7 @@ class YahooBatchOperator(OSSOperator):
         )
 
 
-class YahooBatchOperatorDebug(OSSOperator):
+class YahooBatchOperatorDebug(YahooBatchOperator):
     def __init__(self,
                  from_key: str,
                  key: str,
