@@ -52,7 +52,7 @@ class LogoBatchOperator(OSSOperator):
         )
 
 
-class PublicLogoBatchOperator(OSSOperator):
+class PublicLogoBatchOperator(LogoBatchOperator):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -61,7 +61,7 @@ class PublicLogoBatchOperator(OSSOperator):
         return Public
 
 
-class EtoroLogoBatchOperator(OSSOperator):
+class EtoroLogoBatchOperator(LogoBatchOperator):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
