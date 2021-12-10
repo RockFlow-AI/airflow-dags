@@ -14,6 +14,7 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
     )
 
     FutuExtractHtml(
+        task_id="futu_extract_html_cn",
         from_key="{{ task_instance.xcom_pull('" + futu_cn.task_id + "') }}",
         key=company_profile_batch_download.dag_id,
         region=DEFAULT_REGION,
@@ -30,6 +31,7 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
     )
 
     FutuExtractHtml(
+        task_id="futu_extract_html_en",
         from_key="{{ task_instance.xcom_pull('" + futu_en.task_id + "') }}",
         key=company_profile_batch_download.dag_id,
         region=DEFAULT_REGION,
@@ -48,6 +50,7 @@ with DAG("company_profile_batch_download_debug",
     )
 
     FutuExtractHtmlDebug(
+        task_id="futu_extract_html_cn",
         from_key="{{ task_instance.xcom_pull('" + futu_cn_debug.task_id + "') }}",
         key=company_profile_batch_download_debug.dag_id,
         region=DEFAULT_REGION,
@@ -64,6 +67,7 @@ with DAG("company_profile_batch_download_debug",
     )
 
     FutuExtractHtmlDebug(
+        task_id="futu_extract_html_en",
         from_key="{{ task_instance.xcom_pull('" + futu_en_debug.task_id + "') }}",
         key=company_profile_batch_download_debug.dag_id,
         region=DEFAULT_REGION,

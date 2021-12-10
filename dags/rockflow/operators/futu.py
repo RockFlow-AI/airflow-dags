@@ -106,9 +106,6 @@ class FutuExtractHtml(OSSSaveOperator):
             from_key: str,
             **kwargs,
     ) -> None:
-        # TODO(fix task id)
-        if 'task_id' not in kwargs:
-            kwargs['task_id'] = f"{snakecase(self.__class__.__name__)}_{from_key}"
         super().__init__(**kwargs)
         self.from_key = from_key
 
