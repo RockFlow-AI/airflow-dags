@@ -13,7 +13,7 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as b
     )
 
 with DAG("company_profile_batch_download_debug", default_args=DEFAULT_DEBUG_ARGS) as batch_dag_debug:
-    FutuBatchOperator(
+    FutuBatchOperatorDebug(
         from_key=MERGE_CSV_KEY,
         key=batch_dag_debug.dag_id,
         region=DEFAULT_REGION,
