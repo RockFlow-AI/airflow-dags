@@ -55,7 +55,7 @@ class FutuBatchOperator(OSSOperator):
 
     @property
     def oss_key(self):
-        return f"{self.key}_{snakecase(self.cls().__class__.__name__)}",
+        return f"{self.key}_{snakecase(self.cls.__class__.__name__)}",
 
     def execute(self, context: Any):
         print(f"symbol: {self.symbols[:10]}")
