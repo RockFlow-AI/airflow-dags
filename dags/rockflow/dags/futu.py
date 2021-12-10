@@ -1,25 +1,9 @@
-from datetime import datetime, timedelta
-
 from airflow.models import DAG
 
-from rockflow.dags.const import MERGE_CSV_KEY, DEFAULT_PROXY, DEFAULT_REGION, DEFAULT_BUCKET_NAME
+from rockflow.dags.const import MERGE_CSV_KEY, DEFAULT_PROXY, DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_DEBUG_ARGS
 from rockflow.operators.futu import *
 
-default_args = {
-    "owner": "daijunkai",
-    "depends_on_past": False,
-    # "start_date": datetime(2021, 12, 8),
-    "start_date": datetime.now(),
-    "email": ["daijunkai@flowcapai.com"],
-    "email_on_failure": True,
-    "email_on_retry": True,
-    "retries": 12,
-    "retry_delay": timedelta(minutes=5),
-    "schedule_interval": "@once",  # for debug
-    # "schedule_interval": "0 */12 * * *",
-}
-
-with DAG("company_profile_cn_download", default_args=default_args) as cn_dag:
+with DAG("company_profile_cn_download", default_args=DEFAULT_DEBUG_ARGS) as cn_dag:
     futu_html_cn_prefix = "company_profile_cn_download"
     futu_cn = FutuCnOperator(
         key=futu_html_cn_prefix,
@@ -29,7 +13,7 @@ with DAG("company_profile_cn_download", default_args=default_args) as cn_dag:
         proxy=DEFAULT_PROXY
     )
 
-with DAG("company_profile_en_download", default_args=default_args) as en_dag:
+with DAG("company_profile_en_download", default_args=DEFAULT_DEBUG_ARGS) as en_dag:
     futu_html_en_prefix = "company_profile_en_download"
     futu_en = FutuEnOperator(
         key=futu_html_en_prefix,
@@ -39,7 +23,7 @@ with DAG("company_profile_en_download", default_args=default_args) as en_dag:
         proxy=DEFAULT_PROXY
     )
 
-with DAG("company_profile_batch_download", default_args=default_args) as batch_dag:
+with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as batch_dag:
     futu_html_batch_prefix = "company_profile_batch_download"
     futu_batch = FutuBatchOperator(
         from_key=MERGE_CSV_KEY,
@@ -49,7 +33,7 @@ with DAG("company_profile_batch_download", default_args=default_args) as batch_d
         proxy=DEFAULT_PROXY
     )
 
-with DAG("company_profile_batch_extract", default_args=default_args) as extract_dag:
+with DAG("company_profile_batch_extract", default_args=DEFAULT_DEBUG_ARGS) as extract_dag:
     futu_html_extract_prefix = "company_profile_extract_download"
     futu_extract = FutuExtractHtml(
         from_key="company_profile_batch_download/",
@@ -59,7 +43,7 @@ with DAG("company_profile_batch_extract", default_args=default_args) as extract_
         proxy=DEFAULT_PROXY
     )
 
-with DAG("company_profile_batch_extract_debug", default_args=default_args) as extract_dag_debug:
+with DAG("company_profile_batch_extract_debug", default_args=DEFAULT_DEBUG_ARGS) as extract_dag_debug:
     futu_html_extract_prefix_debug = "company_profile_batch_extract_debug"
     futu_extract_debug = FutuExtractHtmlDebug(
         from_key="company_profile_batch_download/",

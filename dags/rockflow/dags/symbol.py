@@ -1,26 +1,10 @@
-from datetime import datetime, timedelta
-
 from airflow.models import DAG
 from airflow.models.baseoperator import chain
 
-from rockflow.dags.const import MERGE_CSV_KEY, DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_PROXY
+from rockflow.dags.const import MERGE_CSV_KEY, DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_PROXY, DEFAULT_DEBUG_ARGS
 from rockflow.operators.symbol import *
 
-default_args = {
-    "owner": "daijunkai",
-    "depends_on_past": False,
-    # "start_date": datetime(2021, 12, 8),
-    "start_date": datetime.now(),
-    "email": ["daijunkai@flowcapai.com"],
-    "email_on_failure": True,
-    "email_on_retry": True,
-    "retries": 0,
-    "retry_delay": timedelta(minutes=1),
-    "schedule_interval": "@once",  # for debug
-    # "schedule_interval": "0 */12 * * *",
-}
-
-with DAG("symbol_download", default_args=default_args) as dag:
+with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
     nasdaq_raw_key = 'airflow-symbol-raw-nasdaq/nasdaq.json'
     nasdaq_csv_key = 'airflow-symbol-csv-nasdaq/nasdaq.csv'
     symbol_parse_key = 'airflow-symbol-parse/'
