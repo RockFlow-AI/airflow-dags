@@ -1,5 +1,6 @@
 import json
 import os
+from itertools import islice
 from multiprocessing.pool import ThreadPool as Pool
 from pathlib import Path
 from typing import Any
@@ -97,6 +98,29 @@ class FutuExtractHtml(OSSSaveOperator):
                 result.append(
                     pool.map(
                         lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(self.bucket, obj.key)
+                    )
+                )
+        return json.dumps(result, ensure_ascii=False)
+
+
+class FutuExtractHtmlDebug(FutuExtractHtml):
+    def __init__(
+            self,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def content(self):
+        result = []
+        for obj in self.object_iterator(self.from_key):
+            if not obj.is_prefix():
+                continue
+            with Pool(processes=24) as pool:
+                result.append(
+                    pool.map(
+                        lambda x: FutuExtractHtml.task(self.bucket, x),
+                        islice(self.object_iterator_(self.bucket, obj.key), 24)
                     )
                 )
         return json.dumps(result, ensure_ascii=False)

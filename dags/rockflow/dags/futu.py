@@ -5,7 +5,7 @@ from airflow.models import DAG, Variable
 
 from rockflow.common.proxy import Proxy
 from rockflow.dags.const import MERGE_CSV_KEY
-from rockflow.operators.futu import FutuCnOperator, FutuEnOperator, FutuBatchOperator, FutuExtractHtml
+from rockflow.operators.futu import *
 
 default_args = {
     "owner": "daijunkai",
@@ -65,6 +65,16 @@ with DAG("company_profile_batch_extract", default_args=default_args) as extract_
     futu_extract = FutuExtractHtml(
         from_key="company_profile_batch_download/",
         key=futu_html_extract_prefix,
+        region=region,
+        bucket_name=bucket_name,
+        proxy=proxy
+    )
+
+with DAG("company_profile_batch_extract_debug", default_args=default_args) as extract_dag_debug:
+    futu_html_extract_prefix_debug = "company_profile_batch_extract_debug"
+    futu_extract_debug = FutuExtractHtmlDebug(
+        from_key="company_profile_batch_download/",
+        key=futu_html_extract_prefix_debug,
         region=region,
         bucket_name=bucket_name,
         proxy=proxy
