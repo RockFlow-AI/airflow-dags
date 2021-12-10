@@ -75,12 +75,18 @@ class SymbolToCsv(OSSSaveOperator):
         self.from_key = from_key
 
     @property
+    def instance(self):
+        return self.exchange(
+            proxy=self.proxy
+        )
+
+    @property
     def exchange(self):
         raise NotImplementedError()
 
     @property
     def content(self):
-        return self.exchange.to_df(
+        return self.instance.to_df(
             self.get_object(self.from_key).read()
         ).to_csv()
 
@@ -131,12 +137,18 @@ class SymbolParser(OSSSaveOperator):
         self.from_key = from_key
 
     @property
+    def instance(self):
+        return self.exchange(
+            proxy=self.proxy
+        )
+
+    @property
     def exchange(self):
         raise NotImplementedError()
 
     @property
     def exchange_name(self):
-        return self.exchange.__class__.__name__.lower()
+        return self.instance.__class__.__name__.lower()
 
     @property
     def key(self):
@@ -147,7 +159,7 @@ class SymbolParser(OSSSaveOperator):
 
     @property
     def content(self):
-        return self.exchange.to_tickers(self.read_csv()).to_csv()
+        return self.instance.to_tickers(self.read_csv()).to_csv()
 
 
 class NasdaqSymbolParser(SymbolParser):
