@@ -54,6 +54,8 @@ class OSSOperator(BaseOperator):
 
     @staticmethod
     def put_object_(bucket: oss2.api.Bucket, key: str, content):
+        if not content:
+            return
         try:
             print(f"put_object: {key}")
             bucket.put_object(key, content)

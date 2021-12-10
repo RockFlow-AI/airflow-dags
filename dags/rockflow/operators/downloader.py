@@ -23,4 +23,6 @@ class DownloadOperator(OSSSaveOperator):
 
     @property
     def content(self):
-        return self.instance.get().content
+        r = self.instance.get()
+        if self.instance.check(r):
+            return r.content

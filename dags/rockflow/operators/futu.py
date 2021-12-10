@@ -43,7 +43,10 @@ class FutuBatchOperator(OSSOperator):
             proxy=proxy
         )
         if not FutuBatchOperator.object_not_update_for_a_week(bucket, obj.oss_key):
-            FutuBatchOperator.put_object_(bucket, obj.oss_key, obj.get().content)
+            r = obj.get()
+            if not r:
+                return
+            FutuBatchOperator.put_object_(bucket, obj.oss_key, r.content)
 
     @staticmethod
     def call(line: pd.Series, prefix, proxy, bucket):

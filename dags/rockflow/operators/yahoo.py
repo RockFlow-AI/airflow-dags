@@ -37,7 +37,10 @@ class YahooBatchOperator(OSSOperator):
             proxy=proxy
         )
         if not YahooBatchOperator.object_not_update_for_a_week(bucket, obj.oss_key):
-            YahooBatchOperator.put_object_(bucket, obj.oss_key, obj.get().content)
+            r = obj.get()
+            if not r:
+                return
+            YahooBatchOperator.put_object_(bucket, obj.oss_key, r.content)
 
     def execute(self, context: Any):
         print(f"symbol: {self.symbols[:10]}")

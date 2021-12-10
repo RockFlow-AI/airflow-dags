@@ -73,5 +73,7 @@ class Downloader(object):
             headers=self.headers,
             timeout=self.timeout
         )
-        print(f"status_code: {r.status_code}, url: {self.url}, params: {self.params}")
-        return r
+        check = self.check(r)
+        print(f"status_code: {r.status_code}, url: {self.url}, params: {self.params}, check: {check}")
+        if check:
+            return r

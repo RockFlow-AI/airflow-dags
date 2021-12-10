@@ -1,5 +1,7 @@
 import os
 
+import httpx
+
 from rockflow.common.downloader import Downloader
 
 modules = [
@@ -67,7 +69,7 @@ class Yahoo(Downloader):
             f"{self.symbol}.{self.type}",
         )
 
-    def check(self, r):
+    def check(self, r: httpx.Response) -> bool:
         if not super().check(r):
             return False
         r_json = r.json()

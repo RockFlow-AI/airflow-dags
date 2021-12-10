@@ -37,7 +37,10 @@ class LogoBatchOperator(OSSOperator):
             proxy=proxy
         )
         if not LogoBatchOperator.object_not_update_for_a_week(bucket, obj.oss_key):
-            LogoBatchOperator.put_object_(bucket, obj.oss_key, obj.get().content)
+            r = obj.get()
+            if not r:
+                return
+            LogoBatchOperator.put_object_(bucket, obj.oss_key, r.content)
 
     @property
     def cls(self):
