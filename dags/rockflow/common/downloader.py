@@ -16,6 +16,10 @@ class Downloader(object):
         return snakecase(self.__class__.__name__)
 
     @property
+    def lowercase_class_name(self):
+        return self.__class__.__name__.lower()
+
+    @property
     def url(self):
         raise NotImplementedError()
 
@@ -48,6 +52,9 @@ class Downloader(object):
             )
             print(f"status_code: {r.status_code}, url: {self.url}, params: {self.params}")
             return r
+
+    def check(self, r: httpx.Response) -> bool:
+        return r.status_code == 200
 
     def get(self) -> httpx.Response:
         print(f"url: {self.url}, proxy: {self.proxy}")

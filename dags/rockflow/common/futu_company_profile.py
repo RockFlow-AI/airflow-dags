@@ -15,7 +15,10 @@ class FutuCompanyProfile(Downloader):
 
     @property
     def oss_key(self):
-        return os.path.join(self.prefix, self.snakecase_class_name, f"{self.symbol}.{self.type}")
+        return os.path.join(
+            f"{self.prefix}_{self.snakecase_class_name}",
+            f"{self.symbol}.{self.type}"
+        )
 
     @property
     def language(self):

@@ -1,13 +1,9 @@
+from io import BytesIO
+
+import pandas as pd
+
 from rockflow.common.downloader import Downloader
 
-
-# from rockflow.common.header import user_agent
-# from io import BytesIO
-#
-# import pandas as pd
-#
-# from .csvd import CSV
-#
 
 class MIC(Downloader):
     def __init__(self, *args, **kwargs):
@@ -21,9 +17,9 @@ class MIC(Downloader):
     def type(self):
         return "csv"
 
-    # def _to_df(self) -> pd.DataFrame:
-    #     r = self._get()
-    #     return pd.read_csv(
-    #         BytesIO(r.content),
-    #         encoding=r.encoding,
-    #     )
+    def to_df(self) -> pd.DataFrame:
+        r = self.get()
+        return pd.read_csv(
+            BytesIO(r.content),
+            encoding=r.encoding,
+        )
