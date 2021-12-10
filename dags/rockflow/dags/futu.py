@@ -1,4 +1,5 @@
 from airflow.models import DAG
+from airflow.models.baseoperator import chain
 
 from rockflow.dags.const import *
 from rockflow.dags.symbol import MERGE_CSV_KEY
@@ -13,7 +14,7 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
         proxy=DEFAULT_PROXY
     )
 
-    FutuExtractHtml(
+    extract_cn = FutuExtractHtml(
         task_id="futu_extract_html_cn",
         from_key="{{ task_instance.xcom_pull('" + futu_cn.task_id + "') }}",
         key=company_profile_batch_download.dag_id,
@@ -30,13 +31,18 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
         proxy=DEFAULT_PROXY
     )
 
-    FutuExtractHtml(
+    extract_en = FutuExtractHtml(
         task_id="futu_extract_html_en",
         from_key="{{ task_instance.xcom_pull('" + futu_en.task_id + "') }}",
         key=company_profile_batch_download.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
+    )
+
+    chain(
+        [futu_cn, extract_cn],
+        [futu_en, extract_en],
     )
 
 with DAG("company_profile_batch_download_debug",
@@ -49,7 +55,7 @@ with DAG("company_profile_batch_download_debug",
         proxy=DEFAULT_PROXY
     )
 
-    FutuExtractHtmlDebug(
+    extract_cn = FutuExtractHtmlDebug(
         task_id="futu_extract_html_cn",
         from_key="{{ task_instance.xcom_pull('" + futu_cn_debug.task_id + "') }}",
         key=company_profile_batch_download_debug.dag_id,
@@ -66,11 +72,16 @@ with DAG("company_profile_batch_download_debug",
         proxy=DEFAULT_PROXY
     )
 
-    FutuExtractHtmlDebug(
+    extract_en = FutuExtractHtmlDebug(
         task_id="futu_extract_html_en",
         from_key="{{ task_instance.xcom_pull('" + futu_en_debug.task_id + "') }}",
         key=company_profile_batch_download_debug.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
+    )
+
+    chain(
+        [futu_cn, extract_cn],
+        [futu_en, extract_en],
     )
