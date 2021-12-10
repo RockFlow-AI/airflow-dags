@@ -4,16 +4,19 @@ from airflow.models.baseoperator import chain
 from rockflow.dags.const import *
 from rockflow.operators.symbol import *
 
-with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
-    symbol_parse_key = 'airflow-symbol-parse/'
+DAG_ID = "symbol_download"
 
-    nasdaq_raw_key = 'airflow-symbol-raw-nasdaq'
-    hkex_raw_key = 'airflow-symbol-raw-hkex'
-    sse_raw_key = 'airflow-symbol-raw-sse'
-    szse_raw_key = 'airflow-symbol-raw-szse'
+NASDAQ_RAW_KEY = f'{DAG_ID}_nasdaq'
+HKEX_RAW_KEY = f'{DAG_ID}_hkex'
+SSE_RAW_KEY = f'{DAG_ID}_sse'
+SZSE_RAW_KEY = f'{DAG_ID}_szse'
 
+SYMBOL_PARSE_KEY = f'{DAG_ID}_parse/'
+MERGE_CSV_KEY = f'{DAG_ID}_merge/merge.csv'
+
+with DAG(DAG_ID, default_args=DEFAULT_DEBUG_ARGS) as dag:
     nasdaq = NasdaqSymbolDownloadOperator(
-        key=nasdaq_raw_key,
+        key=NASDAQ_RAW_KEY,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -21,14 +24,14 @@ with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
 
     nasdaq_parse = NasdaqSymbolParser(
         from_key="{{ task_instance.xcom_pull('" + nasdaq.task_id + "') }}",
-        key=symbol_parse_key,
+        key=SYMBOL_PARSE_KEY,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
     )
 
     hkex = HkexSymbolDownloadOperator(
-        key=hkex_raw_key,
+        key=HKEX_RAW_KEY,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -36,14 +39,14 @@ with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
 
     hkex_parse = HkexSymbolParser(
         from_key="{{ task_instance.xcom_pull('" + hkex.task_id + "') }}",
-        key=symbol_parse_key,
+        key=SYMBOL_PARSE_KEY,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
     )
 
     sse = SseSymbolDownloadOperator(
-        key=sse_raw_key,
+        key=SSE_RAW_KEY,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -51,13 +54,13 @@ with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
 
     sse_parse = SseSymbolParser(
         from_key="{{ task_instance.xcom_pull('" + sse.task_id + "') }}",
-        key=symbol_parse_key,
+        key=SYMBOL_PARSE_KEY,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
     )
     szse = SzseSymbolDownloadOperator(
-        key=szse_raw_key,
+        key=SZSE_RAW_KEY,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -65,14 +68,14 @@ with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
 
     szse_parse = SzseSymbolParser(
         from_key="{{ task_instance.xcom_pull('" + szse.task_id + "') }}",
-        key=symbol_parse_key,
+        key=SYMBOL_PARSE_KEY,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
     )
 
     merge_csv = MergeCsvList(
-        from_key=symbol_parse_key,
+        from_key=SYMBOL_PARSE_KEY,
         key=MERGE_CSV_KEY,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,

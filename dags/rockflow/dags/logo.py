@@ -1,6 +1,7 @@
 from airflow.models import DAG
 
 from rockflow.dags.const import *
+from rockflow.dags.symbol import MERGE_CSV_KEY
 from rockflow.operators.logo import *
 
 with DAG("public_logo_download", default_args=DEFAULT_DEBUG_ARGS) as public:

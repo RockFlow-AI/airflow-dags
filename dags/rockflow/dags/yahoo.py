@@ -1,6 +1,7 @@
 from airflow.models import DAG
 
 from rockflow.dags.const import *
+from rockflow.dags.symbol import MERGE_CSV_KEY
 from rockflow.operators.yahoo import *
 
 with DAG("yahoo_download", default_args=DEFAULT_DEBUG_ARGS) as yahoo_download:
