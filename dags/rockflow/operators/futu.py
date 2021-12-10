@@ -35,7 +35,7 @@ class FutuBatchOperator(OSSOperator):
         )
 
     @staticmethod
-    def call_one(cls, line: pd.Series, prefix: str, proxy, bucket):
+    def call(line: pd.Series, cls, prefix: str, proxy, bucket):
         obj = cls(
             symbol=line['yahoo'],
             futu_ticker=line['futu'],
@@ -48,24 +48,47 @@ class FutuBatchOperator(OSSOperator):
                 return
             FutuBatchOperator.put_object_(bucket, obj.oss_key, r.content)
 
-    @staticmethod
-    def call(line: pd.Series, prefix, proxy, bucket):
-        cls_list = [
-            FutuCompanyProfileCn,
-            FutuCompanyProfileEn,
-        ]
-        [FutuBatchOperator.call_one(cls, line, prefix, proxy, bucket) for cls in cls_list]
+    @property
+    def cls(self):
+        raise NotImplementedError()
 
     def execute(self, context: Any):
         print(f"symbol: {self.symbols[:10]}")
         self.symbols.apply(
             FutuBatchOperator.call,
             axis=1,
-            args=(self.key, self.proxy, self.bucket)
+            args=(self.cls, self.key, self.proxy, self.bucket)
         )
 
 
-class FutuBatchOperatorDebug(FutuBatchOperator):
+class FutuBatchOperatorCn(FutuBatchOperator):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def cls(self):
+        return FutuCompanyProfileCn
+
+
+class FutuBatchOperatorEn(FutuBatchOperator):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def cls(self):
+        return FutuCompanyProfileEn
+
+
+class FutuBatchOperatorCnDebug(FutuBatchOperatorCn):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def symbols(self) -> pd.DataFrame:
+        return pd.read_csv(self.get_object(self.from_key))[:100]
+
+
+class FutuBatchOperatorEnDebug(FutuBatchOperatorEn):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -85,7 +108,7 @@ class FutuExtractHtml(OSSSaveOperator):
 
     @property
     def oss_key(self):
-        return os.path.join(self._key, f"{self._key}.json")
+        return os.path.join(self.key, f"{self.key}.json")
 
     @staticmethod
     def symbol(obj):
