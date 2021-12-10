@@ -19,30 +19,16 @@ with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
         proxy=DEFAULT_PROXY
     )
 
+    nasdaq_parse = NasdaqSymbolParser(
+        from_key="{{ task_instance.xcom_pull('" + nasdaq.task_id + "') }}",
+        key=symbol_parse_key,
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
     hkex = HkexSymbolDownloadOperator(
         key=hkex_raw_key,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
-    )
-
-    sse = SseSymbolDownloadOperator(
-        key=sse_raw_key,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
-    )
-
-    szse = SzseSymbolDownloadOperator(
-        key=szse_raw_key,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
-    )
-
-    nasdaq_parse = NasdaqSymbolParser(
-        from_key="{{ task_instance.xcom_pull('" + hkex.task_id + "') }}",
-        key=symbol_parse_key,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -56,9 +42,22 @@ with DAG("symbol_download", default_args=DEFAULT_DEBUG_ARGS) as dag:
         proxy=DEFAULT_PROXY
     )
 
+    sse = SseSymbolDownloadOperator(
+        key=sse_raw_key,
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
     sse_parse = SseSymbolParser(
         from_key="{{ task_instance.xcom_pull('" + sse.task_id + "') }}",
         key=symbol_parse_key,
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+    szse = SzseSymbolDownloadOperator(
+        key=szse_raw_key,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
