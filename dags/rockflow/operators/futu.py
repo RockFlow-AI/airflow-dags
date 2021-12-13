@@ -158,6 +158,6 @@ class FutuExtractHtmlDebug(FutuExtractHtml):
         with Pool(processes=24) as pool:
             result = pool.map(
                 lambda x: FutuExtractHtml.task(self.bucket, x),
-                islice(self.object_iterator_(self.bucket, self.from_key), 100)
+                islice(self.object_iterator_(self.bucket, f"{self.from_key}/"), 100)
             )
             return json.dumps(result, ensure_ascii=False)
