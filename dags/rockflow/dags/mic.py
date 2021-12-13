@@ -5,7 +5,7 @@ from rockflow.dags.const import *
 from rockflow.operators.mic import *
 from rockflow.operators.mysql import OssToMysqlOperator
 
-with DAG("market_identification_code_download", default_args=DEFAULT_DEBUG_ARGS) as mic:
+with DAG("mic_download", default_args=DEFAULT_DEBUG_ARGS) as mic:
     mic = MicDownloadOperator(
         key=mic.dag_id,
         region=DEFAULT_REGION,
