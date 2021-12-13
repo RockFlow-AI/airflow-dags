@@ -8,6 +8,8 @@ DEFAULT_PROXY = Proxy(Variable.get("PROXY_URL"), Variable.get("PROXY_PORT")).pro
 DEFAULT_REGION = Variable.get("REGION")
 DEFAULT_BUCKET_NAME = Variable.get("BUCKET_NAME")
 
+MYSQL_CONNECTION_FLOW_TICKER = 'mysql_flow_ticker'
+
 DEFAULT_DEBUG_ARGS = {
     "owner": "daijunkai",
     "depends_on_past": False,
