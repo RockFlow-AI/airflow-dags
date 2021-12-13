@@ -74,7 +74,7 @@ class FutuCompanyProfileEn(FutuCompanyProfile):
 
     def format(self, table_dict):
         return self.format_(self.language, table_dict)
-    
+
     @staticmethod
     def format_(language, table_dict):
         new_table = {}
@@ -91,6 +91,7 @@ class FutuCompanyProfileEn(FutuCompanyProfile):
         new_table["exchange"] = table_dict.get("Market") if table_dict.get("Market") else table_dict.get(
             "Listed exchange")
         return new_table
+
 
 # class FutuCompanyProfileHk(FutuCompanyProfile):
 #     def __init__(self, *args, **kwargs):
@@ -119,7 +120,7 @@ class FutuCompanyProfileCn(FutuCompanyProfile):
 
     def format(self, table_dict):
         return self.format_(self.language, table_dict)
-    
+
     @staticmethod
     def format_(language, table_dict):
         new_table = {}

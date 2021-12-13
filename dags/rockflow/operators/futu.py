@@ -213,7 +213,7 @@ class FutuFormatJsonCn(FutuFormatJson):
     @property
     def cls(self):
         return FutuCompanyProfileCn
-    
+
     @property
     def language(self):
         return "cn"
@@ -226,7 +226,7 @@ class FutuFormatJsonEn(FutuFormatJson):
     @property
     def cls(self):
         return FutuCompanyProfileEn
-    
+
     @property
     def language(self):
         return "en"
