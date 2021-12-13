@@ -175,7 +175,7 @@ class FutuFormatJson(OSSSaveOperator):
     @property
     def oss_key(self):
         return os.path.join(
-            f"{self.key}_{self.from_key}",
+            f"{self.key}_{self.from_key}_{snakecase(self.cls.__name__)}",
             f"{self.key}.json"
         )
 
@@ -187,22 +187,16 @@ class FutuFormatJson(OSSSaveOperator):
     def language(self):
         raise NotImplementedError()
 
-    @staticmethod
-    def symbol(obj):
-        return Path(obj.key).stem
-
-    def format_data(self, bucket, obj):
-        return [self.cls.format_(self.language, j) for j in json.loads(FutuFormatJson.get_object_(bucket, obj.key))]
+    def format_data(self, bucket):
+        return [self.cls.format_(self.language, j) for j in json.loads(self.get_object_(bucket, self.oss_key))]
 
     @staticmethod
-    def task(bucket, obj):
-        if obj.is_prefix():
-            return
-        return FutuFormatJson.format_data(bucket, obj)
+    def task(bucket):
+        return FutuFormatJson.format_data(bucket)
 
     @property
     def content(self):
-        result = FutuFormatJson.task(self.bucket, self.object_iterator_(self.bucket, f"{self.from_key}/"))
+        result = self.task(self.bucket)
         return json.dumps(result, ensure_ascii=False)
 
 
