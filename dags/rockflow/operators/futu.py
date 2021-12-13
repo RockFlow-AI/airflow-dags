@@ -161,3 +161,72 @@ class FutuExtractHtmlDebug(FutuExtractHtml):
                 islice(self.object_iterator_(self.bucket, f"{self.from_key}/"), 100)
             )
             return json.dumps(result, ensure_ascii=False)
+
+
+class FutuFormatJson(OSSSaveOperator):
+    def __init__(
+            self,
+            from_key: str,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.from_key = from_key
+
+    @property
+    def oss_key(self):
+        return os.path.join(
+            f"{self.key}_{self.from_key}",
+            f"{self.key}.json"
+        )
+
+    @property
+    def cls(self):
+        raise NotImplementedError()
+
+    @property
+    def language(self):
+        raise NotImplementedError()
+
+    @staticmethod
+    def symbol(obj):
+        return Path(obj.key).stem
+
+    def format_data(self, bucket, obj):
+        return [self.cls.format_(self.language, j) for j in json.loads(FutuFormatJson.get_object_(bucket, obj.key))]
+
+    @staticmethod
+    def task(bucket, obj):
+        if obj.is_prefix():
+            return
+        return FutuFormatJson.format_data(bucket, obj)
+
+    @property
+    def content(self):
+        result = FutuFormatJson.task(self.bucket, self.object_iterator_(self.bucket, f"{self.from_key}/"))
+        return json.dumps(result, ensure_ascii=False)
+
+
+class FutuFormatJsonCn(FutuFormatJson):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def cls(self):
+        return FutuCompanyProfileCn
+    
+    @property
+    def language(self):
+        return "cn"
+
+
+class FutuFormatJsonEn(FutuFormatJson):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def cls(self):
+        return FutuCompanyProfileEn
+    
+    @property
+    def language(self):
+        return "en"
