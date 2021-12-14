@@ -4,7 +4,7 @@ import pandas as pd
 
 from rockflow.common.hkex import HKEX
 from rockflow.common.nasdaq import Nasdaq
-from rockflow.common.pandas_helper import DataFrameMerger
+from rockflow.common.pandas_helper import merge_data_frame
 from rockflow.common.sse import SSE1
 from rockflow.common.szse import SZSE1
 from rockflow.operators.downloader import DownloadOperator
@@ -137,4 +137,4 @@ class MergeCsvList(OSSSaveOperator):
 
     @property
     def content(self):
-        return DataFrameMerger().merge(self.get_data_frames()).to_csv()
+        return merge_data_frame(self.get_data_frames()).to_csv()

@@ -11,6 +11,7 @@ from stringcase import snakecase
 
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
+from rockflow.common.map_helper import join_map
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
 
 
@@ -195,3 +196,36 @@ class FutuFormatJsonEn(FutuFormatJson):
     @property
     def cls(self):
         return FutuCompanyProfileEn
+
+
+class JoinMap(OSSSaveOperator):
+    template_fields = ["first", "second"]
+
+    def __init__(
+            self,
+            first: str,
+            second: str,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.first = first
+        self.second = second
+
+    @property
+    def oss_key(self):
+        return os.path.join(
+            f"{self.key}_{self.snakecase_class_name}",
+            f"{self.snakecase_class_name}.json"
+        )
+
+    def load_json(self, key):
+        return json.load(
+            BytesIO(self.get_object(key).read())
+        )
+
+    @property
+    def content(self):
+        return join_map(
+            self.load_json(self.first),
+            self.load_json(self.second)
+        )
