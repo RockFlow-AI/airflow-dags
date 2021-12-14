@@ -48,11 +48,14 @@ class FutuBatchOperator(OSSOperator):
             prefix=prefix,
             proxy=proxy
         )
-        if not FutuBatchOperator.object_not_update_for_a_week(bucket, obj.oss_key):
-            r = obj.get()
-            if not r:
-                return
-            FutuBatchOperator.put_object_(bucket, obj.oss_key, r.content)
+        try:
+            if not FutuBatchOperator.object_not_update_for_a_week(bucket, obj.oss_key):
+                r = obj.get()
+                if not r:
+                    return
+                FutuBatchOperator.put_object_(bucket, obj.oss_key, r.content)
+        except Exception as e:
+            print(f"Errors: {e}")
 
     @property
     def cls(self):
