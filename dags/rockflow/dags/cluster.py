@@ -19,6 +19,7 @@ SimpleHttpOperator(
     method='POST',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/currencies/refresh',
+    response_check=lambda response: response.json()['code'] == 200,
     dag=currencies_refresh,
 )
 
@@ -38,6 +39,7 @@ SimpleHttpOperator(
     method='POST',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/contracts/refresh',
+    response_check=lambda response: response.json()['code'] == 200,
     dag=contracts_refresh,
 )
 
@@ -57,5 +59,6 @@ SimpleHttpOperator(
     method='POST',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/ticks',
+    response_check=lambda response: response.json()['code'] == 200,
     dag=ticks,
 )
