@@ -7,12 +7,10 @@ currencies_refresh = DAG(
     "currencies_refresh",
     default_args={
         "owner": "yinxiang",
-        # "start_date": datetime(2021, 12, 15),
-        "start_date": datetime.now(),
+        "start_date": datetime(2021, 12, 14),
         "retries": 0,
         "retry_delay": timedelta(minutes=1),
-        # "schedule_interval": "@hourly",
-        "schedule_interval": "@once",
+        "schedule_interval": "@hourly",
     }
 )
 
@@ -29,12 +27,10 @@ contracts_refresh = DAG(
     "contracts_refresh",
     default_args={
         "owner": "yinxiang",
-        # "start_date": datetime(2021, 12, 15),
-        "start_date": datetime.now(),
+        "start_date": datetime(2021, 12, 14),
         "retries": 0,
         "retry_delay": timedelta(minutes=1),
-        # "schedule_interval": "@hourly",
-        "schedule_interval": "@once",
+        "schedule_interval": "@hourly",
     }
 )
 
@@ -51,12 +47,10 @@ ticks = DAG(
     "ticks",
     default_args={
         "owner": "yinxiang",
-        # "start_date": datetime(2021, 12, 15),
-        "start_date": datetime.now(),
+        "start_date": datetime(2021, 12, 15),
         "retries": 0,
         "retry_delay": timedelta(minutes=1),
-        # "schedule_interval": "* * * * *",
-        "schedule_interval": "@once",
+        "schedule_interval": "* * * * *",
     }
 )
 
