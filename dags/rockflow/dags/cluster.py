@@ -30,7 +30,7 @@ contracts_refresh = DAG(
         "start_date": datetime(2021, 12, 14),
         "retries": 0,
         "retry_delay": timedelta(minutes=1),
-        "schedule_interval": "@hourly",
+        "schedule_interval": "@daily",
     }
 )
 
