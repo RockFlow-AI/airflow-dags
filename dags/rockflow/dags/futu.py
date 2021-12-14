@@ -2,6 +2,7 @@ from airflow.models import DAG
 from airflow.models.baseoperator import chain
 
 from rockflow.dags.const import *
+from rockflow.dags.es_settings.search import search_setting
 from rockflow.dags.symbol import MERGE_CSV_KEY
 from rockflow.operators.futu import *
 
@@ -65,11 +66,22 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
         proxy=DEFAULT_PROXY
     )
 
+    sink_es = SinkEs(
+        from_key="{{ task_instance.xcom_pull('" + join_map.task_id + "') }}",
+        elasticsearch_index_name='i_flow_ticker_search_test',
+        elasticsearch_index_setting=search_setting,
+        elasticsearch_conn_id='elasticsearch_default',
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
 chain(
     [futu_cn, futu_en],
     [extract_cn, extract_en],
     [format_cn, format_en],
     join_map,
+    sink_es,
 )
 
 with DAG("company_profile_batch_download_debug",
@@ -133,9 +145,20 @@ with DAG("company_profile_batch_download_debug",
         proxy=DEFAULT_PROXY
     )
 
+    sink_es_debug = SinkEs(
+        from_key="{{ task_instance.xcom_pull('" + join_map_debug.task_id + "') }}",
+        elasticsearch_index_name='i_flow_ticker_search_test',
+        elasticsearch_index_setting=search_setting,
+        elasticsearch_conn_id='elasticsearch_default',
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
 chain(
     [futu_cn_debug, futu_en_debug],
     [extract_cn_debug, extract_en_debug],
     [format_cn_debug, format_en_debug],
     join_map_debug,
+    sink_es_debug,
 )

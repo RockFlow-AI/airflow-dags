@@ -3,7 +3,7 @@ import os
 from io import BytesIO
 from multiprocessing.pool import ThreadPool as Pool
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 import oss2
 import pandas as pd
@@ -12,6 +12,7 @@ from stringcase import snakecase
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
 from rockflow.common.map_helper import join_map
+from rockflow.operators.elasticsearch import ElasticsearchOperator
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
 
 
@@ -230,3 +231,24 @@ class JoinMap(OSSSaveOperator):
             self.load_json(self.second)
         )
         return json.dumps(result, ensure_ascii=False)
+
+
+class SinkEs(ElasticsearchOperator):
+    template_fields = ["from_key"]
+
+    def __init__(
+            self,
+            from_key: str,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.from_key = from_key
+
+    def load_json(self, key):
+        return json.load(
+            BytesIO(self.get_object(key).read())
+        )
+
+    def execute(self, context: Dict) -> None:
+        for k, v in self.load_json(self.from_key):
+            self.add_one_doc(k, v)
