@@ -241,7 +241,12 @@ class JoinMap(OSSSaveOperator):
                 self.load_json(self.second)
             )
         )
-        return json.dumps(result, ensure_ascii=False)
+        final_result = {}
+        for k, v in result.items():
+            final_result[k] = {
+                vk: vv for vk, vv in v.items() if not vk.startswith("Unnamed")
+            }
+        return json.dumps(final_result, ensure_ascii=False)
 
 
 class SinkEs(ElasticsearchOperator):

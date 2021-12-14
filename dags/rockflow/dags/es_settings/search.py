@@ -70,7 +70,7 @@ search_setting = {
                 "analyzer": "prefix_pinyin_analyzer",
                 "search_analyzer": "one_ngram_search_analyzer"
             },
-            "market_symbol": {
+            "raw": {
                 "type": "text",
                 "analyzer": "prefix_pinyin_analyzer",
                 "search_analyzer": "one_ngram_search_analyzer"
