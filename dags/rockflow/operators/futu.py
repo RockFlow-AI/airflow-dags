@@ -225,7 +225,8 @@ class JoinMap(OSSSaveOperator):
 
     @property
     def content(self):
-        return join_map(
+        result = join_map(
             self.load_json(self.first),
             self.load_json(self.second)
         )
+        return json.dumps(result, ensure_ascii=False)
