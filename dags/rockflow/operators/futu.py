@@ -229,7 +229,7 @@ class JoinMap(OSSSaveOperator):
     def load_merge_pd(self):
         return pd.read_csv(
             self.get_object(self.merge_key),
-            index_col='symbol',
+            index_col='yahoo',
         ).to_dict('index')
 
     @property
