@@ -184,19 +184,11 @@ class FutuFormatJson(OSSSaveOperator):
         raise NotImplementedError()
 
     @property
-    def language(self):
-        raise NotImplementedError()
-
-    def format_data(self, bucket):
-        return [self.cls.format_(self.language, j) for j in json.loads(self.get_object_(bucket, self.oss_key))]
-
-    @staticmethod
-    def task(bucket):
-        return FutuFormatJson.format_data(bucket)
-
-    @property
     def content(self):
-        result = self.task(self.bucket)
+        result = [
+            self.cls.format_(self.cls.language(), i)
+            for i in json.loads(self.get_object_(self.bucket, self.oss_key))
+        ]
         return json.dumps(result, ensure_ascii=False)
 
 
@@ -208,10 +200,6 @@ class FutuFormatJsonCn(FutuFormatJson):
     def cls(self):
         return FutuCompanyProfileCn
 
-    @property
-    def language(self):
-        return "cn"
-
 
 class FutuFormatJsonEn(FutuFormatJson):
     def __init__(self, **kwargs) -> None:
@@ -220,7 +208,3 @@ class FutuFormatJsonEn(FutuFormatJson):
     @property
     def cls(self):
         return FutuCompanyProfileEn
-
-    @property
-    def language(self):
-        return "en"

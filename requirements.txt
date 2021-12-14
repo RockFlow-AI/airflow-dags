@@ -1,7 +1,9 @@
 apache-airflow-providers-alibaba
-apache-airflow-providers-mysql
+apache-airflow-providers-elasticsearch
+apache-airflow-providers-mysql[amazon]
 openpyxl
 lxml
 html5lib
 beautifulsoup4
 stringcase
+elasticsearch==7.10.0

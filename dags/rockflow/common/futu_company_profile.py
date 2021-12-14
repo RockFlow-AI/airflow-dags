@@ -109,7 +109,7 @@ class FutuCompanyProfileCn(FutuCompanyProfile):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @property
+    @classmethod
     def language(self):
         return "cn"
 
@@ -118,7 +118,7 @@ class FutuCompanyProfileCn(FutuCompanyProfile):
         return f"https://www.futunn.com/stock/{self.futu_ticker}/company-profile"
 
     def format(self, table_dict):
-        return self.format_(self.language, table_dict)
+        return self.format_(self.language(), table_dict)
 
     @staticmethod
     def format_(language, table_dict):
