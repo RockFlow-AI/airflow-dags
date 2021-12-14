@@ -3,16 +3,14 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 
 from rockflow.dags.const import *
 
-cluster_timing_dag = DAG(
-    "cluster_timing",
+currencies_refresh = DAG(
+    "currencies_refresh",
     default_args={
         "owner": "yinxiang",
-        # "start_date": datetime(2021, 12, 8),
-        "start_date": datetime.now(),
+        "start_date": datetime(2021, 12, 15),
         "retries": 0,
         "retry_delay": timedelta(minutes=1),
-        # "schedule_interval": "@once",  # for debug
-        "schedule_interval": "@once",  # for debug
+        "schedule_interval": "@hourly",
     }
 )
 
@@ -21,5 +19,43 @@ SimpleHttpOperator(
     method='POST',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/currencies/refresh',
-    dag=cluster_timing_dag,
+    dag=currencies_refresh,
+)
+
+contracts_refresh = DAG(
+    "contracts_refresh",
+    default_args={
+        "owner": "yinxiang",
+        "start_date": datetime(2021, 12, 15),
+        "retries": 0,
+        "retry_delay": timedelta(minutes=1),
+        "schedule_interval": "@hourly",
+    }
+)
+
+SimpleHttpOperator(
+    task_id='contracts_refresh',
+    method='POST',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/contracts/refresh',
+    dag=contracts_refresh,
+)
+
+ticks = DAG(
+    "ticks",
+    default_args={
+        "owner": "yinxiang",
+        "start_date": datetime(2021, 12, 15),
+        "retries": 0,
+        "retry_delay": timedelta(minutes=1),
+        "schedule_interval": "* * * * *",
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks',
+    dag=ticks,
 )
