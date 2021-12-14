@@ -250,5 +250,5 @@ class SinkEs(ElasticsearchOperator):
         )
 
     def execute(self, context: Dict) -> None:
-        for k, v in self.load_json(self.from_key):
+        for k, v in self.load_json(self.from_key).items():
             self.add_one_doc(k, v)
