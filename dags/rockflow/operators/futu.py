@@ -11,7 +11,7 @@ from stringcase import snakecase
 
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
-from rockflow.common.map_helper import join_map
+from rockflow.common.map_helper import join_map, join_list
 from rockflow.operators.elasticsearch import ElasticsearchOperator
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
 
@@ -206,11 +206,13 @@ class JoinMap(OSSSaveOperator):
             self,
             first: str,
             second: str,
+            merge_key: str,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.first = first
         self.second = second
+        self.merge_key = merge_key
 
     @property
     def oss_key(self):
@@ -224,11 +226,20 @@ class JoinMap(OSSSaveOperator):
             BytesIO(self.get_object(key).read())
         )
 
+    def load_merge_pd(self):
+        return pd.read_csv(
+            self.get_object(self.merge_key),
+            index='symbol',
+        ).to_dict('index')
+
     @property
     def content(self):
         result = join_map(
-            self.load_json(self.first),
-            self.load_json(self.second)
+            self.load_merge_pd(),
+            join_list(
+                self.load_json(self.first),
+                self.load_json(self.second)
+            )
         )
         return json.dumps(result, ensure_ascii=False)
 

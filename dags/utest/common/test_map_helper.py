@@ -1,11 +1,11 @@
 import unittest
 
-from rockflow.common.map_helper import join_map
+from rockflow.common.map_helper import join_list
 
 
 class Test(unittest.TestCase):
     def test(self):
-        result = join_map(
+        result = join_list(
             [
                 {
                     "symbol": "aapl",
