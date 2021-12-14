@@ -23,6 +23,9 @@ class LogoBatchOperator(OSSOperator):
 
     @staticmethod
     def object_not_update_for_a_week(bucket: oss2.api.Bucket, key: str):
+        # TODO(speed up)
+        if LogoBatchOperator.object_exists_(bucket, key):
+            return True
         if not LogoBatchOperator.object_exists_(bucket, key):
             return False
         return GmtDatetimeCheck(
