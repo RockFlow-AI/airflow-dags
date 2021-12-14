@@ -59,6 +59,7 @@ with DAG(DAG_ID, default_args=DEFAULT_DEBUG_ARGS) as dag:
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
     )
+
     szse = SzseSymbolDownloadOperator(
         key=SZSE_RAW_KEY,
         region=DEFAULT_REGION,

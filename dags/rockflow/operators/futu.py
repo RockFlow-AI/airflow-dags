@@ -1,6 +1,6 @@
 import json
 import os
-from itertools import islice
+from io import BytesIO
 from multiprocessing.pool import ThreadPool as Pool
 from pathlib import Path
 from typing import Any
@@ -117,8 +117,8 @@ class FutuExtractHtml(OSSSaveOperator):
     @property
     def oss_key(self):
         return os.path.join(
-            f"{self.key}_{self.from_key}",
-            f"{self.key}.json"
+            f"{self.key}_{self.snakecase_class_name}_{self.from_key}",
+            f"{self.snakecase_class_name}.json"
         )
 
     @staticmethod
@@ -146,24 +146,9 @@ class FutuExtractHtml(OSSSaveOperator):
             return json.dumps(result, ensure_ascii=False)
 
 
-class FutuExtractHtmlDebug(FutuExtractHtml):
-    def __init__(
-            self,
-            **kwargs,
-    ) -> None:
-        super().__init__(**kwargs)
-
-    @property
-    def content(self):
-        with Pool(processes=24) as pool:
-            result = pool.map(
-                lambda x: FutuExtractHtml.task(self.bucket, x),
-                islice(self.object_iterator_(self.bucket, f"{self.from_key}/"), 100)
-            )
-            return json.dumps(result, ensure_ascii=False)
-
-
 class FutuFormatJson(OSSSaveOperator):
+    template_fields = ["from_key"]
+
     def __init__(
             self,
             from_key: str,
@@ -175,8 +160,8 @@ class FutuFormatJson(OSSSaveOperator):
     @property
     def oss_key(self):
         return os.path.join(
-            f"{self.key}_{self.from_key}_{snakecase(self.cls.__name__)}",
-            f"{self.key}.json"
+            f"{self.key}_{self.snakecase_class_name}_{snakecase(self.cls.__name__)}",
+            f"{self.snakecase_class_name}.json"
         )
 
     @property
@@ -187,7 +172,9 @@ class FutuFormatJson(OSSSaveOperator):
     def content(self):
         result = [
             self.cls.format_(self.cls.language(), i)
-            for i in json.loads(self.get_object_(self.bucket, self.oss_key))
+            for i in json.load(
+                BytesIO(self.get_object_(self.bucket, self.from_key).read())
+            )
         ]
         return json.dumps(result, ensure_ascii=False)
 

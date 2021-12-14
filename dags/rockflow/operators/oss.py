@@ -27,6 +27,14 @@ class OSSOperator(BaseOperator):
         self.oss_hook = OSSHook(oss_conn_id=self.oss_conn_id, region=self.region)
 
     @property
+    def snakecase_class_name(self):
+        return snakecase(self.__class__.__name__)
+
+    @property
+    def lowercase_class_name(self):
+        return self.__class__.__name__.lower()
+
+    @property
     def bucket(self) -> oss2.api.Bucket:
         return self.oss_hook.get_bucket(self.bucket_name)
 
