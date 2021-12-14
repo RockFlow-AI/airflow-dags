@@ -56,7 +56,7 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
         proxy=DEFAULT_PROXY
     )
 
-    join_map_debug = JoinMap(
+    join_map = JoinMap(
         first="{{ task_instance.xcom_pull('" + format_cn.task_id + "') }}",
         second="{{ task_instance.xcom_pull('" + format_en.task_id + "') }}",
         key=company_profile_batch_download.dag_id,
@@ -69,7 +69,7 @@ chain(
     [futu_cn, futu_en],
     [extract_cn, extract_en],
     [format_cn, format_en],
-    join_map_debug,
+    join_map,
 )
 
 with DAG("company_profile_batch_download_debug",
