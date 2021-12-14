@@ -1,15 +1,20 @@
-def join_map(first, target):
-    first_dict = {}
-    for item in first:
-        first_dict[item["symbol"]] = item
-
-    second_dict = {}
-    for item in target:
-        second_dict[item["symbol"]] = item
-
+def join_map(first, second):
+    first_dict = {
+        item["symbol"]: item for item in first
+    }
+    second_dict = {
+        item["symbol"]: item for item in second
+    }
+    result = {}
     for k, v in second_dict.items():
+        second_map = {
+            k: v for k, v in v.items() if v
+        }
         if k in first_dict:
-            v.update(first_dict[k])
-            first_dict[k] = v
-
-    return first_dict
+            first_map = {
+                k: v for k, v in first_dict[k].items() if v
+            }
+            result[k] = {**first_map, **second_map}
+        else:
+            result[k] = second_map
+    return result
