@@ -62,7 +62,7 @@ ticks = DAG(
 
 SimpleHttpOperator(
     task_id='ticks',
-    method='POST',
+    method='PATCH',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/ticks',
     response_check=lambda response: response.json()['code'] == 200,
