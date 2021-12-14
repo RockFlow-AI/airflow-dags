@@ -75,6 +75,11 @@ search_setting = {
                 "analyzer": "prefix_pinyin_analyzer",
                 "search_analyzer": "one_ngram_search_analyzer"
             },
+            "name": {
+                "type": "text",
+                "analyzer": "prefix_pinyin_analyzer",
+                "search_analyzer": "one_ngram_search_analyzer"
+            },
             "name_en": {
                 "type": "text",
                 "analyzer": "prefix_pinyin_analyzer",

@@ -246,9 +246,12 @@ class JoinMap(OSSSaveOperator):
         )
         final_result = {}
         for k, v in result.items():
-            final_result[k] = {
+            item = {
                 vk: vv for vk, vv in v.items() if not vk.startswith("Unnamed")
             }
+            item["market_symbol"] = item["raw"]
+            item["name"] = item["name_en"]
+            final_result[k] = item
         return json.dumps(final_result, ensure_ascii=False)
 
 
