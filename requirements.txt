@@ -7,4 +7,3 @@ html5lib
 beautifulsoup4
 stringcase
 elasticsearch==7.10.0
-dotenv
