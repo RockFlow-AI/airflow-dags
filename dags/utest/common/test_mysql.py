@@ -2,6 +2,7 @@ import unittest
 from unittest import mock
 
 from airflow.models import Connection, Variable
+from airflow.hooks.base import BaseHook
 
 
 class Test(unittest.TestCase):
@@ -17,7 +18,8 @@ class Test(unittest.TestCase):
         )
         conn_uri = conn.get_uri()
         with mock.patch.dict("os.environ", AIRFLOW_CONN_MY_CONN=conn_uri):
-            assert "cat" == Connection.get("my_conn").login
+            test_conn=BaseHook.get_connection(conn_id="my_conn")
+            assert "cat" == test_conn.login
 
 
 if __name__ == '__main__':
