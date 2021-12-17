@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 import pandas as pd
 from airflow.providers.mysql.hooks.mysql import MySqlHook
@@ -25,21 +25,33 @@ class OssToMysqlOperator(OSSOperator):
     def conn(self):
         return self.mysql_hook.get_conn()
 
-    def execute(self, context: Dict) -> None:
-        self.log.info(f"Loading {self.oss_source_key} to MySql table {self.mysql_table}...")
+    @property
+    def cursor(self):
+        return self.conn.cursor()
 
-        data_df = pd.read_csv(
+    def read_data(self) -> pd.DataFrame:
+        return pd.read_csv(
             self.get_object(self.oss_source_key)
         )
 
-        sql_schema = pd.io.sql.get_schema(
-            data_df,
-            self.mysql_table,
-            keys='MIC',
-            dtype={},
-            con=self.conn
+    @property
+    def dtype(self):
+        return None
+
+    def execute_sql(self, cmd):
+        self.log.info(f"{self.cursor.execute(cmd)}")
+
+    def sql_schema(self):
+        self.execute_sql(f"SHOW CREATE TABLE {self.mysql_table}")
+
+    def to_sql(self, df: Optional[pd.DataFrame]):
+        return df.to_sql(
+            name=self.mysql_table,
+            con=self.conn,
+            if_exists="append",
         )
 
-        self.log.info(f"{sql_schema}")
-
-        data_df.to_sql(self.mysql_table, self.conn)
+    def execute(self, context: Dict) -> None:
+        self.log.info(f"Loading {self.oss_source_key} to MySql table {self.mysql_table}...")
+        self.sql_schema()
+        self.to_sql(self.read_data())

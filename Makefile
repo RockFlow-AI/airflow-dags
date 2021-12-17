@@ -1,10 +1,17 @@
 HOMEDIR := $(shell pwd)
-DAGDIR := $(HOMEDIR)/dags
-PYTHONPATH := $(DAGDIR):$(PYTHONPATH)
+MODULEDIR := $(HOMEDIR)/dags
+DAGDIR := $(MODULEDIR)/rockflow/dags
+PYTHONPATH := $(MODULEDIR):$(PYTHONPATH)
 AIRFLOW_VERSION := 2.2.1
 PY?=python3
 PYTHON_VERSION := $(shell $(PY) --version | cut -d " " -f 2 | cut -d "." -f 1-2)
 CONSTRAINT_URL := "https://raw.githubusercontent.com/apache/airflow/constraints-$(AIRFLOW_VERSION)/constraints-$(PYTHON_VERSION).txt"
+
+# https://lithic.tech/blog/2020-05/makefile-dot-env
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
 
 .PHONY: init
 init: venv
@@ -15,6 +22,10 @@ init: venv
 .PHONY: test
 test: venv
 	PYTHONPATH=$(PYTHONPATH) $(VENV)/python -m unittest discover dags/utest
+
+.PHONY: load
+load: venv
+	PYTHONPATH=$(PYTHONPATH) $(foreach file, $(wildcard $(DAGDIR)/*.py), $(VENV)/python $(file);)
 
 include Makefile.venv
 Makefile.venv:
