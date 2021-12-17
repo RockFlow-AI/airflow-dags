@@ -16,8 +16,14 @@ class HKEX(Downloader):
     @property
     def type(self):
         return "xlsx"
+    
+    def class_filter(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
+        return df[
+            (df['分類']=='股本')|
+            (df['分類']=='房地產投資信託基金')
+            ]
 
-    def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
+    def format_symbol(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()
         result['raw'] = df.iloc[:, 0]
         result['symbol'] = result['raw'].apply(
@@ -31,6 +37,9 @@ class HKEX(Downloader):
         )
         result['market'] = pd.Series(["HK" for _ in range(len(result.index))])
         return result
+
+    def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
+        return self.format_symbol(self.class_filter(df))
 
     def to_df(self, fp) -> pd.DataFrame:
         return pd.read_excel(
