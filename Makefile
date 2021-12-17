@@ -1,6 +1,16 @@
 HOMEDIR := $(shell pwd)
 DAGDIR := $(HOMEDIR)/dags
 PYTHONPATH := $(DAGDIR):$(PYTHONPATH)
+AIRFLOW_VERSION := 2.2.1
+PY?=python3
+PYTHON_VERSION := $(shell $(PY) --version | cut -d " " -f 2 | cut -d "." -f 1-2)
+CONSTRAINT_URL := "https://raw.githubusercontent.com/apache/airflow/constraints-$(AIRFLOW_VERSION)/constraints-$(PYTHON_VERSION).txt"
+
+.PHONY: init
+init: venv
+	$(VENV)/pip install "apache-airflow[async,postgres,google,alibaba]==$(AIRFLOW_VERSION)" --constraint "$(CONSTRAINT_URL)"
+	$(VENV)/pip install -r requirements_extra.txt
+	$(VENV)/pip install -r requirements_test.txt
 
 .PHONY: test
 test: venv
