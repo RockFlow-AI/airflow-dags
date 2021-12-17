@@ -1,3 +1,11 @@
+HOMEDIR := $(shell pwd)
+DAGDIR := $(HOMEDIR)/dags
+PYTHONPATH := $(DAGDIR):$(PYTHONPATH)
+
+.PHONY: test
+test: venv
+	PYTHONPATH=$(PYTHONPATH) $(VENV)/python -m unittest discover dags/utest
+
 include Makefile.venv
 Makefile.venv:
 	curl \
