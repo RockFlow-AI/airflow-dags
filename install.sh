@@ -1,3 +1,5 @@
+set -xv
+
 make
 
 source .venv/bin/activate
@@ -8,6 +10,6 @@ CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${A
 
 pip install "apache-airflow[async,postgres,google,alibaba]==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
 
-pip install -r requirements.txt
+pip install -r requirements_extra.txt
 
 pip install -r requirements_test.txt
