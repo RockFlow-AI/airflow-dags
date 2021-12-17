@@ -3,13 +3,14 @@ from unittest import mock
 
 from airflow.hooks.base import BaseHook
 from airflow.models import Connection
+
 from rockflow.dags.const import *
 
 
 class Test(unittest.TestCase):
     def test_mock_env(self):
         with mock.patch.dict("os.environ", AIRFLOW_VAR_KEY="env-value"):
-            assert "env-value" == Variable.get("key")
+            self.assertEqual("env-value", Variable.get("key"))
 
     def test_mock_connection(self):
         conn = Connection(
@@ -20,7 +21,7 @@ class Test(unittest.TestCase):
         conn_uri = conn.get_uri()
         with mock.patch.dict("os.environ", AIRFLOW_CONN_MY_CONN=conn_uri):
             test_conn = BaseHook.get_connection(conn_id="my_conn")
-            assert "cat" == test_conn.login
+            self.assertEqual("cat", test_conn.login)
 
     def test_variable(self):
         self.assertEqual("rockflow-data-dev", Variable.get("bucket_name"))

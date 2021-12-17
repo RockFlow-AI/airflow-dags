@@ -1,6 +1,7 @@
 import unittest
 
 from airflow.models import DAG
+
 from rockflow.dags.const import *
 from rockflow.operators.market import MicDownloadOperator
 
@@ -14,7 +15,7 @@ class Test(unittest.TestCase):
                 bucket_name=DEFAULT_BUCKET_NAME,
                 proxy=DEFAULT_PROXY
             )
-            mic.execute("")
+            self.assertIsNotNone(mic.execute(""))
 
 
 if __name__ == '__main__':

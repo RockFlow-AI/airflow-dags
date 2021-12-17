@@ -8,7 +8,7 @@ class Test(unittest.TestCase):
     def test(self):
         # python -m unittest test_nasdaq.Test.test
         nasdaq = Nasdaq(proxy=local_proxy())
-        print(nasdaq.get().content)
+        self.assertIsNotNone(nasdaq.get().content)
 
 
 if __name__ == '__main__':

@@ -23,17 +23,17 @@ class Test(unittest.TestCase):
                 },
             ]
         )
-        assert "aapl" in result
-        assert "symbol" in result["aapl"]
-        assert "name_zh" in result["aapl"]
-        assert "name_en" in result["aapl"]
-        assert "short_name_a" in result["aapl"]
-        assert "short_name_b" in result["aapl"]
-        assert not "name_hk" in result["aapl"]
-        assert "apple" == result["aapl"]["name_en"]
-        assert "苹果公司" == result["aapl"]["name_zh"]
-        assert "苹果A" == result["aapl"]["short_name_a"]
-        assert "苹果B" == result["aapl"]["short_name_b"]
+        self.assertIn("aapl", result)
+        self.assertIn("symbol", result["aapl"])
+        self.assertIn("name_zh", result["aapl"])
+        self.assertIn("name_en", result["aapl"])
+        self.assertIn("short_name_a", result["aapl"])
+        self.assertIn("short_name_b", result["aapl"])
+        self.assertNotIn("name_hk", result["aapl"])
+        self.assertEqual("apple", result["aapl"]["name_en"])
+        self.assertEqual("苹果公司", result["aapl"]["name_zh"])
+        self.assertEqual("苹果A", result["aapl"]["short_name_a"])
+        self.assertEqual("苹果B", result["aapl"]["short_name_b"])
 
 
 if __name__ == '__main__':

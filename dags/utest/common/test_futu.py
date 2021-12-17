@@ -17,9 +17,9 @@ class Test(unittest.TestCase):
         prefix = ""
         for ticker in ticker_list:
             cn_obj = FutuCompanyProfileCn(ticker[0], ticker[1], prefix, proxy=local_proxy())
-            cn_obj.to_json(cn_obj.get().content)
+            self.assertIsNotNone(cn_obj.to_json(cn_obj.get().content))
             en_ojb = FutuCompanyProfileEn(ticker[0], ticker[1], prefix, proxy=local_proxy())
-            en_ojb.to_json(en_ojb.get().content)
+            self.assertIsNotNone(en_ojb.to_json(en_ojb.get().content))
 
 
 if __name__ == '__main__':
