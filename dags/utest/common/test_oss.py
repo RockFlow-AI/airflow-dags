@@ -1,5 +1,6 @@
 import unittest
 
+from rockflow.dags.const import *
 from rockflow.operators.futu import FutuBatchOperatorCnDebug
 
 
@@ -8,9 +9,9 @@ class Test(unittest.TestCase):
         t = FutuBatchOperatorCnDebug(
             from_key="symbol_download_merge/merge.csv",
             key="test_oss",
-            region="cn-hongkong",
-            bucket_name="rockflow-data-dev",
             oss_conn_id="oss_default",
+            region=DEFAULT_REGION,
+            bucket_name=DEFAULT_BUCKET_NAME
         )
         t.execute("")
 
