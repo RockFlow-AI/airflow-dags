@@ -13,20 +13,24 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
+# install python deps
 .PHONY: init
 init: venv
 	$(VENV)/pip install "apache-airflow[async,postgres,google,alibaba]==$(AIRFLOW_VERSION)" --constraint "$(CONSTRAINT_URL)"
 	$(VENV)/pip install -r requirements_extra.txt
 	$(VENV)/pip install -r requirements_test.txt
 
+# run all unit test
 .PHONY: test
 test: venv
 	PYTHONPATH=$(PYTHONPATH) $(VENV)/python -m unittest discover dags/utest
 
+# test load all dags
 .PHONY: load
 load: venv
 	PYTHONPATH=$(PYTHONPATH) $(foreach file, $(wildcard $(DAGDIR)/*.py), $(VENV)/python $(file);)
 
+# init venv
 include Makefile.venv
 Makefile.venv:
 	curl \
