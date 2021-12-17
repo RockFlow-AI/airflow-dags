@@ -2,10 +2,8 @@ import unittest
 from unittest import mock
 
 from airflow.hooks.base import BaseHook
-from airflow.models import Connection, Variable
-from dotenv import load_dotenv, find_dotenv
-
-load_dotenv(find_dotenv(), override=True)
+from airflow.models import Connection
+from rockflow.dags.const import *
 
 
 class Test(unittest.TestCase):

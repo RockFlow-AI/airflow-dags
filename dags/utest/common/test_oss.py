@@ -1,10 +1,7 @@
 import unittest
-from airflow.models import Connection
-from dotenv import load_dotenv, find_dotenv
 
 from rockflow.operators.futu import FutuBatchOperatorCnDebug
 
-load_dotenv(find_dotenv(), override=True)
 
 class Test(unittest.TestCase):
     def test(self):

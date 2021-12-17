@@ -1,8 +1,17 @@
+import os
+import sys
 from datetime import datetime, timedelta
 
 from airflow.models import Variable
-
 from rockflow.common.proxy import Proxy
+
+if 'unittest' in sys.modules:
+    from dotenv import load_dotenv, find_dotenv
+
+    load_dotenv(find_dotenv(), override=True)
+    print("os.environ:", {
+        k: v for k, v in os.environ.items() if k.startswith("AIRFLOW")
+    })
 
 DEFAULT_PROXY = Proxy(Variable.get("PROXY_URL"), Variable.get("PROXY_PORT")).proxies
 DEFAULT_REGION = Variable.get("REGION")
