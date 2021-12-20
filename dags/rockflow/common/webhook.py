@@ -21,5 +21,6 @@ class WebHook(object):
             url=self.url,
             json=self.text(content)
         )
-        print(f"status_code: {r.status_code}, url: {self.url}, text: {content}")
+        print(
+            f"status_code: {r.status_code}, url: {self.url}, text: {content}")
         return r

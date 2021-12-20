@@ -19,7 +19,8 @@ class ElasticsearchOperator(OSSOperator):
         self.elasticsearch_index_setting = elasticsearch_index_setting
         self.elasticsearch_conn_id = elasticsearch_conn_id
 
-        self.es_hook = ElasticsearchHook(elasticsearch_conn_id=self.elasticsearch_conn_id)
+        self.es_hook = ElasticsearchHook(
+            elasticsearch_conn_id=self.elasticsearch_conn_id)
 
     @property
     def client(self):
@@ -48,7 +49,8 @@ class ElasticsearchOperator(OSSOperator):
         return self.client.indices.refresh(index=self.elasticsearch_index_name)
 
     def add_one_doc(self, id, doc):
-        self.log.info(f"add_one_doc: {self.elasticsearch_index_name}, id:{id}, body: {doc}")
+        self.log.info(
+            f"add_one_doc: {self.elasticsearch_index_name}, id:{id}, body: {doc}")
         return self.client.index(index=self.elasticsearch_index_name, id=id, body=json.dumps(doc, ensure_ascii=False))
 
     def execute(self, context: Dict) -> None:

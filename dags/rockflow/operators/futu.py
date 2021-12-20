@@ -136,7 +136,8 @@ class FutuExtractHtml(OSSSaveOperator):
     @staticmethod
     def extract_data(bucket, obj):
         return FutuCompanyProfile.extract_data(
-            FutuExtractHtml.get_object_(bucket, obj.key), FutuExtractHtml.symbol(obj)
+            FutuExtractHtml.get_object_(
+                bucket, obj.key), FutuExtractHtml.symbol(obj)
         )
 
     @staticmethod
@@ -149,7 +150,8 @@ class FutuExtractHtml(OSSSaveOperator):
     def content(self):
         with Pool(processes=24) as pool:
             result = pool.map(
-                lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(self.bucket, f"{self.from_key}/")
+                lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(
+                    self.bucket, f"{self.from_key}/")
             )
             return json.dumps(result, ensure_ascii=False)
 

@@ -24,7 +24,8 @@ class OSSOperator(BaseOperator):
         self.region = region
         self.bucket_name = bucket_name
 
-        self.oss_hook = OSSHook(oss_conn_id=self.oss_conn_id, region=self.region)
+        self.oss_hook = OSSHook(
+            oss_conn_id=self.oss_conn_id, region=self.region)
 
     @property
     def snakecase_class_name(self):

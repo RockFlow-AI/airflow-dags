@@ -58,7 +58,8 @@ class Downloader(object):
                 headers=self.headers,
                 timeout=self.timeout
             )
-            print(f"status_code: {r.status_code}, url: {self.url}, params: {self.params}")
+            print(
+                f"status_code: {r.status_code}, url: {self.url}, params: {self.params}")
             return r
 
     def check(self, r: httpx.Response) -> bool:
@@ -74,6 +75,7 @@ class Downloader(object):
             timeout=self.timeout
         )
         check = self.check(r)
-        print(f"status_code: {r.status_code}, url: {self.url}, params: {self.params}, check: {check}")
+        print(
+            f"status_code: {r.status_code}, url: {self.url}, params: {self.params}, check: {check}")
         if check:
             return r

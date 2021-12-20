@@ -9,7 +9,8 @@ def merge_data_frame(data_frame_list: Optional[List[pd.DataFrame]]) -> Optional[
         if result is None:
             result = data_frame_item
         else:
-            result = pd.concat([result, data_frame_item], axis=0, ignore_index=True)
+            result = pd.concat([result, data_frame_item],
+                               axis=0, ignore_index=True)
     return result
 
 

@@ -76,4 +76,5 @@ class Yahoo(Downloader):
         return "quoteSummary" not in r_json or \
                "result" not in r_json["quoteSummary"] or \
                not r_json["quoteSummary"]["result"] or \
-               ("error" not in r_json["quoteSummary"] or not r_json["quoteSummary"]["error"])
+               ("error" not in r_json["quoteSummary"]
+                or not r_json["quoteSummary"]["error"])

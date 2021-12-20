@@ -50,7 +50,8 @@ class OssToMysqlOperator(OSSOperator):
         )
 
     def execute(self, context: Any) -> None:
-        self.log.info(f"Loading {self.oss_source_key} to MySql table {self.mysql_table}...")
+        self.log.info(
+            f"Loading {self.oss_source_key} to MySql table {self.mysql_table}...")
         self.get_sql_schema()
         self.load_to_sql(
             self.transform(

@@ -135,5 +135,6 @@ class FutuCompanyProfileCn(FutuCompanyProfile):
         new_table["profile" + "_" + language] = table_dict.get("公司简介")
         new_table["business" + "_" + language] = table_dict.get("公司业务") if table_dict.get(
             "公司业务") else table_dict.get("公司主营")
-        new_table["exchange"] = table_dict.get("所属市场") if table_dict.get("所属市场") else table_dict.get("上市交易所")
+        new_table["exchange"] = table_dict.get("所属市场") if table_dict.get(
+            "所属市场") else table_dict.get("上市交易所")
         return new_table
