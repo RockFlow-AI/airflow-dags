@@ -3,6 +3,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 
 from rockflow.dags.const import *
 
+# 汇率更新
 currencies_refresh = DAG(
     "currencies_refresh",
     default_args={
@@ -13,16 +14,17 @@ currencies_refresh = DAG(
         "schedule_interval": "@hourly",
     }
 )
-
 SimpleHttpOperator(
     task_id='currencies_refresh',
     method='POST',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/currencies/refresh',
     response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60 * 3},
     dag=currencies_refresh,
 )
 
+# 碎股及港股更新
 contracts_refresh = DAG(
     "contracts_refresh",
     default_args={
@@ -33,16 +35,17 @@ contracts_refresh = DAG(
         "schedule_interval": "@daily",
     }
 )
-
 SimpleHttpOperator(
     task_id='contracts_refresh',
     method='POST',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/contracts/refresh',
     response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 30},
     dag=contracts_refresh,
 )
 
+# 实时行情聚合为1分钟
 ticks = DAG(
     "ticks",
     default_args={
@@ -53,12 +56,12 @@ ticks = DAG(
         "schedule_interval": "* * * * *",
     }
 )
-
 SimpleHttpOperator(
     task_id='ticks',
     method='PATCH',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/ticks',
     response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 30},
     dag=ticks,
 )
