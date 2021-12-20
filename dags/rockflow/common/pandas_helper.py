@@ -18,4 +18,5 @@ def map_frame(df: Optional[pd.DataFrame], mapper: Dict[str, str]) -> Optional[pd
     result = pd.DataFrame()
     for k, v in mapper.items():
         result[v] = df[k]
+    result.index.rename('id', inplace=True)
     return result

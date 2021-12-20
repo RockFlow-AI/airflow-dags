@@ -1,7 +1,7 @@
 import unittest
 
-from rockflow.operators.symbol import HkexSymbolParser
 from rockflow.dags.const import *
+from rockflow.operators.symbol import HkexSymbolParser
 
 
 class TestHKEX(unittest.TestCase):

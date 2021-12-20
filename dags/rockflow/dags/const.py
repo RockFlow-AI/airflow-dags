@@ -3,6 +3,7 @@ import sys
 from datetime import datetime, timedelta
 
 from airflow.models import Variable
+
 from rockflow.common.proxy import Proxy
 
 if 'unittest' in sys.modules:

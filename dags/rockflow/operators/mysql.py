@@ -2,6 +2,8 @@ from typing import Optional, Any, Dict
 
 import pandas as pd
 from airflow.providers.mysql.hooks.mysql import MySqlHook
+from pangres import upsert
+
 from rockflow.common.pandas_helper import map_frame
 from rockflow.operators.oss import OSSOperator
 
@@ -42,11 +44,12 @@ class OssToMysqlOperator(OSSOperator):
         return result
 
     def load_to_sql(self, df: Optional[pd.DataFrame]):
-        return df.to_sql(
-            name=self.mysql_table,
-            con=self.mysql_hook.get_sqlalchemy_engine(),
-            if_exists="append",
-            index=False,
+        engine = self.mysql_hook.get_sqlalchemy_engine()
+        return upsert(
+            engine=engine,
+            df=df,
+            table_name=self.mysql_table,
+            if_row_exists='update',
         )
 
     def execute(self, context: Any) -> None:
