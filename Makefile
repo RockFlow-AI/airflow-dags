@@ -20,6 +20,12 @@ init: venv
 	$(VENV)/pip install -r requirements_extra.txt
 	$(VENV)/pip install -r requirements_test.txt
 
+# format code
+.PHONY: format
+format: venv
+	$(VENV)/pip install autopep8
+	$(VENV)/autopep8 --in-place --recursive $(MODULEDIR)
+
 # run all unit test
 .PHONY: test
 test: venv
