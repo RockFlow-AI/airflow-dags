@@ -14,7 +14,19 @@ SZSE_RAW_KEY = f'{DAG_ID}_szse'
 SYMBOL_PARSE_KEY = f'{DAG_ID}_parse/'
 MERGE_CSV_KEY = f'{DAG_ID}_merge/merge.csv'
 
-with DAG(DAG_ID, default_args=DEFAULT_DEBUG_ARGS) as dag:
+symbol_dag_args = {
+    "owner": "daijunkai",
+    "depends_on_past": False,
+    "start_date": datetime(2021, 12, 21),
+    "email": ["daijunkai@flowcapai.com"],
+    "email_on_failure": True,
+    "email_on_retry": True,
+    "retries": 0,
+    "retry_delay": timedelta(minutes=1),
+    "schedule_interval": "@hourly",
+}
+
+with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
     nasdaq = NasdaqSymbolDownloadOperator(
         key=NASDAQ_RAW_KEY,
         region=DEFAULT_REGION,
