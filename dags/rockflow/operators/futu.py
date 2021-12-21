@@ -237,7 +237,7 @@ class JoinMap(OSSSaveOperator):
     def load_merge_pd(self):
         return pd.read_csv(
             self.get_object(self.merge_key),
-            index_col='yahoo',
+            index_col='rockflow',
         ).to_dict('index')
 
     @property
