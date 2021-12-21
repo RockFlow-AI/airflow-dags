@@ -29,7 +29,7 @@ class HKEX(Downloader):
         result['symbol'] = result['raw'].apply(
             lambda x: "%05d" % x
         )
-        result['yahoo'] = result['raw'].apply(
+        result['rockflow'] = result['raw'].apply(
             lambda x: "%05d.HK" % x
         )
         result['yahoo'] = result['raw'].apply(
