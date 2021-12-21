@@ -19,11 +19,11 @@ init: venv
 	$(VENV)/pip install "apache-airflow[async,postgres,google,alibaba]==$(AIRFLOW_VERSION)" --constraint "$(CONSTRAINT_URL)"
 	$(VENV)/pip install -r requirements_extra.txt
 	$(VENV)/pip install -r requirements_test.txt
+	$(VENV)/pip install autopep8
 
 # format code
 .PHONY: format
 format: venv
-	$(VENV)/pip install autopep8
 	$(VENV)/autopep8 --in-place --recursive $(MODULEDIR)
 
 # run all unit test
