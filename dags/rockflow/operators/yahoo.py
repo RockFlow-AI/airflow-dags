@@ -1,11 +1,13 @@
 from typing import Any
+from io import StringIO
 
 import oss2
 import pandas as pd
+import json
 
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.yahoo import Yahoo
-from rockflow.operators.oss import OSSOperator
+from rockflow.operators.oss import OSSOperator, OSSSaveOperator
 
 
 class YahooBatchOperator(OSSOperator):
@@ -61,3 +63,38 @@ class YahooBatchOperatorDebug(YahooBatchOperator):
     @property
     def symbols(self) -> pd.DataFrame:
         return pd.read_csv(self.get_object(self.from_key))[:100]
+
+
+class YahooExtractAssetProfileOperator(OSSSaveOperator):
+    def __init__(self,
+                 from_key: str,
+                 **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.from_key = from_key
+
+    @property
+    def oss_key(self):
+        return self.key+'/'+self.key+'.json'
+
+    def get_data(self):
+        json_data_list = [
+            [
+                obj.key,
+                json.loads(
+                    self.get_object(obj.key).read()
+                ).get("quoteSummary").get("result")[0]
+            ]
+            for obj in self.object_iterator(self.from_key+'/') if not obj.is_prefix()
+        ]
+        return json_data_list
+
+    def merge_data(self):
+        result = {}
+        for key, item in self.get_data():
+            symbol = key.split('/')[-1].replace('.json', '')
+            result[symbol] = item["assetProfile"]
+        return result
+
+    @property
+    def content(self):
+        return json.dumps(self.merge_data())
