@@ -30,6 +30,9 @@ class HKEX(Downloader):
             lambda x: "%05d" % x
         )
         result['yahoo'] = result['raw'].apply(
+            lambda x: "%05d.HK" % x
+        )
+        result['yahoo'] = result['raw'].apply(
             lambda x: "%04d.HK" % x
         )
         result['futu'] = result['raw'].apply(

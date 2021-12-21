@@ -54,6 +54,9 @@ class Nasdaq(Downloader):
         result = pd.DataFrame()
         result['raw'] = df['symbol']
         result['symbol'] = result['raw'].astype(str)
+        result['rockflow'] = result['raw'].apply(
+            lambda x: x.strip().replace("^", "-P").replace("/", "-").upper()
+        )
         result['yahoo'] = result['raw'].apply(
             lambda x: x.strip().replace("^", "-P").replace("/", "-").upper()
         )

@@ -55,6 +55,9 @@ class SSE(Downloader):
         result = pd.DataFrame()
         result['raw'] = df.iloc[:, 0]
         result['symbol'] = result['raw'].astype(str)
+        result['rockflow'] = result['raw'].apply(
+            lambda x: "%d.SS" % x
+        )
         result['yahoo'] = result['raw'].apply(
             lambda x: "%d.SS" % x
         )

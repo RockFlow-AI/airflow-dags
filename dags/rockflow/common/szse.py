@@ -45,6 +45,9 @@ class SZSE(Downloader):
         result['symbol'] = result['raw'].apply(
             lambda x: "%06d" % x
         )
+        result['rockflow'] = result['raw'].apply(
+            lambda x: "%05d.SZ" % x
+        )
         result['yahoo'] = result['raw'].apply(
             lambda x: "%06d.SZ" % x
         )
