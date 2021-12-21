@@ -43,7 +43,7 @@ class FutuBatchOperator(OSSOperator):
     @staticmethod
     def call(line: pd.Series, cls, prefix: str, proxy, bucket):
         obj = cls(
-            symbol=line['yahoo'],
+            symbol=line['rockflow'],
             futu_ticker=line['futu'],
             prefix=prefix,
             proxy=proxy
