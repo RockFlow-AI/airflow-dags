@@ -19,7 +19,7 @@ with DAG("futu_rename_en", default_args=DEFAULT_DEBUG_ARGS) as futu_rename_en:
         proxy=DEFAULT_PROXY
     )
 
-with DAG("yahoo_rename_cn", default_args=DEFAULT_DEBUG_ARGS) as yahoo_rename_cn:
+with DAG("yahoo_rename", default_args=DEFAULT_DEBUG_ARGS) as yahoo_rename:
     RenameOss(
         prefix="yahoo_download_yahoo",
         region=DEFAULT_REGION,
