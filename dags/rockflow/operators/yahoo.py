@@ -7,6 +7,7 @@ import os
 import oss2
 import pandas as pd
 import json
+import logging
 
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.yahoo import Yahoo
@@ -84,20 +85,28 @@ class YahooExtractOperator(OSSSaveOperator):
         return self.key
 
     def _list_file(self):
-        return [obj for obj in self.object_iterator(self.from_key) if not obj.is_prefix()]
+        return [obj for obj in self.object_iterator(os.path.join(self.from_key, "")) if not obj.is_prefix()]
+
+    @staticmethod
+    def read_data(bucket, obj):
+        json_dic = json.loads(
+            YahooExtractOperator.get_object_(bucket, obj.key).read())
+        try:
+            json_data = json_dic.get("quoteSummary").get("result")[0]
+        except:
+            logging.error(
+                f"Error occurred while reading json! File: {obj.key} skipped.")
+            return [obj.key, None]
+        else:
+            return [obj.key, json_data]
 
     def _get_data(self):
-        json_data_list = []
-        for obj in self._list_file():
-            json_dic = json.loads(self.get_object(obj.key).read())
-            try:
-                json_data = json_dic.get("quoteSummary").get("result")[0]
-            except:
-                print("Error occurred while reading json! File:",
-                      obj.key, "skipped.")
-            else:
-                json_data_list.append([self._get_filename(obj.key), json_data])
-        return json_data_list
+        with Pool(processes=24) as pool:
+            result = pool.map(
+                lambda x: YahooExtractOperator.read_data(
+                    self.bucket, x), self._list_file()
+            )
+            return result
 
     def _get_filename(self, file_path):
         return Path(file_path).stem
@@ -106,14 +115,15 @@ class YahooExtractOperator(OSSSaveOperator):
     def merge_data(data_list):
         result = {}
         for symbol, item in data_list:
-            for key in item:
-                if key not in result:
-                    result[key] = {}
-                if symbol not in result[key]:
-                    result[key][symbol] = item[key]
-                else:
-                    print("Duplicate symbol:", symbol,
-                          "while merging key:", key)
+            if symbol and item:
+                for key in item:
+                    if key not in result:
+                        result[key] = {}
+                    if symbol not in result[key]:
+                        result[key][symbol] = item[key]
+                    else:
+                        logging.warning(
+                            f"Duplicate symbol: {symbol} while merging key: {key}")
         return result
 
     def _save_key(self, key):
@@ -124,7 +134,8 @@ class YahooExtractOperator(OSSSaveOperator):
         data = self.merge_data(self._get_data())
         result = []
         for category in data:
-            result.append([category, json.dumps(data[category])])
+            result.append([self._get_filename(category),
+                          json.dumps(data[category])])
         return result
 
     def execute(self, context):

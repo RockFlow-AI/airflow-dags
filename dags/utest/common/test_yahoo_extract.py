@@ -7,7 +7,7 @@ from rockflow.operators.yahoo import YahooExtractOperator
 class TestYahoo(unittest.TestCase):
     def test_yahoo(self):
         yahoo = YahooExtractOperator(
-            from_key="yahoo_download_debug_yahoo/",
+            from_key="yahoo_download_debug_yahoo",
             key="yahoo_extract",
             region=DEFAULT_REGION,
             bucket_name=DEFAULT_BUCKET_NAME
@@ -27,11 +27,11 @@ class TestYahoo(unittest.TestCase):
             [3, {"a": "a3", "b": "b3"}],
             [4, {"a": "a4", "b": "b4"}]
         ]
-        self.assertTrue(
-            len(YahooExtractOperator.merge_data(test_data1)) == 2
+        self.assertEqual(
+            len(YahooExtractOperator.merge_data(test_data1)),2
         )
-        self.assertFalse(
-            YahooExtractOperator.merge_data(test_data2)["a"][1] == "a2"
+        self.assertNotEqual(
+            YahooExtractOperator.merge_data(test_data2)["a"][1],"a2"
         )
 
 
