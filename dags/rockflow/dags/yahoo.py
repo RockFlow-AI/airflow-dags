@@ -15,7 +15,7 @@ with DAG("yahoo_download", default_args=DEFAULT_DEBUG_ARGS) as yahoo_download:
     )
 
     yahoo_extract = YahooExtractOperator(
-        from_key="{{ task_instance.xcom_pull('" + yahoo.task_id + "') }}/",
+        from_key="{{ task_instance.xcom_pull('" + yahoo.task_id + "') }}",
         key="yahoo_extract",
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
@@ -33,7 +33,7 @@ with DAG("yahoo_download_debug", default_args=DEFAULT_DEBUG_ARGS) as yahoo_downl
 
     yahoo_extract_debug = YahooExtractOperator(
         from_key="{{ task_instance.xcom_pull('" +
-        yahoo_debug.task_id + "') }}/",
+        yahoo_debug.task_id + "') }}",
         key="yahoo_extract_debug",
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
