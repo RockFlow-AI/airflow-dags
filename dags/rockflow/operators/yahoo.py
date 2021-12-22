@@ -1,13 +1,17 @@
 from typing import Any
 from io import StringIO
+from multiprocessing.pool import ThreadPool as Pool
+from pathlib import Path
 
+import os
 import oss2
 import pandas as pd
 import json
 
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.yahoo import Yahoo
-from rockflow.operators.oss import OSSOperator, OSSMultiSaveOperator
+from rockflow.operators.oss import OSSOperator, OSSSaveOperator
+from stringcase import snakecase
 
 
 class YahooBatchOperator(OSSOperator):
@@ -66,7 +70,9 @@ class YahooBatchOperatorDebug(YahooBatchOperator):
         return pd.read_csv(self.get_object(self.from_key))[:100]
 
 
-class YahooExtractOperator(OSSMultiSaveOperator):
+class YahooExtractOperator(OSSSaveOperator):
+    template_fields = ["from_key"]
+
     def __init__(self,
                  from_key: str,
                  **kwargs) -> None:
@@ -77,32 +83,54 @@ class YahooExtractOperator(OSSMultiSaveOperator):
     def oss_key(self):
         return self.key
 
-    def get_data(self):
-        json_data_list = [
-            [
-                obj.key,
-                json.loads(
-                    self.get_object(obj.key).read()
-                ).get("quoteSummary").get("result")[0]
-            ]
-            for obj in self.object_iterator(self.from_key+'/') if not obj.is_prefix()
-        ]
+    def _list_file(self):
+        return [obj for obj in self.object_iterator(self.from_key) if not obj.is_prefix()]
+
+    def _get_data(self):
+        json_data_list = []
+        for obj in self._list_file():
+            json_dic = json.loads(self.get_object(obj.key).read())
+            try:
+                json_data = json_dic.get("quoteSummary").get("result")[0]
+            except:
+                print("Error occurred while reading json! File:",
+                      obj.key, "skipped.")
+            else:
+                json_data_list.append([self._get_filename(obj.key), json_data])
         return json_data_list
 
-    def merge_data(self):
+    def _get_filename(self, file_path):
+        return Path(file_path).stem
+
+    @staticmethod
+    def merge_data(data_list):
         result = {}
-        for path, item in self.get_data():
-            symbol = path.split('/')[-1].replace('.json', '')
+        for symbol, item in data_list:
             for key in item:
                 if key not in result:
                     result[key] = {}
-                result[key][symbol] = item[key]
+                if symbol not in result[key]:
+                    result[key][symbol] = item[key]
+                else:
+                    print("Duplicate symbol:", symbol,
+                          "while merging key:", key)
         return result
+
+    def _save_key(self, key):
+        return os.path.join(self.oss_key + '_' + snakecase(key), snakecase(key) + '.json')
 
     @property
     def content(self):
-        data = self.merge_data()
+        data = self.merge_data(self._get_data())
         result = []
         for category in data:
             result.append([category, json.dumps(data[category])])
         return result
+
+    def execute(self, context):
+        with Pool(processes=24) as pool:
+            pool.map(
+                lambda x: self.put_object(self._save_key(x[0]), x[1]),
+                self.content
+            )
+        return self.oss_key
