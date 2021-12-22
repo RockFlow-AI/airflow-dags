@@ -1,7 +1,6 @@
 import json
 import os
 from io import BytesIO
-from multiprocessing.pool import ThreadPool as Pool
 from pathlib import Path
 from typing import Any, Dict
 
@@ -12,6 +11,7 @@ from stringcase import snakecase
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
 from rockflow.common.map_helper import join_map, join_list
+from rockflow.common.pool import DEFAULT_POOL
 from rockflow.operators.elasticsearch import ElasticsearchOperator
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
 
@@ -148,12 +148,12 @@ class FutuExtractHtml(OSSSaveOperator):
 
     @property
     def content(self):
-        with Pool(processes=24) as pool:
-            result = pool.map(
-                lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(
-                    self.bucket, os.path.join(self.from_key, ""))
-            )
-            return json.dumps(result, ensure_ascii=False)
+        pool = DEFAULT_POOL
+        result = pool.map(
+            lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(
+                self.bucket, os.path.join(self.from_key, ""))
+        )
+        return json.dumps(result, ensure_ascii=False)
 
 
 class FutuFormatJson(OSSSaveOperator):

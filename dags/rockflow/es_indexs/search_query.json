@@ -1,0 +1,12 @@
+{
+  "query": {
+    "multi_match": {
+      "query": "{{query}}",
+      "type": "phrase",
+      "fields": [
+        "symbol",
+        "shortName"
+      ]
+    }
+  }
+}
