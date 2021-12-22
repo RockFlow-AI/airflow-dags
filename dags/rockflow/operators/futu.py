@@ -148,8 +148,7 @@ class FutuExtractHtml(OSSSaveOperator):
 
     @property
     def content(self):
-        pool = DEFAULT_POOL
-        result = pool.map(
+        result = DEFAULT_POOL.map(
             lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(
                 self.bucket, os.path.join(self.from_key, ""))
         )
