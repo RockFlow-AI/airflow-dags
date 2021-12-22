@@ -87,24 +87,22 @@ class YahooExtractOperator(OSSSaveOperator):
     def _list_file(self):
         return [obj for obj in self.object_iterator(os.path.join(self.from_key, "")) if not obj.is_prefix()]
 
-    @staticmethod
-    def read_data(bucket, obj):
+    def read_data(self, obj):
         json_dic = json.loads(
-            YahooExtractOperator.get_object_(bucket, obj.key).read())
+            self.get_object(obj.key).read())
         try:
             json_data = json_dic.get("quoteSummary").get("result")[0]
         except:
             logging.error(
                 f"Error occurred while reading json! File: {obj.key} skipped.")
-            return [obj.key, None]
+            return [self._get_filename(obj.key), None]
         else:
-            return [obj.key, json_data]
+            return [self._get_filename(obj.key), json_data]
 
     def _get_data(self):
         with Pool(processes=24) as pool:
             result = pool.map(
-                lambda x: YahooExtractOperator.read_data(
-                    self.bucket, x), self._list_file()
+                lambda x: self.read_data(x), self._list_file()
             )
             return result
 
@@ -115,15 +113,16 @@ class YahooExtractOperator(OSSSaveOperator):
     def merge_data(data_list):
         result = {}
         for symbol, item in data_list:
-            if symbol and item:
-                for key in item:
-                    if key not in result:
-                        result[key] = {}
-                    if symbol not in result[key]:
-                        result[key][symbol] = item[key]
-                    else:
-                        logging.warning(
-                            f"Duplicate symbol: {symbol} while merging key: {key}")
+            if not symbol or not item:
+                continue
+            for key in item:
+                if key not in result:
+                    result[key] = {}
+                if symbol not in result[key]:
+                    result[key][symbol] = item[key]
+                else:
+                    logging.warning(
+                        f"Duplicate symbol: {symbol} while merging key: {key}")
         return result
 
     def _save_key(self, key):
@@ -134,7 +133,7 @@ class YahooExtractOperator(OSSSaveOperator):
         data = self.merge_data(self._get_data())
         result = []
         for category in data:
-            result.append([self._get_filename(category),
+            result.append([category,
                           json.dumps(data[category])])
         return result
 

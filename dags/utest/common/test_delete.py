@@ -63,20 +63,16 @@ class TestDelete(unittest.TestCase):
         )
 
     def test_rename_cn(self):
-        self.rename(
-            "company_profile_batch_download_debug_futu_company_profile_cn")
+        self.rename("company_profile_batch_download_futu_company_profile_cn")
 
     def test_rename_en(self):
-        self.rename(
-            "company_profile_batch_download_debug_futu_company_profile_en")
+        self.rename("company_profile_batch_download_futu_company_profile_en")
 
-    def test_delete_cn(self):
-        self.delete(
-            "company_profile_batch_download_debug_futu_company_profile_cn")
-
-    def test_delete_en(self):
-        self.delete(
-            "company_profile_batch_download_debug_futu_company_profile_en")
+    # def test_delete_cn(self):
+    #     self.delete("company_profile_batch_download_debug_futu_company_profile_cn")
+    #
+    # def test_delete_en(self):
+    #     self.delete("company_profile_batch_download_debug_futu_company_profile_en")
 
 
 if __name__ == '__main__':
