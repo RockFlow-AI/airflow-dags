@@ -88,7 +88,8 @@ class OSSOperator(BaseOperator):
     def move_object_(bucket: oss2.api.Bucket, src_key: str, dest_key: str):
         try:
             print(f"move_object: {src_key} to {dest_key}")
-            bucket.copy_object(bucket.get_bucket_info().name, src_key, dest_key)
+            bucket.copy_object(
+                bucket.get_bucket_info().name, src_key, dest_key)
             return bucket.delete_object(src_key)
         except Exception as e:
             raise AirflowException(f"Errors: {e}")

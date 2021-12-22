@@ -29,12 +29,12 @@ format: venv
 # run all unit test
 .PHONY: test
 test: venv
-	PYTHONPATH=$(PYTHONPATH) $(VENV)/python -m unittest discover dags/utest
+	unset all_proxy && unset ALL_PROXY; PYTHONPATH=$(PYTHONPATH) $(VENV)/python -m unittest discover dags/utest
 
 # test load all dags
 .PHONY: load
 load: venv
-	PYTHONPATH=$(PYTHONPATH) $(foreach file, $(wildcard $(DAGDIR)/*.py), $(VENV)/python $(file);)
+	unset all_proxy && unset ALL_PROXY; PYTHONPATH=$(PYTHONPATH) $(foreach file, $(wildcard $(DAGDIR)/*.py), $(VENV)/python $(file);)
 
 # init venv
 include Makefile.venv
