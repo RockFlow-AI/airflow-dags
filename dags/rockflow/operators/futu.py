@@ -151,7 +151,7 @@ class FutuExtractHtml(OSSSaveOperator):
         with Pool(processes=24) as pool:
             result = pool.map(
                 lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(
-                    self.bucket, f"{self.from_key}/")
+                    self.bucket, os.path.join(self.from_key, ""))
             )
             return json.dumps(result, ensure_ascii=False)
 

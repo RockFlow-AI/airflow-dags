@@ -1,3 +1,4 @@
+import os
 from typing import Optional, Any
 
 import oss2
@@ -60,6 +61,40 @@ class OSSOperator(BaseOperator):
 
     def get_object(self, key: str):
         return self.get_object_(self.bucket, key)
+
+    @staticmethod
+    def delete_object_(bucket: oss2.api.Bucket, key: str):
+        try:
+            print(f"delete_object: {key}")
+            return bucket.delete_object(key)
+        except Exception as e:
+            raise AirflowException(f"Errors: {e}")
+
+    def delete_object(self, key: str):
+        return self.delete_object_(self.bucket, key)
+
+    @staticmethod
+    def copy_object_(bucket: oss2.api.Bucket, src_key: str, dest_key: str):
+        try:
+            print(f"copy_object: {src_key} to {dest_key}")
+            return bucket.copy_object(bucket.get_bucket_info().name, src_key, dest_key)
+        except Exception as e:
+            raise AirflowException(f"Errors: {e}")
+
+    def copy_object(self, src_key: str, dest_key: str):
+        return self.copy_object_(self.bucket, src_key, dest_key)
+
+    @staticmethod
+    def move_object_(bucket: oss2.api.Bucket, src_key: str, dest_key: str):
+        try:
+            print(f"move_object: {src_key} to {dest_key}")
+            bucket.copy_object(bucket.get_bucket_info().name, src_key, dest_key)
+            return bucket.delete_object(src_key)
+        except Exception as e:
+            raise AirflowException(f"Errors: {e}")
+
+    def move_object(self, src_key: str, dest_key: str):
+        return self.move_object_(self.bucket, src_key, dest_key)
 
     @staticmethod
     def put_object_(bucket: oss2.api.Bucket, key: str, content):
@@ -138,3 +173,55 @@ class OSSSaveOperator(OSSOperator):
     def execute(self, context):
         self.put_object(key=self.oss_key, content=self.content)
         return self.oss_key
+
+
+class OSSDeleteOperator(OSSOperator):
+    def __init__(
+            self,
+            prefix: str,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.prefix = prefix
+
+    @property
+    def oss_prefix(self):
+        return os.path.join(self.prefix, "")
+
+    def to_delete(self, obj):
+        raise NotImplementedError()
+
+    def execute(self, context):
+        for obj in self.object_iterator(self.oss_prefix):
+            if not self.to_delete(obj):
+                continue
+            self.delete_object(obj.key)
+
+
+class OSSRenameOperator(OSSOperator):
+    def __init__(
+            self,
+            prefix: str,
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.prefix = prefix
+
+    @property
+    def oss_prefix(self):
+        return os.path.join(self.prefix, "")
+
+    def src_name(self, obj):
+        return obj.key
+
+    def dest_name(self, obj):
+        raise NotImplementedError()
+
+    def match(self, obj):
+        return self.src_name(obj) == self.dest_name(obj)
+
+    def execute(self, context):
+        for obj in self.object_iterator(self.oss_prefix):
+            if self.match(obj):
+                continue
+            self.move_object(self.src_name(obj), self.dest_name(obj))
