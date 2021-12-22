@@ -28,10 +28,10 @@ class TestYahoo(unittest.TestCase):
             [4, {"a": "a4", "b": "b4"}]
         ]
         self.assertEqual(
-            len(YahooExtractOperator.merge_data(test_data1)),2
+            len(YahooExtractOperator.merge_data(test_data1)), 2
         )
         self.assertNotEqual(
-            YahooExtractOperator.merge_data(test_data2)["a"][1],"a2"
+            YahooExtractOperator.merge_data(test_data2)["a"][1], "a2"
         )
 
 
