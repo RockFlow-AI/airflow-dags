@@ -43,14 +43,15 @@ modules = [
 
 
 class Yahoo(Downloader):
-    def __init__(self, symbol, prefix: str, *args, **kwargs):
+    def __init__(self, symbol: str, yahoo: str, prefix: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.symbol = symbol
+        self.yahoo = yahoo
         self.prefix = prefix
 
     @property
     def url(self):
-        return f"https://query2.finance.yahoo.com/v10/finance/quoteSummary/{self.symbol}"
+        return f"https://query2.finance.yahoo.com/v10/finance/quoteSummary/{self.yahoo}"
 
     @property
     def params(self):

@@ -35,7 +35,8 @@ class YahooBatchOperator(OSSOperator):
     @staticmethod
     def call(line: pd.Series, prefix, proxy, bucket):
         obj = Yahoo(
-            symbol=line['yahoo'],
+            symbol=line['rockflow'],
+            yahoo=line['yahoo'],
             prefix=prefix,
             proxy=proxy
         )
