@@ -54,9 +54,8 @@ class FutuCompanyProfile(Downloader):
 
     def to_json(self, fp):
         raw_table = self.extract_data(fp, self.symbol)
-        # print(json.dumps(raw_table, ensure_ascii=False))
         table_dict = self.format(raw_table)
-        print(json.dumps(table_dict, ensure_ascii=False))
+        self.log.info(json.dumps(table_dict, ensure_ascii=False))
         return table_dict
 
 

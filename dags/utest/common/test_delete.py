@@ -1,29 +1,7 @@
 import unittest
-from pathlib import Path
 
 from rockflow.dags.const import *
-from rockflow.operators.oss import OSSDeleteOperator, OSSRenameOperator
-
-
-def symbol_match(key):
-    return key != symbol_rename(key)
-
-
-def new_symbol(symbol):
-    if symbol.isnumeric():
-        return "%05d" % int(symbol)
-    else:
-        return symbol
-
-
-def symbol_rename(key):
-    name = Path(key).stem
-    i = name.rfind('.')
-    if 0 < i < len(name) - 1:
-        symbol = name[:i]
-    else:
-        symbol = name
-    return key.replace(symbol, new_symbol(symbol))
+from rockflow.operators.rename import RenameOss, DeleteInvalidOss, symbol_match, symbol_rename
 
 
 class TestRename(unittest.TestCase):
@@ -63,22 +41,6 @@ class TestMatch(unittest.TestCase):
             self.assertEqual(symbol_match(input), result, input)
 
 
-class DeleteInvalidOss(OSSDeleteOperator):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-    def to_delete(self, obj):
-        return symbol_match(obj.key)
-
-
-class RenameOss(OSSRenameOperator):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-    def dest_name(self, obj):
-        return symbol_rename(obj.key)
-
-
 class TestDelete(unittest.TestCase):
     def rename(self, key):
         self.assertIsNone(
@@ -101,16 +63,16 @@ class TestDelete(unittest.TestCase):
         )
 
     def test_rename_cn(self):
-        self.rename("company_profile_batch_download_debug_futu_company_profile_cn")
+        self.rename("company_profile_batch_download_futu_company_profile_cn")
 
     def test_rename_en(self):
-        self.rename("company_profile_batch_download_debug_futu_company_profile_en")
+        self.rename("company_profile_batch_download_futu_company_profile_en")
 
-    def test_delete_cn(self):
-        self.delete("company_profile_batch_download_debug_futu_company_profile_cn")
-
-    def test_delete_en(self):
-        self.delete("company_profile_batch_download_debug_futu_company_profile_en")
+    # def test_delete_cn(self):
+    #     self.delete("company_profile_batch_download_debug_futu_company_profile_cn")
+    #
+    # def test_delete_en(self):
+    #     self.delete("company_profile_batch_download_debug_futu_company_profile_en")
 
 
 if __name__ == '__main__':

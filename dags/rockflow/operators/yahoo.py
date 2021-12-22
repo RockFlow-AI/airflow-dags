@@ -46,7 +46,7 @@ class YahooBatchOperator(OSSOperator):
             YahooBatchOperator.put_object_(bucket, obj.oss_key, r.content)
 
     def execute(self, context: Any):
-        print(f"symbol: {self.symbols[:10]}")
+        self.log.info(f"symbol: {self.symbols[:10]}")
         self.symbols.apply(
             YahooBatchOperator.call,
             axis=1,

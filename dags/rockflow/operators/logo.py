@@ -50,7 +50,7 @@ class LogoBatchOperator(OSSOperator):
         raise NotImplementedError()
 
     def execute(self, context: Any):
-        print(f"symbol: {self.symbols[:10]}")
+        self.log.info(f"symbol: {self.symbols[:10]}")
         self.symbols.apply(
             LogoBatchOperator.call,
             axis=1,
