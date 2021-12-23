@@ -15,8 +15,7 @@ def merge_data_frame(data_frame_list: Optional[List[pd.DataFrame]]) -> Optional[
 
 
 def map_frame(df: Optional[pd.DataFrame], mapper: Dict[str, str]) -> Optional[pd.DataFrame]:
-    result = pd.DataFrame()
+    result = pd.DataFrame(columns=[k for k, _ in mapper.items()])
     for k, v in mapper.items():
         result[v] = df[k]
-    # result.index.rename('id', inplace=True)
     return result
