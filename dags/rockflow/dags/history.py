@@ -3,22 +3,12 @@ from airflow.models import DAG
 from rockflow.dags.const import *
 from rockflow.operators.history import HistoryImportOperatorDebug, HistoryImportOperator
 
-HISTORY_MAPPING = {
-    "Date": "begin",
-    "Open": "open",
-    "High": "high",
-    "Low": "low",
-    "Close": "close",
-    "Volume": "volume",
-}
-
 with DAG("history_sync", default_args=DEFAULT_DEBUG_ARGS) as history_sync:
     hkex_sync = HistoryImportOperator(
         task_id='sync_hkex_history_to_mysql',
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         prefix="day/hkex/",
-        mapping=HISTORY_MAPPING,
         mysql_table='flow_ticker_stock_price_daily',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
@@ -28,7 +18,6 @@ with DAG("history_sync", default_args=DEFAULT_DEBUG_ARGS) as history_sync:
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         prefix="day/us/",
-        mapping=HISTORY_MAPPING,
         mysql_table='flow_ticker_stock_price_daily',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
@@ -39,7 +28,6 @@ with DAG("history_sync_debug", default_args=DEFAULT_DEBUG_ARGS) as history_sync_
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         prefix="day/hkex/",
-        mapping=HISTORY_MAPPING,
         mysql_table='flow_ticker_stock_price_daily',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
@@ -49,7 +37,6 @@ with DAG("history_sync_debug", default_args=DEFAULT_DEBUG_ARGS) as history_sync_
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         prefix="day/us/",
-        mapping=HISTORY_MAPPING,
         mysql_table='flow_ticker_stock_price_daily',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )

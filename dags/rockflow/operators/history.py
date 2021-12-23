@@ -24,6 +24,15 @@ def get_symbol(key):
 
 class HistoryImportOperator(OssBatchToMysqlOperator):
     def __init__(self, **kwargs) -> None:
+        if 'mapping' not in kwargs:
+            kwargs['mapping'] = {
+                "Date": "begin",
+                "Open": "open",
+                "High": "high",
+                "Low": "low",
+                "Close": "close",
+                "Volume": "volume",
+            }
         super().__init__(**kwargs)
 
     def transform(self, obj, df: Optional[pd.DataFrame]) -> Optional[pd.DataFrame]:
