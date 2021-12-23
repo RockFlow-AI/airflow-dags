@@ -6,7 +6,7 @@ from rockflow.operators.history import date_to_timestamp, get_symbol
 
 class Test(unittest.TestCase):
     def test_market(self):
-        self.assertIsNotNone(hkex_sync_debug.execute(""))
+        # self.assertIsNone(hkex_sync_debug.execute(""))
         self.assertIsNone(us_sync_debug.execute(""))
 
     def test_date_to_timestamp(self):

@@ -32,9 +32,11 @@ class HistoryImportOperator(OssBatchToMysqlOperator):
 
         result = super().transform(obj, df)
         result['id'] = result.apply(lambda row: change_date_to_timestamp(obj, row), axis=1)
+        result['symbol'] = pd.Series([get_symbol(obj.key) for _ in range(len(result.index))])
 
         self.log.info(f"{result[:10]}")
-        return result.index.rename("id")
+        result.set_index("id", inplace=True)
+        return result
 
 
 class HistoryImportOperatorDebug(HistoryImportOperator):

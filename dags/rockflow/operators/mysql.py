@@ -103,6 +103,8 @@ class OssBatchToMysqlOperator(OSSOperator):
 
     def execute(self, context: Any) -> None:
         for obj in self.iterator():
+            if obj.key.endswith("/"):
+                continue
             self.load_to_sql(
                 obj,
                 self.transform(
