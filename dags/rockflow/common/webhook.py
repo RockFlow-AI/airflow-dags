@@ -21,6 +21,6 @@ class WebHook(object):
             url=self.url,
             json=self.text(content)
         )
-        self.log.info(
+        print(
             f"status_code: {r.status_code}, url: {self.url}, text: {content}")
         return r
