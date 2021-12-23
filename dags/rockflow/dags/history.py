@@ -5,6 +5,7 @@ from rockflow.operators.mysql import OssBatchToMysqlOperator, OssBatchToMysqlOpe
 
 with DAG("history_sync", default_args=DEFAULT_DEBUG_ARGS) as history_sync:
     hkex_sync = OssBatchToMysqlOperator(
+        task_id='sync_hkex_history_to_mysql',
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         prefix="day/hkex/",
@@ -21,6 +22,7 @@ with DAG("history_sync", default_args=DEFAULT_DEBUG_ARGS) as history_sync:
     )
 
     us_sync = OssBatchToMysqlOperator(
+        task_id='sync_us_history_to_mysql',
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         prefix="day/us/",
@@ -38,6 +40,7 @@ with DAG("history_sync", default_args=DEFAULT_DEBUG_ARGS) as history_sync:
 
 with DAG("history_sync_debug", default_args=DEFAULT_DEBUG_ARGS) as history_sync_debug:
     hkex_sync_debug = OssBatchToMysqlOperatorDebug(
+        task_id='sync_hkex_history_to_mysql',
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         prefix="day/hkex/",
@@ -54,6 +57,7 @@ with DAG("history_sync_debug", default_args=DEFAULT_DEBUG_ARGS) as history_sync_
     )
 
     us_sync_debug = OssBatchToMysqlOperatorDebug(
+        task_id='sync_us_history_to_mysql',
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         prefix="day/us/",
