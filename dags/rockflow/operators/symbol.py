@@ -77,7 +77,7 @@ class SymbolParser(OSSSaveOperator):
 
     @property
     def content(self):
-        return self.instance.to_tickers(self.read_raw()).to_csv()
+        return self.instance.to_tickers(self.read_raw()).to_csv(index=False)
 
 
 class NasdaqSymbolParser(SymbolParser):
@@ -131,7 +131,7 @@ class MergeCsvList(OSSSaveOperator):
 
     def get_data_frames(self):
         return [
-            pd.read_csv(self.get_object(obj.key))
+            pd.read_csv(self.get_object(obj.key), index_col=False)
             for obj in self.object_iterator(os.path.join(self.from_key, "")) if not obj.is_prefix()
         ]
 

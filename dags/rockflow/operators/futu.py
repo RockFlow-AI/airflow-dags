@@ -248,17 +248,7 @@ class JoinMap(OSSSaveOperator):
                 self.load_json(self.second)
             )
         )
-        final_result = {}
-        for k, v in result.items():
-            item = {
-                vk: vv for vk, vv in v.items() if not vk.startswith("Unnamed")
-            }
-            if "raw" in item:
-                item["market_symbol"] = item["raw"]
-            if "name_en" in item:
-                item["name"] = item["name_en"]
-            final_result[k] = item
-        return json.dumps(final_result, ensure_ascii=False)
+        return json.dumps(result, ensure_ascii=False)
 
 
 class SinkEs(ElasticsearchOperator):
