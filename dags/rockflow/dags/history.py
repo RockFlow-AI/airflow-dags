@@ -1,7 +1,7 @@
 from airflow.models import DAG
 
 from rockflow.dags.const import *
-from rockflow.operators.mysql import OssBatchToMysqlOperator, OssBatchToMysqlOperatorDebug
+from rockflow.operators.history import HistoryImportOperatorDebug, HistoryImportOperator
 
 HISTORY_MAPPING = {
     "Date": "begin",
@@ -13,7 +13,7 @@ HISTORY_MAPPING = {
 }
 
 with DAG("history_sync", default_args=DEFAULT_DEBUG_ARGS) as history_sync:
-    hkex_sync = OssBatchToMysqlOperator(
+    hkex_sync = HistoryImportOperator(
         task_id='sync_hkex_history_to_mysql',
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
@@ -23,7 +23,7 @@ with DAG("history_sync", default_args=DEFAULT_DEBUG_ARGS) as history_sync:
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
 
-    us_sync = OssBatchToMysqlOperator(
+    us_sync = HistoryImportOperator(
         task_id='sync_us_history_to_mysql',
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
@@ -34,7 +34,7 @@ with DAG("history_sync", default_args=DEFAULT_DEBUG_ARGS) as history_sync:
     )
 
 with DAG("history_sync_debug", default_args=DEFAULT_DEBUG_ARGS) as history_sync_debug:
-    hkex_sync_debug = OssBatchToMysqlOperatorDebug(
+    hkex_sync_debug = HistoryImportOperatorDebug(
         task_id='sync_hkex_history_to_mysql',
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
@@ -44,7 +44,7 @@ with DAG("history_sync_debug", default_args=DEFAULT_DEBUG_ARGS) as history_sync_
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
 
-    us_sync_debug = OssBatchToMysqlOperatorDebug(
+    us_sync_debug = HistoryImportOperatorDebug(
         task_id='sync_us_history_to_mysql',
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,

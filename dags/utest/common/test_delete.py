@@ -1,7 +1,8 @@
 import unittest
 
+from rockflow.common.rename import symbol_match, symbol_rename
 from rockflow.dags.const import *
-from rockflow.operators.rename import RenameOss, DeleteInvalidOss, symbol_match, symbol_rename
+from rockflow.operators.rename import RenameOss, DeleteInvalidOss
 
 
 class TestRename(unittest.TestCase):

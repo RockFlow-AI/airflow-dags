@@ -80,16 +80,16 @@ class OssBatchToMysqlOperator(OSSOperator):
         self.mapping = mapping
         self.mysql_hook = MySqlHook(mysql_conn_id=self.mysql_conn_id)
 
-    def extract_data(self, key) -> pd.DataFrame:
-        return pd.read_csv(self.get_object(key))
+    def extract_data(self, obj) -> pd.DataFrame:
+        return pd.read_csv(self.get_object(obj.key))
 
-    def transform(self, df: Optional[pd.DataFrame]) -> Optional[pd.DataFrame]:
+    def transform(self, obj, df: Optional[pd.DataFrame]) -> Optional[pd.DataFrame]:
         self.log.info(f"{df[:10]}")
         result = map_frame(df, self.mapping)
         self.log.info(f"{result[:10]}")
         return result
 
-    def load_to_sql(self, df: Optional[pd.DataFrame]):
+    def load_to_sql(self, obj, df: Optional[pd.DataFrame]):
         engine = self.mysql_hook.get_sqlalchemy_engine()
         return upsert(
             engine=engine,
@@ -104,14 +104,16 @@ class OssBatchToMysqlOperator(OSSOperator):
     def execute(self, context: Any) -> None:
         for obj in self.iterator():
             self.load_to_sql(
+                obj,
                 self.transform(
-                    self.extract_data(obj.key)
+                    obj,
+                    self.extract_data(obj)
                 )
             )
 
 
 class OssBatchToMysqlOperatorDebug(OssBatchToMysqlOperator):
-    def __init__(self, **kwargs, ) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
     def iterator(self):
