@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from multiprocessing.pool import ThreadPool as Pool
 from pathlib import Path
 from typing import Any
 
@@ -8,8 +9,8 @@ import oss2
 import pandas as pd
 from stringcase import snakecase
 
+from rockflow.common.const import DEFAULT_POOL_SIZE
 from rockflow.common.datatime_helper import GmtDatetimeCheck
-from rockflow.common.pool import DEFAULT_POOL
 from rockflow.common.yahoo import Yahoo
 from rockflow.operators.oss import OSSOperator, OSSSaveOperator
 
@@ -97,11 +98,12 @@ class YahooExtractOperator(OSSSaveOperator):
             return [self._get_filename(obj.key), None]
 
     def _get_data(self):
-        result = DEFAULT_POOL.map(
-            lambda x: self.read_data(x), self.object_iterator(
-                os.path.join(self.from_key, ""))
-        )
-        return result
+        with Pool(DEFAULT_POOL_SIZE) as pool:
+            result = pool.map(
+                lambda x: self.read_data(x), self.object_iterator(
+                    os.path.join(self.from_key, ""))
+            )
+            return result
 
     def _get_filename(self, file_path):
         return Path(file_path).stem
@@ -135,8 +137,9 @@ class YahooExtractOperator(OSSSaveOperator):
         return result
 
     def execute(self, context):
-        DEFAULT_POOL.map(
-            lambda x: self.put_object(self._save_key(x[0]), x[1]),
-            self.content
-        )
-        return self.oss_key
+        with Pool(DEFAULT_POOL_SIZE) as pool:
+            pool.map(
+                lambda x: self.put_object(self._save_key(x[0]), x[1]),
+                self.content
+            )
+            return self.oss_key
