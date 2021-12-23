@@ -44,6 +44,11 @@ class ElasticsearchOperator(OSSOperator):
             self.delete_index()
         self.create_index()
 
+    def if_not_exist_and_create(self):
+        if self.exists_index():
+            return
+        self.create_index()
+
     def refresh_index(self):
         self.log.info(f"refresh_index: {self.elasticsearch_index_name}")
         return self.client.indices.refresh(index=self.elasticsearch_index_name)

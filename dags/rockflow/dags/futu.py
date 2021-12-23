@@ -69,7 +69,7 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
 
     sink_es = SinkEs(
         from_key="{{ task_instance.xcom_pull('" + join_map.task_id + "') }}",
-        elasticsearch_index_name='i_flow_ticker_search',
+        elasticsearch_index_name='i_flow_ticker_stock_search',
         elasticsearch_index_setting=search_setting,
         elasticsearch_conn_id='elasticsearch_default',
         region=DEFAULT_REGION,
@@ -156,7 +156,7 @@ with DAG("company_profile_batch_download_debug",
     sink_es_debug = SinkEs(
         from_key="{{ task_instance.xcom_pull('" +
                  join_map_debug.task_id + "') }}",
-        elasticsearch_index_name='i_flow_ticker_search_debug',
+        elasticsearch_index_name='i_flow_ticker_stock_search_debug',
         elasticsearch_index_setting=search_setting,
         elasticsearch_conn_id='elasticsearch_default',
         region=DEFAULT_REGION,
