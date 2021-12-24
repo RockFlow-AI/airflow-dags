@@ -3,6 +3,7 @@ import unittest
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn
 from rockflow.common.proxy import local_proxy
 from rockflow.dags.const import DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_PROXY
+from rockflow.dags.futu import sink_futu_profile_op
 from rockflow.dags.symbol import MERGE_CSV_KEY
 from rockflow.operators.futu import JoinMap
 
@@ -38,6 +39,9 @@ class Test(unittest.TestCase):
         )
         print(join_map.content)
         self.assertIsNotNone(join_map.content)
+
+    def test_sink_futu_profile_op(self):
+        self.assertIsNone(sink_futu_profile_op.execute(""))
 
 
 if __name__ == '__main__':

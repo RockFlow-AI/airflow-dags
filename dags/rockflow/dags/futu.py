@@ -85,6 +85,15 @@ chain(
     sink_es,
 )
 
+with DAG("sink_futu_profile", default_args=DEFAULT_DEBUG_ARGS) as sink_futu_profile:
+    sink_futu_profile_op = SinkFutuProfile(
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        oss_source_key="company_profile_batch_download_join_map/join_map.json",
+        mysql_table='flow_ticker_stock_profile',
+        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
+    )
+
 with DAG("company_profile_batch_download_debug",
          default_args=DEFAULT_DEBUG_ARGS) as company_profile_batch_download_debug:
     futu_cn_debug = FutuBatchOperatorCnDebug(

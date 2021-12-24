@@ -14,6 +14,7 @@ from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
 from rockflow.common.map_helper import join_map, join_list
 from rockflow.operators.elasticsearch import ElasticsearchOperator
+from rockflow.operators.mysql import OssToMysqlOperator
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
 
 
@@ -306,3 +307,28 @@ class SinkFutuSearch(SinkEs):
                 ("market", "market"),
             ]
         super().__init__(**kwargs)
+
+
+class SinkFutuProfile(OssToMysqlOperator):
+    def __init__(self, **kwargs) -> None:
+        if 'index_col' not in kwargs:
+            kwargs['index_col'] = "symbol"
+        if 'mapping' not in kwargs:
+            kwargs['mapping'] = {
+                "symbol": "symbol",
+                "raw": "raw",
+                "name_en": "name_en",
+                "name_cn": "name_zh",
+                "profile_en": "profile_en",
+                "profile_cn": "profile_zh",
+                "market": "market",
+            }
+        super().__init__(**kwargs)
+
+    def extract_data(self) -> pd.DataFrame:
+        return pd.DataFrame.from_dict(
+            json.load(
+                BytesIO(self.get_object(self.oss_source_key).read()),
+            ),
+            orient="index"
+        )
