@@ -5,7 +5,7 @@ from airflow import AirflowException
 
 from rockflow.common.hkex import HKEX
 from rockflow.common.nasdaq import Nasdaq
-from rockflow.common.pandas_helper import merge_data_frame
+from rockflow.common.pandas_helper import merge_data_frame_by_column
 from rockflow.common.sse import SSE1
 from rockflow.common.szse import SZSE1
 from rockflow.operators.downloader import DownloadOperator
@@ -138,7 +138,8 @@ class MergeCsvList(OSSSaveOperator):
 
     @property
     def content(self):
-        result = merge_data_frame(self.get_data_frames()).to_csv(index=False)
+        result = merge_data_frame_by_column(
+            self.get_data_frames()).to_csv(index=False)
         if result.isna().any().any():
             raise AirflowException(f"Has Nan: {result}")
         return result
