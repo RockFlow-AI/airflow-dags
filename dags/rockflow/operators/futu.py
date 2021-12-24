@@ -300,9 +300,9 @@ class SinkFutuSearch(SinkEs):
                 ("symbol", "symbol"),
                 ("raw", "raw"),
                 ("name_en", "name_en"),
-                ("name_zh", "name_zh"),
+                ("name_cn", "name_zh"),
                 ("profile_en", "profile_en"),
-                ("profile_zh", "profile_zh"),
+                ("profile_cn", "profile_zh"),
                 ("market", "market"),
             ]
         super().__init__(**kwargs)
