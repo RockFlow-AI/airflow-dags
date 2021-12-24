@@ -1,21 +1,19 @@
 import json
 import logging
 import os
-import sys
 from multiprocessing.pool import ThreadPool as Pool
 from pathlib import Path
 from typing import Any
 
 import oss2
 import pandas as pd
-from sqlalchemy.sql.expression import null
 from stringcase import snakecase
 
 from rockflow.common.const import DEFAULT_POOL_SIZE
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.yahoo import Yahoo
 from rockflow.operators.oss import OSSOperator, OSSSaveOperator
-from rockflow.common.pandas_helper import merge_data_frame
+from rockflow.common.pandas_helper import merge_data_frame_by_index
 
 
 class YahooBatchOperator(OSSOperator):
@@ -88,18 +86,20 @@ class YahooExtractOperator(OSSSaveOperator):
         return self.key
 
     def read_data_pandas(self, obj):
+        symbol = self._get_filename(obj.key)
         if obj.is_prefix():
-            return pd.DataFrame.from_dict({self._get_filename(obj.key): null}, orient='index')
+            return pd.DataFrame.from_dict({symbol: None}, orient='index')
         json_dic = json.loads(
             self.get_object(obj.key).read())
         try:
             json_data = json_dic.get("quoteSummary").get("result")[0]
-            return pd.DataFrame.from_dict({self._get_filename(obj.key): json_data
-                                           }, orient='index')
+            return pd.DataFrame.from_dict(
+                {symbol: json_data
+                 }, orient='index')
         except:
             logging.error(
                 f"Error occurred while reading json! File: {obj.key} skipped.")
-            return
+            return pd.DataFrame.from_dict({symbol: None}, orient='index')
 
     def _get_data(self):
         with Pool(DEFAULT_POOL_SIZE) as pool:
@@ -117,11 +117,12 @@ class YahooExtractOperator(OSSSaveOperator):
 
     @property
     def content(self):
-        data = merge_data_frame(self._get_data(), 0, False)
+        data = merge_data_frame_by_index(self._get_data())
         result = []
         for category in data:
-            result.append([category,
-                           json.dumps(data[category].to_dict())])
+            result.append(
+                [category,
+                 json.dumps(data[category].to_dict())])
         return result
 
     def execute(self, context):
