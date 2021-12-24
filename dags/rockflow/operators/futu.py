@@ -271,6 +271,9 @@ class SinkEs(ElasticsearchOperator):
             BytesIO(self.get_object(key).read())
         )
 
+    def check_data(self, data) -> bool:
+        return "symbol" in data and "raw" in data and "name_en" in data and "name_zh" in data
+
     def execute(self, context: Dict) -> None:
         def map_dict(input, mapper: Dict[str, str]):
             result = {}
@@ -281,6 +284,8 @@ class SinkEs(ElasticsearchOperator):
         self.if_not_exist_and_create()
         for k, v in self.load_json(self.from_key).items():
             res = map_dict(v, self.mapping)
+            if not self.check_data(res):
+                continue
             self.add_one_doc(k, res)
 
 
