@@ -137,4 +137,4 @@ class MergeCsvList(OSSSaveOperator):
 
     @property
     def content(self):
-        return merge_data_frame(self.get_data_frames()).to_csv()
+        return merge_data_frame(self.get_data_frames()).to_csv(index=False)
