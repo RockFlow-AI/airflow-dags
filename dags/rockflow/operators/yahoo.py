@@ -1,18 +1,21 @@
 import json
 import logging
 import os
+import sys
 from multiprocessing.pool import ThreadPool as Pool
 from pathlib import Path
 from typing import Any
 
 import oss2
 import pandas as pd
+from sqlalchemy.sql.expression import null
 from stringcase import snakecase
 
 from rockflow.common.const import DEFAULT_POOL_SIZE
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.yahoo import Yahoo
 from rockflow.operators.oss import OSSOperator, OSSSaveOperator
+from rockflow.common.pandas_helper import merge_data_frame
 
 
 class YahooBatchOperator(OSSOperator):
@@ -84,23 +87,24 @@ class YahooExtractOperator(OSSSaveOperator):
     def oss_key(self):
         return self.key
 
-    def read_data(self, obj):
+    def read_data_pandas(self, obj):
         if obj.is_prefix():
-            return [self._get_filename(obj.key), None]
+            return pd.DataFrame.from_dict({self._get_filename(obj.key): null}, orient='index')
         json_dic = json.loads(
             self.get_object(obj.key).read())
         try:
             json_data = json_dic.get("quoteSummary").get("result")[0]
-            return [self._get_filename(obj.key), json_data]
+            return pd.DataFrame.from_dict({self._get_filename(obj.key): json_data
+                                           }, orient='index')
         except:
             logging.error(
                 f"Error occurred while reading json! File: {obj.key} skipped.")
-            return [self._get_filename(obj.key), None]
+            return
 
     def _get_data(self):
         with Pool(DEFAULT_POOL_SIZE) as pool:
             result = pool.map(
-                lambda x: self.read_data(x), self.object_iterator(
+                lambda x: self.read_data_pandas(x), self.object_iterator(
                     os.path.join(self.from_key, ""))
             )
             return result
@@ -108,32 +112,16 @@ class YahooExtractOperator(OSSSaveOperator):
     def _get_filename(self, file_path):
         return Path(file_path).stem
 
-    @staticmethod
-    def merge_data(data_list):
-        result = {}
-        for symbol, item in data_list:
-            if not symbol or not item:
-                continue
-            for key in item:
-                if key not in result:
-                    result[key] = {}
-                if symbol not in result[key]:
-                    result[key][symbol] = item[key]
-                else:
-                    logging.warning(
-                        f"Duplicate symbol: {symbol} while merging key: {key}")
-        return result
-
     def _save_key(self, key):
         return os.path.join(self.oss_key + '_' + snakecase(key), snakecase(key) + '.json')
 
     @property
     def content(self):
-        data = self.merge_data(self._get_data())
+        data = merge_data_frame(self._get_data(), 0, False)
         result = []
         for category in data:
             result.append([category,
-                           json.dumps(data[category])])
+                           json.dumps(data[category].to_dict())])
         return result
 
     def execute(self, context):

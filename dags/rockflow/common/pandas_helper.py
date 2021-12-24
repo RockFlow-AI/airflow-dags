@@ -3,14 +3,14 @@ from typing import List, Optional, Dict
 import pandas as pd
 
 
-def merge_data_frame(data_frame_list: Optional[List[pd.DataFrame]]) -> Optional[pd.DataFrame]:
+def merge_data_frame(data_frame_list: Optional[List[pd.DataFrame]], concat_axis=0, concat_ignore_index=True) -> Optional[pd.DataFrame]:
     result = None
     for data_frame_item in data_frame_list:
         if result is None:
             result = data_frame_item
         else:
             result = pd.concat([result, data_frame_item],
-                               axis=0, ignore_index=True)
+                               axis=concat_axis, ignore_index=concat_ignore_index)
     return result
 
 
