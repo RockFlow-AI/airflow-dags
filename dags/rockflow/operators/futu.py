@@ -259,10 +259,12 @@ class SinkEs(ElasticsearchOperator):
     def __init__(
             self,
             from_key: str,
+            mapping: Dict[str, str],
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
+        self.mapping = mapping
 
     def load_json(self, key):
         return json.load(
@@ -270,6 +272,28 @@ class SinkEs(ElasticsearchOperator):
         )
 
     def execute(self, context: Dict) -> None:
+        def map_dict(input, mapper: Dict[str, str]):
+            result = {}
+            for k, v in mapper.items():
+                result[v] = input[k]
+            return result
+
         self.if_not_exist_and_create()
         for k, v in self.load_json(self.from_key).items():
-            self.add_one_doc(k, v)
+            res = map_dict(v, self.mapping)
+            self.add_one_doc(k, res)
+
+
+class SinkFutuSearch(SinkEs):
+    def __init__(self, **kwargs) -> None:
+        if 'mapping' not in kwargs:
+            kwargs['mapping'] = {
+                "symbol": "symbol",
+                "raw": "raw",
+                "name_en": "name_en",
+                "name_zh": "name_zh",
+                "profile_en": "profile_en",
+                "profile_zh": "profile_zh",
+                "market": "market",
+            }
+        super().__init__(**kwargs)

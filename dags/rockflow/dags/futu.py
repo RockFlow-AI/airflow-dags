@@ -67,7 +67,7 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
         proxy=DEFAULT_PROXY
     )
 
-    sink_es = SinkEs(
+    sink_es = SinkFutuSearch(
         from_key="{{ task_instance.xcom_pull('" + join_map.task_id + "') }}",
         elasticsearch_index_name='i_flow_ticker_stock_search',
         elasticsearch_index_setting=search_setting,
@@ -153,7 +153,7 @@ with DAG("company_profile_batch_download_debug",
         proxy=DEFAULT_PROXY
     )
 
-    sink_es_debug = SinkEs(
+    sink_es_debug = SinkFutuSearch(
         from_key="{{ task_instance.xcom_pull('" +
                  join_map_debug.task_id + "') }}",
         elasticsearch_index_name='i_flow_ticker_stock_search_debug',
