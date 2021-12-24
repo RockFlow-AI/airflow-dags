@@ -297,7 +297,7 @@ class SinkFutuSearch(SinkEs):
         if 'mapping' not in kwargs:
             kwargs['mapping'] = [
                 ("symbol", "symbol"),
-                ("symbol", "raw"),
+                ("raw", "raw"),
                 ("name_en", "name_en"),
                 ("name_zh", "name_zh"),
                 ("profile_en", "profile_en"),
