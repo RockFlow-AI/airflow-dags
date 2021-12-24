@@ -13,6 +13,7 @@ class OssToMysqlOperator(OSSOperator):
     def __init__(
             self,
             oss_source_key: str,
+            index_col: Any,
             mapping: Dict[str, str],
             mysql_table: str,
             mysql_conn_id: str = 'mysql_default',
@@ -22,6 +23,7 @@ class OssToMysqlOperator(OSSOperator):
         self.oss_source_key = oss_source_key
         self.mysql_table = mysql_table
         self.mysql_conn_id = mysql_conn_id
+        self.index_col = index_col
         self.mapping = mapping
 
         self.mysql_hook = MySqlHook(mysql_conn_id=self.mysql_conn_id)
@@ -42,6 +44,7 @@ class OssToMysqlOperator(OSSOperator):
         self.log.info(f"{df[:10]}")
         result = map_frame(df, self.mapping)
         self.log.info(f"{result[:10]}")
+        result.set_index(self.index_col, inplace=True)
         return result
 
     def load_to_sql(self, df: Optional[pd.DataFrame]):
