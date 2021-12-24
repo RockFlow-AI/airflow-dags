@@ -288,6 +288,7 @@ class SinkEs(ElasticsearchOperator):
         for k, v in self.load_json(self.from_key).items():
             res = map_dict(v, self.mapping)
             if not self.check_data(res):
+                print("check error: ", res)
                 continue
             self.add_one_doc(k, res)
 
