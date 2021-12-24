@@ -277,7 +277,9 @@ class SinkEs(ElasticsearchOperator):
     def execute(self, context: Dict) -> None:
         def map_dict(input, mapper: Dict[str, str]):
             result = {}
-            for k, v in mapper.items():
+            for pair in mapper:
+                k = pair[0]
+                v = pair[1]
                 if k in input:
                     result[v] = input[k]
             return result
@@ -293,13 +295,13 @@ class SinkEs(ElasticsearchOperator):
 class SinkFutuSearch(SinkEs):
     def __init__(self, **kwargs) -> None:
         if 'mapping' not in kwargs:
-            kwargs['mapping'] = {
-                "symbol": "symbol",
-                "raw": "raw",
-                "name_en": "name_en",
-                "name_zh": "name_zh",
-                "profile_en": "profile_en",
-                "profile_zh": "profile_zh",
-                "market": "market",
-            }
+            kwargs['mapping'] = [
+                ("symbol", "symbol"),
+                ("symbol", "raw"),
+                ("name_en", "name_en"),
+                ("name_zh", "name_zh"),
+                ("profile_en", "profile_en"),
+                ("profile_zh", "profile_zh"),
+                ("market", "market"),
+            ]
         super().__init__(**kwargs)

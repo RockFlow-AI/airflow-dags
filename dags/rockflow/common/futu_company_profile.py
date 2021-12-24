@@ -78,9 +78,7 @@ class FutuCompanyProfileEn(FutuCompanyProfile):
     def format_(language, table_dict):
         new_table = {}
         new_table["symbol"] = table_dict.get("symbol")
-        new_table["futu_ticker"] = table_dict.get("futu_ticker")
         new_table["language"] = language
-        new_table["market"] = table_dict.get("market")
 
         new_table["short_name_a"] = table_dict.get("Short name-A")
         new_table["short_name_h"] = table_dict.get("Short name-H")
@@ -124,9 +122,7 @@ class FutuCompanyProfileCn(FutuCompanyProfile):
     def format_(language, table_dict):
         new_table = {}
         new_table["symbol"] = table_dict.get("symbol")
-        new_table["futu_ticker"] = table_dict.get("futu_ticker")
         new_table["language"] = language
-        new_table["market"] = table_dict.get("market")
 
         new_table["short_name_a"] = table_dict.get("A股证券简称")
         new_table["short_name_h"] = table_dict.get("H股证券简称")
