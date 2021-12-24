@@ -278,7 +278,8 @@ class SinkEs(ElasticsearchOperator):
         def map_dict(input, mapper: Dict[str, str]):
             result = {}
             for k, v in mapper.items():
-                result[v] = input[k]
+                if k in input:
+                    result[v] = input[k]
             return result
 
         self.if_not_exist_and_create()
