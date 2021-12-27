@@ -1,8 +1,9 @@
 import unittest
 
-from rockflow.common.pandas_helper import *
-from pandas.testing import assert_frame_equal
 import numpy as np
+from pandas.testing import assert_frame_equal
+
+from rockflow.common.pandas_helper import *
 
 
 class TestYahoo(unittest.TestCase):

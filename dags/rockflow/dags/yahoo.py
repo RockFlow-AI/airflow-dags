@@ -5,6 +5,7 @@ from rockflow.dags.const import *
 from rockflow.dags.symbol import MERGE_CSV_KEY
 from rockflow.operators.yahoo import *
 
+# 废弃
 with DAG("yahoo_download", default_args=DEFAULT_DEBUG_ARGS) as yahoo_download:
     yahoo = YahooBatchOperator(
         from_key=MERGE_CSV_KEY,

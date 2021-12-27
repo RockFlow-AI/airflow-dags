@@ -11,9 +11,9 @@ from stringcase import snakecase
 
 from rockflow.common.const import DEFAULT_POOL_SIZE
 from rockflow.common.datatime_helper import GmtDatetimeCheck
+from rockflow.common.pandas_helper import merge_data_frame_by_index
 from rockflow.common.yahoo import Yahoo
 from rockflow.operators.oss import OSSOperator, OSSSaveOperator
-from rockflow.common.pandas_helper import merge_data_frame_by_index
 
 
 class YahooBatchOperator(OSSOperator):

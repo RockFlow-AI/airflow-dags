@@ -6,6 +6,7 @@ from rockflow.dags.symbol import MERGE_CSV_KEY
 from rockflow.es_indexs.search import search_setting
 from rockflow.operators.futu import *
 
+# 废弃
 with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as company_profile_batch_download:
     futu_cn = FutuBatchOperatorCn(
         from_key=MERGE_CSV_KEY,
@@ -80,7 +81,8 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
     sink_futu_profile_op = SinkFutuProfile(
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
-        oss_source_key="{{ task_instance.xcom_pull('" + join_map.task_id + "') }}",
+        oss_source_key="{{ task_instance.xcom_pull('" +
+                       join_map.task_id + "') }}",
         mysql_table='flow_ticker_stock_profile',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
@@ -175,7 +177,8 @@ with DAG("company_profile_batch_download_debug",
     sink_futu_profile_op_debug = SinkFutuProfile(
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
-        oss_source_key="{{ task_instance.xcom_pull('" + join_map_debug.task_id + "') }}",
+        oss_source_key="{{ task_instance.xcom_pull('" +
+                       join_map_debug.task_id + "') }}",
         mysql_table='flow_ticker_stock_profile_debug',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
