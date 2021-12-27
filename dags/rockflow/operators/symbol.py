@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+from airflow import AirflowException
 
 from rockflow.common.hkex import HKEX
 from rockflow.common.nasdaq import Nasdaq
@@ -138,5 +139,7 @@ class MergeCsvList(OSSSaveOperator):
     @property
     def content(self):
         result = merge_data_frame_by_column(
-            self.get_data_frames()).to_csv(index=False)
-        return result
+            self.get_data_frames())
+        if result.isna().any().any():
+            raise AirflowException(f"Has Nan: {result}")
+        return result.to_csv(index=False)
