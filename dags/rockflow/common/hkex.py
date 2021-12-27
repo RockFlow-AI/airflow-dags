@@ -38,7 +38,7 @@ class HKEX(Downloader):
         result['futu'] = result['raw'].apply(
             lambda x: "%05d-HK" % x
         )
-        result['market'] = pd.Series(["HK" for _ in range(len(result.index))])
+        result['market'] = "HK"
         return result
 
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:

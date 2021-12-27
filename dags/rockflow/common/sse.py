@@ -64,7 +64,7 @@ class SSE(Downloader):
         result['futu'] = result['raw'].apply(
             lambda x: "%d-SH" % x
         )
-        result['market'] = pd.Series(["SH" for _ in range(len(result.index))])
+        result['market'] = "SH"
         return result
 
 

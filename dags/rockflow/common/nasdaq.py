@@ -63,7 +63,7 @@ class Nasdaq(Downloader):
         result['futu'] = result['yahoo'].apply(
             lambda x: "%s-US" % x
         )
-        result['market'] = pd.Series(["US" for _ in range(len(result.index))])
+        result['market'] = "US"
         return result
 
     def to_df(self, fp) -> pd.DataFrame:

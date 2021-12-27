@@ -46,8 +46,7 @@ class HistoryImportOperator(OssBatchToMysqlOperator):
         else:
             result['id'] = result.apply(
                 lambda row: change_date_to_timestamp(obj, row), axis=1)
-            result['symbol'] = pd.Series(
-                [get_symbol(obj.key) for _ in range(len(result.index))])
+            result['symbol'] = get_symbol(obj.key)
 
         self.log.info(f"{result[:10]}")
         result.set_index("id", inplace=True)

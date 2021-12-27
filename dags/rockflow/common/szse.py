@@ -54,7 +54,7 @@ class SZSE(Downloader):
         result['futu'] = result['raw'].apply(
             lambda x: "%06d-SZ" % x
         )
-        result['market'] = pd.Series(["SZ" for _ in range(len(result.index))])
+        result['market'] = "SZ"
         return result
 
 
