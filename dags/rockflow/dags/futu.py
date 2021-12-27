@@ -77,22 +77,21 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
         proxy=DEFAULT_PROXY
     )
 
+    sink_futu_profile_op = SinkFutuProfile(
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        oss_source_key="{{ task_instance.xcom_pull('" + join_map.task_id + "') }}",
+        mysql_table='flow_ticker_stock_profile',
+        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
+    )
+
 chain(
     [futu_cn, futu_en],
     [extract_cn, extract_en],
     [format_cn, format_en],
     join_map,
-    sink_es,
+    [sink_es, sink_futu_profile_op],
 )
-
-with DAG("sink_futu_profile", default_args=DEFAULT_DEBUG_ARGS) as sink_futu_profile:
-    sink_futu_profile_op = SinkFutuProfile(
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        oss_source_key="company_profile_batch_download_join_map/join_map.json",
-        mysql_table='flow_ticker_stock_profile',
-        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
-    )
 
 with DAG("company_profile_batch_download_debug",
          default_args=DEFAULT_DEBUG_ARGS) as company_profile_batch_download_debug:
@@ -173,10 +172,18 @@ with DAG("company_profile_batch_download_debug",
         proxy=DEFAULT_PROXY
     )
 
+    sink_futu_profile_op_debug = SinkFutuProfile(
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        oss_source_key="{{ task_instance.xcom_pull('" + join_map_debug.task_id + "') }}",
+        mysql_table='flow_ticker_stock_profile_debug',
+        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
+    )
+
 chain(
     [futu_cn_debug, futu_en_debug],
     [extract_cn_debug, extract_en_debug],
     [format_cn_debug, format_en_debug],
     join_map_debug,
-    sink_es_debug,
+    [sink_es_debug, sink_futu_profile_op_debug],
 )

@@ -10,6 +10,8 @@ from rockflow.operators.oss import OSSOperator
 
 
 class OssToMysqlOperator(OSSOperator):
+    template_fields = ["oss_source_key"]
+
     def __init__(
             self,
             oss_source_key: str,
