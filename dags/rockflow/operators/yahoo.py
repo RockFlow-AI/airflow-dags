@@ -88,18 +88,26 @@ class YahooExtractOperator(OSSSaveOperator):
     def read_data_pandas(self, obj):
         symbol = self._get_filename(obj.key)
         if obj.is_prefix():
-            return pd.DataFrame.from_dict({symbol: None}, orient='index')
+            return pd.DataFrame.from_dict(
+                {symbol: None},
+                orient='index'
+            )
         json_dic = json.loads(
-            self.get_object(obj.key).read())
+            self.get_object(obj.key).read()
+        )
         try:
             json_data = json_dic.get("quoteSummary").get("result")[0]
             return pd.DataFrame.from_dict(
-                {symbol: json_data
-                 }, orient='index')
+                {symbol: json_data},
+                orient='index'
+            )
         except:
             logging.error(
                 f"Error occurred while reading json! File: {obj.key} skipped.")
-            return pd.DataFrame.from_dict({symbol: None}, orient='index')
+            return pd.DataFrame.from_dict(
+                {symbol: None},
+                orient='index'
+            )
 
     def _get_data(self):
         with Pool(DEFAULT_POOL_SIZE) as pool:
@@ -121,8 +129,11 @@ class YahooExtractOperator(OSSSaveOperator):
         result = []
         for category in data:
             result.append(
-                [category,
-                 json.dumps(data[category].to_dict())])
+                [
+                    category,
+                    json.dumps(data[category].to_dict())
+                ]
+            )
         return result
 
     def execute(self, context):
