@@ -202,9 +202,19 @@ chain(
     [nasdaq, hkex, sse, szse],
     [nasdaq_parse, hkex_parse, sse_parse, szse_parse],
     merge_csv,
-    [futu_cn, futu_en, yahoo],
-    [extract_cn, extract_en, yahoo_extract],
+)
+
+chain(
+    merge_csv,
+    [futu_cn, futu_en],
+    [extract_cn, extract_en],
     [format_cn, format_en],
     join_map,
     [sink_es, sink_futu_profile_op],
+)
+
+chain(
+    merge_csv,
+    yahoo,
+    yahoo_extract,
 )
