@@ -2,7 +2,10 @@ from airflow.models import DAG
 from airflow.models.baseoperator import chain
 
 from rockflow.dags.const import *
+from rockflow.es_indexs.search import search_setting
+from rockflow.operators.futu import *
 from rockflow.operators.symbol import *
+from rockflow.operators.yahoo import *
 
 DAG_ID = "symbol_download"
 
@@ -27,6 +30,8 @@ symbol_dag_args = {
 }
 
 with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
+    # ------------------------------------------------------------
+
     nasdaq = NasdaqSymbolDownloadOperator(
         key=NASDAQ_RAW_KEY,
         region=DEFAULT_REGION,
@@ -95,8 +100,111 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
         proxy=DEFAULT_PROXY
     )
 
+    # ------------------------------------------------------------
+
+    futu_cn = FutuBatchOperatorCn(
+        from_key=MERGE_CSV_KEY,
+        key=symbol_dag.dag_id,
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
+    extract_cn = FutuExtractHtml(
+        task_id="futu_extract_html_cn",
+        from_key="{{ task_instance.xcom_pull('" + futu_cn.task_id + "') }}",
+        key=symbol_dag.dag_id,
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
+    format_cn = FutuFormatJsonCn(
+        from_key="{{ task_instance.xcom_pull('" + extract_cn.task_id + "') }}",
+        key=symbol_dag.dag_id,
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
+    futu_en = FutuBatchOperatorEn(
+        from_key=MERGE_CSV_KEY,
+        key=symbol_dag.dag_id,
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
+    extract_en = FutuExtractHtml(
+        task_id="futu_extract_html_en",
+        from_key="{{ task_instance.xcom_pull('" + futu_en.task_id + "') }}",
+        key=symbol_dag.dag_id,
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
+    format_en = FutuFormatJsonEn(
+        from_key="{{ task_instance.xcom_pull('" + extract_en.task_id + "') }}",
+        key=symbol_dag.dag_id,
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
+    join_map = JoinMap(
+        first="{{ task_instance.xcom_pull('" + format_cn.task_id + "') }}",
+        second="{{ task_instance.xcom_pull('" + format_en.task_id + "') }}",
+        merge_key=MERGE_CSV_KEY,
+        key=symbol_dag.dag_id,
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
+    sink_es = SinkFutuSearch(
+        from_key="{{ task_instance.xcom_pull('" + join_map.task_id + "') }}",
+        elasticsearch_index_name='i_flow_ticker_stock_search',
+        elasticsearch_index_setting=search_setting,
+        elasticsearch_conn_id='elasticsearch_default',
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
+    sink_futu_profile_op = SinkFutuProfile(
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        oss_source_key="{{ task_instance.xcom_pull('" + join_map.task_id + "') }}",
+        mysql_table='flow_ticker_stock_profile',
+        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
+    )
+
+    # ------------------------------------------------------------
+
+    yahoo = YahooBatchOperator(
+        from_key=MERGE_CSV_KEY,
+        key=symbol_dag.dag_id,
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
+    yahoo_extract = YahooExtractOperator(
+        from_key="yahoo_download_yahoo",
+        key="yahoo_extract",
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        proxy=DEFAULT_PROXY
+    )
+
 chain(
     [nasdaq, hkex, sse, szse],
     [nasdaq_parse, hkex_parse, sse_parse, szse_parse],
-    merge_csv
+    merge_csv,
+    [futu_cn, futu_en], yahoo,
+    [extract_cn, extract_en], yahoo_extract,
+    [format_cn, format_en],
+    join_map,
+    [sink_es, sink_futu_profile_op],
 )
