@@ -1,8 +1,8 @@
 import unittest
-from airflow.exceptions import AirflowException
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+from airflow.exceptions import AirflowException
 
 from rockflow.dags.const import *
 from rockflow.operators.symbol import MergeCsvList
