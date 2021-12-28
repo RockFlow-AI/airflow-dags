@@ -8,12 +8,15 @@ from typing import Any
 import oss2
 import pandas as pd
 from stringcase import snakecase
+from guppy import hpy  # test mem
 
 from rockflow.common.const import DEFAULT_POOL_SIZE
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.pandas_helper import merge_data_frame_by_index
 from rockflow.common.yahoo import Yahoo
 from rockflow.operators.oss import OSSOperator, OSSSaveOperator
+
+hxx = hpy()  # test mem
 
 
 class YahooBatchOperator(OSSOperator):
@@ -126,20 +129,17 @@ class YahooExtractOperator(OSSSaveOperator):
     @property
     def content(self):
         data = merge_data_frame_by_index(self._get_data())
+        print("Data loading complete.\n", hxx.heap())  # test mem
         result = []
         for category in data:
-            result.append(
-                [
-                    category,
-                    json.dumps(data[category].to_dict())
-                ]
-            )
-        return result
+            result = [
+                category,
+                json.dumps(data[category].to_dict())
+            ]
+            print(category, "memory usage:\n", hxx.heap())  # test mem
+            yield result
 
     def execute(self, context):
-        with Pool(DEFAULT_POOL_SIZE) as pool:
-            pool.map(
-                lambda x: self.put_object(self._save_key(x[0]), x[1]),
-                self.content
-            )
-            return self.oss_key
+        for x in self.content:
+            self.put_object(self._save_key(x[0]), x[1])
+        return self.oss_key
