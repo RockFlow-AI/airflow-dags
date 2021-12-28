@@ -87,7 +87,7 @@ class YahooExtractOperator(OSSSaveOperator):
 
     def read_data_pandas(self, obj):
         symbol = self._get_filename(obj.key)
-        if not symbol.endswith("US"):
+        if symbol.endswith("HK") or symbol.endswith("SZ") or symbol.endswith("SS"):
             return
         if obj.is_prefix():
             return
