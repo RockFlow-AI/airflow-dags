@@ -6,6 +6,8 @@ import pandas as pd
 def merge_data_frame_by_column(data_frame_list: Optional[List[pd.DataFrame]]) -> Optional[pd.DataFrame]:
     result = None
     for data_frame_item in data_frame_list:
+        if data_frame_item is None:
+            continue
         if result is None:
             result = data_frame_item
         else:
@@ -17,6 +19,8 @@ def merge_data_frame_by_column(data_frame_list: Optional[List[pd.DataFrame]]) ->
 def merge_data_frame_by_index(data_frame_list: Optional[List[pd.DataFrame]]) -> Optional[pd.DataFrame]:
     result = None
     for data_frame_item in data_frame_list:
+        if data_frame_item is None:
+            continue
         if result is None:
             result = data_frame_item
         else:
