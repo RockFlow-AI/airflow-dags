@@ -199,6 +199,14 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
         proxy=DEFAULT_PROXY
     )
 
+    summary_detail_mysql = SummaryDetailImportOperator(
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        oss_source_key="yahoo_extract_summary_detail/summary_detail.json",
+        mysql_table='flow_ticker_summary_detail',
+        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
+    )
+
 chain(
     [nasdaq, hkex, sse, szse],
     [nasdaq_parse, hkex_parse, sse_parse, szse_parse],
@@ -218,4 +226,5 @@ chain(
     merge_csv,
     yahoo,
     yahoo_extract,
+    summary_detail_mysql,
 )

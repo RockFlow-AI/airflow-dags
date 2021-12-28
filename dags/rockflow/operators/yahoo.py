@@ -3,7 +3,7 @@ import logging
 import os
 from multiprocessing.pool import ThreadPool as Pool
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 import oss2
 import pandas as pd
@@ -13,6 +13,7 @@ from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.pandas_helper import merge_data_frame_by_index
 from rockflow.common.yahoo import Yahoo
 from rockflow.operators.const import DEFAULT_POOL_SIZE
+from rockflow.operators.mysql import OssToMysqlOperator
 from rockflow.operators.oss import OSSOperator, OSSSaveOperator
 
 
@@ -134,3 +135,46 @@ class YahooExtractOperator(OSSSaveOperator):
         for x in self.content:
             self.put_object(self._save_key(x[0]), x[1])
         return self.oss_key
+
+
+class SummaryDetailImportOperator(OssToMysqlOperator):
+    def __init__(self, **kwargs) -> None:
+        if 'index_col' not in kwargs:
+            kwargs['index_col'] = "symbol"
+        if 'mapping' not in kwargs:
+            kwargs['mapping'] = {
+                "symbol": "symbol",
+                "open": "open",
+                "dayHigh": "high",
+                "dayLow": "low",
+                "previousClose": "previous_close",
+                "marketCap": "market_cap",
+                "volume": "volume",
+                "trailingPE": "trailing_pe",
+                "dividendYield": "dividend_yield",
+                "currency": "currency",
+            }
+        super().__init__(**kwargs)
+
+    def format_dict(self, dict_data):
+        dict_data = {
+            k: v for k, v in dict_data.items() if isinstance(v, Dict)
+        }
+        for k, v in dict_data.items():
+            if not isinstance(v, Dict):
+                continue
+            v[self.index_col] = k
+            for key, value in v.items():
+                if not isinstance(value, Dict):
+                    continue
+                if "raw" in value:
+                    # 去除所有带view的展示
+                    v[key] = value["raw"]
+                elif not value:
+                    v[key] = None
+        return dict_data
+
+    def extract_data(self) -> pd.DataFrame:
+        return self.extract_index_dict_to_df(
+            self.format_dict(self.extract_index_dict())
+        )

@@ -1,3 +1,4 @@
+import json
 import os
 from typing import Optional, Any, Dict
 
@@ -36,8 +37,24 @@ class OssToMysqlOperator(OSSOperator):
         self.log.info(f"{cur.execute(cmd)}")
         conn.commit()
 
-    def extract_data(self) -> pd.DataFrame:
+    def extract_csv_to_df(self) -> pd.DataFrame:
         return pd.read_csv(self.get_object(self.oss_source_key))
+
+    def extract_index_dict(self):
+        return json.loads(
+            self.get_object(self.oss_source_key).read()
+        )
+
+    def extract_index_dict_to_df(self, dict_data) -> pd.DataFrame:
+        result = pd.DataFrame.from_dict(
+            dict_data,
+            orient='index'
+        )
+        result.index.rename(self.index_col, inplace=True)
+        return result
+
+    def extract_data(self) -> pd.DataFrame:
+        return self.extract_csv_to_df()
 
     def get_sql_schema(self):
         self.execute_sql(f"SHOW CREATE TABLE {self.mysql_table}")
