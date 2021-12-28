@@ -86,8 +86,8 @@ class YahooExtractOperator(OSSSaveOperator):
     def oss_key(self):
         return self.key
 
-    def read_data_pandas(self, obj):
-        symbol = self._get_filename(obj.key)
+    def read_one(self, obj):
+        symbol = self.get_symbol(obj.key)
         if symbol.endswith("HK") or symbol.endswith("SZ") or symbol.endswith("SS"):
             return
         if obj.is_prefix():
@@ -106,15 +106,15 @@ class YahooExtractOperator(OSSSaveOperator):
                 f"Error occurred while reading json! File: {obj.key} skipped.")
             return
 
-    def _get_data(self):
+    def merge_data(self):
         with Pool(DEFAULT_POOL_SIZE) as pool:
             result = pool.map(
-                lambda x: self.read_data_pandas(x), self.object_iterator(
+                lambda x: self.read_one(x), self.object_iterator(
                     os.path.join(self.from_key, ""))
             )
             return result
 
-    def _get_filename(self, file_path):
+    def get_symbol(self, file_path):
         return Path(file_path).stem
 
     def _save_key(self, key):
@@ -122,8 +122,7 @@ class YahooExtractOperator(OSSSaveOperator):
 
     @property
     def content(self):
-        data = merge_data_frame_by_index(self._get_data())
-        result = []
+        data = merge_data_frame_by_index(self.merge_data())
         for category in data:
             result = [
                 category,
