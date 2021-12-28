@@ -193,7 +193,7 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
 
     yahoo_extract_us = YahooExtractOperatorUS(
         from_key="yahoo_download_yahoo",
-        key="yahoo_extract",
+        key=symbol_dag.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -201,7 +201,7 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
 
     yahoo_extract_none_us = YahooExtractOperatorNoneUS(
         from_key="yahoo_download_yahoo",
-        key="yahoo_extract",
+        key=symbol_dag.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -211,7 +211,7 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
         task_id='summary_detail_mysql_us',
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
-        oss_source_key="yahoo_extract_summary_detail/yahoo_extract_operator_u_s.json",
+        oss_source_key=yahoo_extract_us.save_key("SummaryDetail"),
         mysql_table='flow_ticker_summary_detail',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
@@ -220,7 +220,7 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
         task_id='summary_detail_mysql_none_us',
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
-        oss_source_key="yahoo_extract_summary_detail/yahoo_extract_operator_none_u_s.json",
+        oss_source_key=yahoo_extract_none_us.save_key("SummaryDetail"),
         mysql_table='flow_ticker_summary_detail',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
