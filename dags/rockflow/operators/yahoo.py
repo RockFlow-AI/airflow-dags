@@ -86,9 +86,12 @@ class YahooExtractOperator(OSSSaveOperator):
     def oss_key(self):
         return self.key
 
+    def split(self, symbol):
+        raise NotImplementedError()
+
     def read_one(self, obj):
         symbol = self.get_symbol(obj.key)
-        if symbol.endswith("HK") or symbol.endswith("SZ") or symbol.endswith("SS"):
+        if not self.split(symbol):
             return
         if obj.is_prefix():
             return
@@ -106,19 +109,22 @@ class YahooExtractOperator(OSSSaveOperator):
                 f"Error occurred while reading json! File: {obj.key} skipped.")
             return
 
+    @property
+    def iterator(self):
+        return self.object_iterator(os.path.join(self.from_key, ""))
+
     def merge_data(self):
         with Pool(DEFAULT_POOL_SIZE) as pool:
             result = pool.map(
-                lambda x: self.read_one(x), self.object_iterator(
-                    os.path.join(self.from_key, ""))
+                lambda x: self.read_one(x), self.iterator
             )
             return result
 
     def get_symbol(self, file_path):
         return Path(file_path).stem
 
-    def _save_key(self, key):
-        return os.path.join(self.oss_key + '_' + snakecase(key), snakecase(key) + '.json')
+    def save_key(self, key):
+        return os.path.join(self.key + '_' + snakecase(key), self.snakecase_class_name + '.json')
 
     @property
     def content(self):
@@ -132,8 +138,23 @@ class YahooExtractOperator(OSSSaveOperator):
 
     def execute(self, context):
         for x in self.content:
-            self.put_object(self._save_key(x[0]), x[1])
-        return self.oss_key
+            self.put_object(self.save_key(x[0]), x[1])
+
+
+class YahooExtractOperatorUS(YahooExtractOperator):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    def split(self, symbol):
+        return not (symbol.endswith("HK") or symbol.endswith("SZ") or symbol.endswith("SS"))
+
+
+class YahooExtractOperatorNoneUS(YahooExtractOperator):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    def split(self, symbol):
+        return symbol.endswith("HK") or symbol.endswith("SZ") or symbol.endswith("SS")
 
 
 class SummaryDetailImportOperator(OssToMysqlOperator):

@@ -191,7 +191,7 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
         proxy=DEFAULT_PROXY
     )
 
-    yahoo_extract = YahooExtractOperator(
+    yahoo_extract_us = YahooExtractOperatorUS(
         from_key="yahoo_download_yahoo",
         key="yahoo_extract",
         region=DEFAULT_REGION,
@@ -199,10 +199,28 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
         proxy=DEFAULT_PROXY
     )
 
-    summary_detail_mysql = SummaryDetailImportOperator(
+    yahoo_extract_none_us = YahooExtractOperatorNoneUS(
+        from_key="yahoo_download_yahoo",
+        key="yahoo_extract",
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
-        oss_source_key="yahoo_extract_summary_detail/summary_detail.json",
+        proxy=DEFAULT_PROXY
+    )
+
+    summary_detail_mysql_us = SummaryDetailImportOperator(
+        task_id='summary_detail_mysql_us',
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        oss_source_key="yahoo_extract_summary_detail/yahoo_extract_operator_u_s.json",
+        mysql_table='flow_ticker_summary_detail',
+        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
+    )
+
+    summary_detail_mysql_none_us = SummaryDetailImportOperator(
+        task_id='summary_detail_mysql_none_us',
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        oss_source_key="yahoo_extract_summary_detail/yahoo_extract_operator_none_u_s.json",
         mysql_table='flow_ticker_summary_detail',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
@@ -225,6 +243,6 @@ chain(
 chain(
     merge_csv,
     yahoo,
-    yahoo_extract,
-    summary_detail_mysql,
+    [yahoo_extract_us, yahoo_extract_none_us],
+    [summary_detail_mysql_us, summary_detail_mysql_none_us],
 )
