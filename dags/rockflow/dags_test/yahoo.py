@@ -23,6 +23,20 @@ with DAG("yahoo_download", default_args=DEFAULT_DEBUG_ARGS) as yahoo_download:
         proxy=DEFAULT_PROXY
     )
 
+    summary_detail_mysql = SummaryDetailImportOperator(
+        region=DEFAULT_REGION,
+        bucket_name=DEFAULT_BUCKET_NAME,
+        oss_source_key="yahoo_extract_summary_detail/summary_detail.json",
+        mysql_table='flow_ticker_summary_detail',
+        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
+    )
+
+chain(
+    yahoo,
+    yahoo_extract,
+    summary_detail_mysql,
+)
+
 with DAG("yahoo_download_debug", default_args=DEFAULT_DEBUG_ARGS) as yahoo_download_debug:
     yahoo_debug = YahooBatchOperatorDebug(
         from_key=MERGE_CSV_KEY,
@@ -39,20 +53,6 @@ with DAG("yahoo_download_debug", default_args=DEFAULT_DEBUG_ARGS) as yahoo_downl
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
     )
-
-    summary_detail_mysql = SummaryDetailImportOperator(
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        oss_source_key="yahoo_extract_summary_detail/summary_detail.json",
-        mysql_table='flow_ticker_summary_detail',
-        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
-    )
-
-chain(
-    yahoo,
-    yahoo_extract,
-    summary_detail_mysql,
-)
 
 chain(
     yahoo_debug,
