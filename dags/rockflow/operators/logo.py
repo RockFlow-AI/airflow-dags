@@ -5,6 +5,7 @@ import pandas as pd
 
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.logo import Public, Etoro
+from rockflow.operators.common import is_none_us_symbol
 from rockflow.operators.oss import OSSOperator
 
 
@@ -34,8 +35,11 @@ class LogoBatchOperator(OSSOperator):
 
     @staticmethod
     def call(line: pd.Series, cls, prefix, proxy, bucket):
+        symbol = line['yahoo']
+        if is_none_us_symbol(symbol):
+            return
         obj = cls(
-            symbol=line['yahoo'],
+            symbol=symbol,
             prefix=prefix,
             proxy=proxy
         )
