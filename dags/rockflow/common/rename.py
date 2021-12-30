@@ -13,6 +13,8 @@ def new_symbol(symbol):
 
 
 def new_symbol_with_market(name):
+    if name.endswith(".SS"):
+        name = name.replace(".SS", ".SH")
     i = name.rfind('.')
     if 0 < i < len(name) - 1:
         symbol = name[:i]
@@ -22,4 +24,6 @@ def new_symbol_with_market(name):
 
 
 def symbol_rename(key):
-    return new_symbol_with_market(Path(key).stem)
+    old_symbol = Path(key).stem
+    new_symbol = new_symbol_with_market(old_symbol)
+    return key.replace(old_symbol, new_symbol)
