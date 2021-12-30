@@ -192,7 +192,7 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
     )
 
     yahoo_extract_us = YahooExtractOperatorUS(
-        from_key="yahoo_download_yahoo",
+        from_key="symbol_download_yahoo",
         key=symbol_dag.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
@@ -200,7 +200,7 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
     )
 
     yahoo_extract_none_us = YahooExtractOperatorNoneUS(
-        from_key="yahoo_download_yahoo",
+        from_key="symbol_download_yahoo",
         key=symbol_dag.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
