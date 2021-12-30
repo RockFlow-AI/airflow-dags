@@ -6,8 +6,6 @@ from rockflow.operators.oss import OSSOperator
 
 
 class FtptToOssOperator(OSSOperator):
-    template_fields = ["oss_source_key"]
-
     def __init__(
             self,
             prefix: str,
