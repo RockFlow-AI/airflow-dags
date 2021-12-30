@@ -1,6 +1,7 @@
 apache-airflow-providers-alibaba
 apache-airflow-providers-elasticsearch
 apache-airflow-providers-mysql[amazon]
+apache-airflow-providers-ssh
 openpyxl
 lxml
 html5lib
