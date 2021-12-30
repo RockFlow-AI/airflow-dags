@@ -31,16 +31,9 @@ with DAG("yahoo_download", default_args=DEFAULT_DEBUG_ARGS) as yahoo_download:
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
 
-chain(
-    yahoo,
-    yahoo_extract,
-    summary_detail_mysql,
-)
-
-with DAG("yahoo_download_debug", default_args=DEFAULT_DEBUG_ARGS) as yahoo_download_debug:
     yahoo_debug = YahooBatchOperatorDebug(
         from_key=MERGE_CSV_KEY,
-        key=yahoo_download_debug.dag_id,
+        key=yahoo_download.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -53,6 +46,12 @@ with DAG("yahoo_download_debug", default_args=DEFAULT_DEBUG_ARGS) as yahoo_downl
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
     )
+
+chain(
+    yahoo,
+    yahoo_extract,
+    summary_detail_mysql,
+)
 
 chain(
     yahoo_debug,

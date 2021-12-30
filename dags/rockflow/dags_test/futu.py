@@ -87,19 +87,9 @@ with DAG("company_profile_batch_download", default_args=DEFAULT_DEBUG_ARGS) as c
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
 
-chain(
-    [futu_cn, futu_en],
-    [extract_cn, extract_en],
-    [format_cn, format_en],
-    join_map,
-    [sink_es, sink_futu_profile_op],
-)
-
-with DAG("company_profile_batch_download_debug",
-         default_args=DEFAULT_DEBUG_ARGS) as company_profile_batch_download_debug:
     futu_cn_debug = FutuBatchOperatorCnDebug(
         from_key=MERGE_CSV_KEY,
-        key=company_profile_batch_download_debug.dag_id,
+        key=company_profile_batch_download.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -109,7 +99,7 @@ with DAG("company_profile_batch_download_debug",
         task_id="futu_extract_html_cn",
         from_key="{{ task_instance.xcom_pull('" +
                  futu_cn_debug.task_id + "') }}",
-        key=company_profile_batch_download_debug.dag_id,
+        key=company_profile_batch_download.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -118,7 +108,7 @@ with DAG("company_profile_batch_download_debug",
     format_cn_debug = FutuFormatJsonCn(
         from_key="{{ task_instance.xcom_pull('" +
                  extract_cn_debug.task_id + "') }}",
-        key=company_profile_batch_download_debug.dag_id,
+        key=company_profile_batch_download.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -126,7 +116,7 @@ with DAG("company_profile_batch_download_debug",
 
     futu_en_debug = FutuBatchOperatorEnDebug(
         from_key=MERGE_CSV_KEY,
-        key=company_profile_batch_download_debug.dag_id,
+        key=company_profile_batch_download.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -136,7 +126,7 @@ with DAG("company_profile_batch_download_debug",
         task_id="futu_extract_html_en",
         from_key="{{ task_instance.xcom_pull('" +
                  futu_en_debug.task_id + "') }}",
-        key=company_profile_batch_download_debug.dag_id,
+        key=company_profile_batch_download.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -145,7 +135,7 @@ with DAG("company_profile_batch_download_debug",
     format_en_debug = FutuFormatJsonEn(
         from_key="{{ task_instance.xcom_pull('" +
                  extract_en_debug.task_id + "') }}",
-        key=company_profile_batch_download_debug.dag_id,
+        key=company_profile_batch_download.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -157,7 +147,7 @@ with DAG("company_profile_batch_download_debug",
         second="{{ task_instance.xcom_pull('" +
                format_en_debug.task_id + "') }}",
         merge_key=MERGE_CSV_KEY,
-        key=company_profile_batch_download_debug.dag_id,
+        key=company_profile_batch_download.dag_id,
         region=DEFAULT_REGION,
         bucket_name=DEFAULT_BUCKET_NAME,
         proxy=DEFAULT_PROXY
@@ -182,6 +172,14 @@ with DAG("company_profile_batch_download_debug",
         mysql_table='flow_ticker_stock_profile_debug',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
+
+chain(
+    [futu_cn, futu_en],
+    [extract_cn, extract_en],
+    [format_cn, format_en],
+    join_map,
+    [sink_es, sink_futu_profile_op],
+)
 
 chain(
     [futu_cn_debug, futu_en_debug],
