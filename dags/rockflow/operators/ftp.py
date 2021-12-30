@@ -7,7 +7,7 @@ from airflow.providers.ssh.hooks.ssh import SSHHook
 from rockflow.operators.oss import OSSOperator
 
 
-class SftptToOssOperator(OSSOperator):
+class SftpToOssOperator(OSSOperator):
     def __init__(
             self,
             prefix: str,

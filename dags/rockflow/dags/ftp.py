@@ -1,10 +1,10 @@
 from airflow.models import DAG
 
 from rockflow.dags.const import *
-from rockflow.operators.ftp import SftptToOssOperator
+from rockflow.operators.ftp import SftpToOssOperator
 
 with DAG("ice_sftp_sync", default_args=DEFAULT_DEBUG_ARGS) as ice_sftp_sync:
-    SftptToOssOperator(
+    SftpToOssOperator(
         prefix=ice_sftp_sync.dag_id,
         work_dir="/FLOWAIHKFTPH1",
         ssh_conn_id="ftp_ice",
