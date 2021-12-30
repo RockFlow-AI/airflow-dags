@@ -1,3 +1,5 @@
+import os
+from tempfile import NamedTemporaryFile
 from typing import Any
 
 from airflow.providers.ssh.hooks.ssh import SSHHook
@@ -24,5 +26,11 @@ class SftptToOssOperator(OSSOperator):
         return self.ssh_hook.get_conn().open_sftp()
 
     def execute(self, context: Any):
-        for file in self.sftp_client.listdir_iter(self.work_dir):
-            print(file)
+        for file in self.sftp_client.listdir_attr(self.work_dir):
+            filename = file.filename
+            print(filename)
+            sftp_path = os.path.join(self.work_dir, filename)
+            dest_path = os.path.join(self.prefix, filename)
+            with NamedTemporaryFile("w") as f:
+                self.sftp_client.get(sftp_path, f.name)
+                self.oss_hook.put_object(dest_path, f.name)
