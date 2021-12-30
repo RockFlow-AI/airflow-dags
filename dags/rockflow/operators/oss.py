@@ -111,6 +111,19 @@ class OSSOperator(BaseOperator):
         self.put_object_(self.bucket, key, content)
 
     @staticmethod
+    def put_object_from_file_(bucket: oss2.api.Bucket, key: str, content):
+        if not content:
+            return
+        try:
+            print(f"put_object_from_file: {key}")
+            bucket.put_object_from_file(key, content)
+        except Exception as e:
+            raise AirflowException(f"Errors: {e}")
+
+    def put_object_from_file(self, key: str, content):
+        self.put_object_from_file_(self.bucket, key, content)
+
+    @staticmethod
     def object_exists_(bucket: oss2.api.Bucket, key: str):
         print(f"object_exists: {key}")
         return bucket.object_exists(key)
