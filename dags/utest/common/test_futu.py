@@ -1,11 +1,10 @@
 import unittest
 
-from rockflow.dags.futu import sink_futu_profile_op
-
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn
 from rockflow.common.proxy import local_proxy
 from rockflow.dags.const import DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_PROXY
 from rockflow.dags.symbol import MERGE_CSV_KEY
+from rockflow.dags_test.futu import sink_futu_profile_op
 from rockflow.operators.futu import JoinMap
 
 
