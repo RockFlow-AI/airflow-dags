@@ -33,4 +33,4 @@ class SftptToOssOperator(OSSOperator):
             dest_path = os.path.join(self.prefix, filename)
             with NamedTemporaryFile("w") as f:
                 self.sftp_client.get(sftp_path, f.name)
-                self.oss_hook.put_object(dest_path, f.name)
+                self.put_object(dest_path, f.name)
