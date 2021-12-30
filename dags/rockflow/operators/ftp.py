@@ -1,4 +1,3 @@
-import os
 from typing import Any
 
 from airflow.providers.ssh.hooks.ssh import SSHHook
@@ -25,6 +24,5 @@ class SftptToOssOperator(OSSOperator):
         return self.ssh_hook.get_conn().open_sftp()
 
     def execute(self, context: Any):
-        sftp_path = os.path.join(self.work_dir, "K16D75_20211229.SRV")
-        with self.sftp_client.file(sftp_path, mode='rb') as data:
-            self.put_object("ice_sftp_sync/bak", data)
+        for file in self.sftp_client.listdir_iter(self.work_dir):
+            print(file)
