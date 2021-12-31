@@ -29,13 +29,16 @@ class SftpToOssOperator(OSSOperator):
 
     def sync_one(self, file):
         filename = file.filename
+        obj_path = os.path.join(self.prefix, filename)
+        if self.object_exists(obj_path):
+            return
         with NamedTemporaryFile("w") as f:
             self.sftp_client.get(
                 os.path.join(self.work_dir, filename),
                 f.name
             )
             self.put_object_from_file(
-                os.path.join(self.prefix, filename),
+                obj_path,
                 f.name
             )
 
