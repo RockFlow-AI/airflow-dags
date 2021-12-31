@@ -2,7 +2,6 @@ import json
 import logging
 import os
 from multiprocessing.pool import ThreadPool as Pool
-from pathlib import Path
 from typing import Any, Dict
 
 import oss2
@@ -79,9 +78,11 @@ class YahooExtractOperator(OSSSaveOperator):
 
     def __init__(self,
                  from_key: str,
+                 symbol_key: str,
                  **kwargs) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
+        self.symbol_key = symbol_key
 
     @property
     def oss_key(self):
@@ -90,15 +91,18 @@ class YahooExtractOperator(OSSSaveOperator):
     def split(self, symbol):
         raise NotImplementedError()
 
-    def read_one(self, obj):
-        symbol = self.get_symbol(obj.key)
+    def read_one(self, symbol):
         if not self.split(symbol):
             return
-        if obj.is_prefix():
+        symbol_key = self.get_symbol_key(symbol)
+        try:
+            json_dic = json.loads(
+                self.get_object(symbol_key).read()
+            )
+        except:
+            logging.error(
+                f"Error occurred while downloading file: {symbol_key}")
             return
-        json_dic = json.loads(
-            self.get_object(obj.key).read()
-        )
         try:
             json_data = json_dic.get("quoteSummary").get("result")[0]
             return pd.DataFrame.from_dict(
@@ -107,22 +111,24 @@ class YahooExtractOperator(OSSSaveOperator):
             )
         except:
             logging.error(
-                f"Error occurred while reading json! File: {obj.key} skipped.")
+                f"Error occurred while reading json! File: {symbol_key} skipped.")
             return
 
     @property
-    def iterator(self):
-        return self.object_iterator(os.path.join(self.from_key, ""))
+    def symbol_list(self):
+        symbol_df = pd.read_csv(self.get_object(
+            self.symbol_key), index_col=False)
+        return symbol_df["rockflow"].to_list()
 
     def merge_data(self):
         with Pool(DEFAULT_POOL_SIZE) as pool:
             result = pool.map(
-                lambda x: self.read_one(x), self.iterator
+                lambda x: self.read_one(x), self.symbol_list
             )
             return result
 
-    def get_symbol(self, file_path):
-        return Path(file_path).stem
+    def get_symbol_key(self, symbol):
+        return os.path.join(self.from_key, symbol + '.json')
 
     def save_key(self, key):
         return os.path.join(self.key + '_' + snakecase(key), self.snakecase_class_name + '.json')
@@ -130,6 +136,8 @@ class YahooExtractOperator(OSSSaveOperator):
     @property
     def content(self):
         data = merge_data_frame_by_index(self.merge_data())
+        if data is None:
+            return
         for category in data:
             result = [
                 category,
