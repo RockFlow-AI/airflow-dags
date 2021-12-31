@@ -2,17 +2,9 @@ import unittest
 
 from rockflow.dags.symbol import yahoo_extract_us, yahoo_extract_none_us, summary_detail_mysql_us, \
     summary_detail_mysql_none_us
-from rockflow.operators.yahoo import YahooExtractOperator
 
 
 class TestYahoo(unittest.TestCase):
-    def test_yahoo(self):
-        yahoo = YahooExtractOperator(
-            from_key="yahoo_download_debug_yahoo",
-            key="yahoo_extract"
-        )
-        self.assertIsNotNone(yahoo.execute(""))
-
     def test_yahoo_extract_us(self):
         self.assertIsNone(yahoo_extract_us.execute(""))
 
