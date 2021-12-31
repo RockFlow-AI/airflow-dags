@@ -182,3 +182,8 @@ chain(
     [yahoo_extract_us, yahoo_extract_none_us],
     [summary_detail_mysql_us, summary_detail_mysql_none_us],
 )
+
+chain(
+    merge_csv,
+    [yahoo_extract_us, yahoo_extract_none_us],
+)
