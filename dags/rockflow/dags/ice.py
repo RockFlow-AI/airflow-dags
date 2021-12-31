@@ -1,4 +1,5 @@
 from airflow.models import DAG
+from airflow.models.baseoperator import chain
 
 from rockflow.dags.const import *
 from rockflow.operators.ice import DailyHistoryImportOperator
@@ -21,3 +22,8 @@ with DAG("ice_sftp_sync", default_args=DEFAULT_DEBUG_ARGS) as ice_sftp_sync:
         mysql_table='flow_ticker_stock_price_daily',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
+
+chain(
+    sync_all_files,
+    daily_history,
+)
