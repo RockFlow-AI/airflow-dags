@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 
 from airflow.hooks.base import BaseHook
-from airflow.models import Connection
+from airflow.models import Connection, Variable
 
 
 class Test(unittest.TestCase):
