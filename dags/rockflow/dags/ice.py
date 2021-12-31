@@ -5,12 +5,19 @@ from rockflow.dags.const import *
 from rockflow.operators.ice import DailyHistoryImportOperator
 from rockflow.operators.sftp import SftpToOssOperator
 
+ice_dag_args = {
+    "owner": "daijunkai",
+    "depends_on_past": False,
+    "start_date": datetime(2021, 12, 30),
+    "email": ["daijunkai@flowcapai.com"],
+    "email_on_failure": True,
+    "email_on_retry": True,
+    "retries": 0,
+    "retry_delay": timedelta(minutes=1),
+    "schedule_interval": "@daily",
+}
 
-def get_date_time():
-    return datetime.today().strftime("%Y%m%d")
-
-
-with DAG("ice_sftp_sync", default_args=DEFAULT_DEBUG_ARGS) as ice_sftp_sync:
+with DAG("ice_sftp_sync", default_args=ice_dag_args) as ice_sftp_sync:
     sync_all_files = SftpToOssOperator(
         prefix=ice_sftp_sync.dag_id,
         work_dir="/FLOWAIHKFTPH1",
