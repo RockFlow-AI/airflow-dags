@@ -7,14 +7,16 @@ from airflow.models import BaseOperator
 from airflow.providers.alibaba.cloud.hooks.oss import OSSHook
 from stringcase import snakecase
 
+from rockflow.operators.const import DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_PROXY
+
 
 class OSSOperator(BaseOperator):
     def __init__(
             self,
-            region: str,
-            bucket_name: Optional[str] = None,
+            region: str = DEFAULT_REGION,
+            bucket_name: Optional[str] = DEFAULT_BUCKET_NAME,
             oss_conn_id: Optional[str] = 'oss_default',
-            proxy: Optional[dict] = None,
+            proxy: Optional[dict] = DEFAULT_PROXY,
             **kwargs,
     ) -> None:
         if 'task_id' not in kwargs:

@@ -2,10 +2,6 @@ import os
 import sys
 from datetime import datetime, timedelta
 
-from airflow.models import Variable
-
-from rockflow.common.proxy import Proxy
-
 if 'unittest' in sys.modules:
     from dotenv import load_dotenv, find_dotenv
 
@@ -13,11 +9,6 @@ if 'unittest' in sys.modules:
     print("os.environ:", {
         k: v for k, v in os.environ.items() if k.startswith("AIRFLOW")
     })
-
-DEFAULT_PROXY = Proxy(Variable.get("PROXY_URL"),
-                      Variable.get("PROXY_PORT")).proxies
-DEFAULT_REGION = Variable.get("REGION")
-DEFAULT_BUCKET_NAME = Variable.get("BUCKET_NAME")
 
 MYSQL_CONNECTION_FLOW_TICKER = 'mysql_flow_ticker'
 

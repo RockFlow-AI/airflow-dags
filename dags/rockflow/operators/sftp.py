@@ -42,5 +42,6 @@ class SftpToOssOperator(OSSOperator):
     def execute(self, context: Any):
         with Pool(self.pool_size) as pool:
             pool.map(
-                lambda file: self.sync_one(file), self.sftp_client.listdir_attr(self.work_dir)
+                lambda file: self.sync_one(
+                    file), self.sftp_client.listdir_attr(self.work_dir)
             )

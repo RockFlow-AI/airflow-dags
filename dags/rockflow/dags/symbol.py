@@ -33,148 +33,95 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
     # ------------------------------------------------------------
 
     nasdaq = NasdaqSymbolDownloadOperator(
-        key=NASDAQ_RAW_KEY,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=NASDAQ_RAW_KEY
     )
 
     nasdaq_parse = NasdaqSymbolParser(
         from_key="{{ task_instance.xcom_pull('" + nasdaq.task_id + "') }}",
-        key=SYMBOL_PARSE_KEY,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=SYMBOL_PARSE_KEY
     )
 
     hkex = HkexSymbolDownloadOperator(
-        key=HKEX_RAW_KEY,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=HKEX_RAW_KEY
     )
 
     hkex_parse = HkexSymbolParser(
         from_key="{{ task_instance.xcom_pull('" + hkex.task_id + "') }}",
-        key=SYMBOL_PARSE_KEY,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=SYMBOL_PARSE_KEY
     )
 
     sse = SseSymbolDownloadOperator(
-        key=SSE_RAW_KEY,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=SSE_RAW_KEY
     )
 
     sse_parse = SseSymbolParser(
         from_key="{{ task_instance.xcom_pull('" + sse.task_id + "') }}",
-        key=SYMBOL_PARSE_KEY,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=SYMBOL_PARSE_KEY
     )
 
     szse = SzseSymbolDownloadOperator(
-        key=SZSE_RAW_KEY,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=SZSE_RAW_KEY
     )
 
     szse_parse = SzseSymbolParser(
         from_key="{{ task_instance.xcom_pull('" + szse.task_id + "') }}",
-        key=SYMBOL_PARSE_KEY,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=SYMBOL_PARSE_KEY
     )
 
     merge_csv = MergeCsvList(
         from_key=SYMBOL_PARSE_KEY,
-        key=MERGE_CSV_KEY,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=MERGE_CSV_KEY
     )
 
     # ------------------------------------------------------------
 
     futu_cn = FutuBatchOperatorCn(
         from_key=MERGE_CSV_KEY,
-        key=symbol_dag.dag_id,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=symbol_dag.dag_id
     )
 
     extract_cn = FutuExtractHtml(
         task_id="futu_extract_html_cn",
         from_key="{{ task_instance.xcom_pull('" + futu_cn.task_id + "') }}",
-        key=symbol_dag.dag_id,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=symbol_dag.dag_id
     )
 
     format_cn = FutuFormatJsonCn(
         from_key="{{ task_instance.xcom_pull('" + extract_cn.task_id + "') }}",
-        key=symbol_dag.dag_id,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=symbol_dag.dag_id
     )
 
     futu_en = FutuBatchOperatorEn(
         from_key=MERGE_CSV_KEY,
-        key=symbol_dag.dag_id,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=symbol_dag.dag_id
     )
 
     extract_en = FutuExtractHtml(
         task_id="futu_extract_html_en",
         from_key="{{ task_instance.xcom_pull('" + futu_en.task_id + "') }}",
-        key=symbol_dag.dag_id,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=symbol_dag.dag_id
     )
 
     format_en = FutuFormatJsonEn(
         from_key="{{ task_instance.xcom_pull('" + extract_en.task_id + "') }}",
-        key=symbol_dag.dag_id,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=symbol_dag.dag_id
     )
 
     join_map = JoinMap(
         first="{{ task_instance.xcom_pull('" + format_cn.task_id + "') }}",
         second="{{ task_instance.xcom_pull('" + format_en.task_id + "') }}",
         merge_key=MERGE_CSV_KEY,
-        key=symbol_dag.dag_id,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=symbol_dag.dag_id
     )
 
     sink_es = SinkFutuSearch(
         from_key="{{ task_instance.xcom_pull('" + join_map.task_id + "') }}",
         elasticsearch_index_name='i_flow_ticker_stock_search',
         elasticsearch_index_setting=search_setting,
-        elasticsearch_conn_id='elasticsearch_default',
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        elasticsearch_conn_id='elasticsearch_default'
     )
 
     sink_futu_profile_op = SinkFutuProfile(
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
         oss_source_key="{{ task_instance.xcom_pull('" +
                        join_map.task_id + "') }}",
         mysql_table='flow_ticker_stock_profile',
@@ -185,32 +132,21 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
 
     yahoo = YahooBatchOperator(
         from_key=MERGE_CSV_KEY,
-        key=symbol_dag.dag_id,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=symbol_dag.dag_id
     )
 
     yahoo_extract_us = YahooExtractOperatorUS(
         from_key="symbol_download_yahoo",
-        key=symbol_dag.dag_id,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=symbol_dag.dag_id
     )
 
     yahoo_extract_none_us = YahooExtractOperatorNoneUS(
         from_key="symbol_download_yahoo",
-        key=symbol_dag.dag_id,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=symbol_dag.dag_id
     )
 
     summary_detail_mysql_us = SummaryDetailImportOperator(
         task_id='summary_detail_mysql_us',
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
         oss_source_key=yahoo_extract_us.save_key("SummaryDetail"),
         mysql_table='flow_ticker_summary_detail',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
@@ -218,8 +154,6 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
 
     summary_detail_mysql_none_us = SummaryDetailImportOperator(
         task_id='summary_detail_mysql_none_us',
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
         oss_source_key=yahoo_extract_none_us.save_key("SummaryDetail"),
         mysql_table='flow_ticker_summary_detail',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER

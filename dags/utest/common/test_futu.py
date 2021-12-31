@@ -2,7 +2,6 @@ import unittest
 
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn
 from rockflow.common.proxy import local_proxy
-from rockflow.dags.const import DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_PROXY
 from rockflow.dags.symbol import MERGE_CSV_KEY, sink_futu_profile_op
 from rockflow.operators.futu import JoinMap
 
@@ -31,10 +30,7 @@ class Test(unittest.TestCase):
             first="company_profile_batch_download_debug_futu_format_json_en_futu_company_profile_en/futu_format_json_en.json",
             second="company_profile_batch_download_debug_futu_format_json_cn_futu_company_profile_cn/futu_format_json_cn.json",
             merge_key=MERGE_CSV_KEY,
-            key="company_profile_batch_download",
-            region=DEFAULT_REGION,
-            bucket_name=DEFAULT_BUCKET_NAME,
-            proxy=DEFAULT_PROXY
+            key="company_profile_batch_download"
         )
         print(join_map.content)
         self.assertIsNotNone(join_map.content)

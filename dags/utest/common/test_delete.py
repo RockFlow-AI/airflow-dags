@@ -1,7 +1,6 @@
 import unittest
 
 from rockflow.common.rename import symbol_match, symbol_rename
-from rockflow.dags.const import *
 from rockflow.operators.rename import RenameOss, DeleteInvalidOss
 
 
@@ -50,20 +49,14 @@ class TestDelete(unittest.TestCase):
     def rename(self, key):
         self.assertIsNone(
             RenameOss(
-                prefix=key,
-                region=DEFAULT_REGION,
-                bucket_name=DEFAULT_BUCKET_NAME,
-                proxy=DEFAULT_PROXY
+                prefix=key
             ).execute("")
         )
 
     def delete(self, key):
         self.assertIsNone(
             DeleteInvalidOss(
-                prefix=key,
-                region=DEFAULT_REGION,
-                bucket_name=DEFAULT_BUCKET_NAME,
-                proxy=DEFAULT_PROXY
+                prefix=key
             ).execute("")
         )
 

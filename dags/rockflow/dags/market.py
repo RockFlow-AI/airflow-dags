@@ -6,15 +6,10 @@ from rockflow.operators.market import *
 
 with DAG("market_download", default_args=DEFAULT_DEBUG_ARGS) as mic:
     mic_download = MicDownloadOperator(
-        key=mic.dag_id,
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
-        proxy=DEFAULT_PROXY
+        key=mic.dag_id
     )
 
     mic_to_mysql = MarketImportOperator(
-        region=DEFAULT_REGION,
-        bucket_name=DEFAULT_BUCKET_NAME,
         oss_source_key=mic_download.oss_key,
         mysql_table='flow_ticker_market',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER

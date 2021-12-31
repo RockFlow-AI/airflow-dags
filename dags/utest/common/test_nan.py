@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from airflow.exceptions import AirflowException
 
-from rockflow.dags.const import *
 from rockflow.operators.symbol import MergeCsvList
 
 
@@ -26,9 +25,7 @@ class TestYahoo(unittest.TestCase):
     def test_merge_symbol(self):
         merge = MergeCsvList(
             from_key="symbol_download_parse",
-            key="symbol_download_merge",
-            region=DEFAULT_REGION,
-            bucket_name=DEFAULT_BUCKET_NAME
+            key="symbol_download_merge"
         )
         self.assertRaises(AirflowException, lambda: merge.execute(""))
 

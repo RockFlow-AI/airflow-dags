@@ -4,8 +4,6 @@ from unittest import mock
 from airflow.hooks.base import BaseHook
 from airflow.models import Connection
 
-from rockflow.dags.const import *
-
 
 class Test(unittest.TestCase):
     def test_mock_env(self):
