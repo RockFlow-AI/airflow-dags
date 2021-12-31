@@ -18,7 +18,7 @@ with DAG("ice_sftp_sync", default_args=DEFAULT_DEBUG_ARGS) as ice_sftp_sync:
     )
 
     daily_history = DailyHistoryImportOperator(
-        oss_source_key=f"{ice_sftp_sync.dag_id}/K16D75_{get_date_time()}.SRV",
+        oss_source_key=ice_sftp_sync.dag_id + "/K16D75_{{ yesterday_ds_nodash }}.SRV",
         mysql_table='flow_ticker_stock_price_daily',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
