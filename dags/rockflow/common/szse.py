@@ -51,6 +51,9 @@ class SZSE(Downloader):
         result['yahoo'] = result['raw'].apply(
             lambda x: "%06d.SZ" % x
         )
+        result['ice'] = result['raw'].apply(
+            lambda x: "%05d.SZ" % x
+        )
         result['futu'] = result['raw'].apply(
             lambda x: "%06d-SZ" % x
         )

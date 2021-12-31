@@ -60,6 +60,9 @@ class Nasdaq(Downloader):
         result['yahoo'] = result['raw'].apply(
             lambda x: x.strip().replace("^", "-P").replace("/", "-").upper()
         )
+        result['ice'] = result['raw'].apply(
+            lambda x: x.strip().replace("^", ".PR").replace("/", "-").upper()
+        )
         result['futu'] = result['yahoo'].apply(
             lambda x: "%s-US" % x
         )

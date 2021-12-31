@@ -61,6 +61,9 @@ class SSE(Downloader):
         result['yahoo'] = result['raw'].apply(
             lambda x: "%d.SS" % x
         )
+        result['ice'] = result['raw'].apply(
+            lambda x: "%d.SH" % x
+        )
         result['futu'] = result['raw'].apply(
             lambda x: "%d-SH" % x
         )
