@@ -3,6 +3,7 @@ from io import BytesIO
 from typing import Optional
 
 import pandas as pd
+
 from rockflow.common.downloader import Downloader
 
 
@@ -51,7 +52,9 @@ class Nasdaq(Downloader):
 
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         def rockflow_symbol(raw: str):
-            return futu_symbol(raw)
+            return raw.strip() \
+                .replace("^", "-") \
+                .replace("/", ".").upper()
 
         def yahoo_symbol(raw: str):
             return raw.strip() \
