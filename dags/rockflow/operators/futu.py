@@ -44,7 +44,7 @@ class FutuBatchOperator(OSSOperator):
         obj = cls(
             symbol=line['rockflow'],
             futu_ticker=line['futu'],
-            prefix=self.prefix,
+            prefix=self.key,
             proxy=self.proxy
         )
         if self.object_not_update_for_a_week(obj.oss_key):

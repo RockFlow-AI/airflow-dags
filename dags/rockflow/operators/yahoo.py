@@ -43,7 +43,7 @@ class YahooBatchOperator(OSSOperator):
         obj = Yahoo(
             symbol=line['rockflow'],
             yahoo=line['yahoo'],
-            prefix=self.prefix,
+            prefix=self.key,
             proxy=self.proxy
         )
         if self.object_not_update_for_a_day(obj.oss_key):

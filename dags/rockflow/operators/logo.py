@@ -37,7 +37,7 @@ class LogoBatchOperator(OSSOperator):
             return
         obj = cls(
             symbol=symbol,
-            prefix=self.prefix,
+            prefix=self.key,
             proxy=self.proxy
         )
         if self.object_not_update_for_a_week(obj.oss_key):
