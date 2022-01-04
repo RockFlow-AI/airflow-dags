@@ -318,9 +318,6 @@ class SinkFutuProfile(OssToMysqlOperator):
         super().__init__(**kwargs)
 
     def extract_data(self) -> pd.DataFrame:
-        return pd.DataFrame.from_dict(
-            json.load(
-                BytesIO(self.get_object(self.oss_source_key).read()),
-            ),
-            orient="index"
+        return self.extract_index_dict_to_df(
+            self.extract_index_dict()
         )
