@@ -9,6 +9,7 @@ import pandas as pd
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
 from rockflow.common.map_helper import join_map, join_list
+from rockflow.operators.const import DEFAULT_POOL_SIZE
 from rockflow.operators.elasticsearch import ElasticsearchOperator
 from rockflow.operators.mysql import OssToMysqlOperator
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator

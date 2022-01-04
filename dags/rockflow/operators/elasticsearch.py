@@ -2,7 +2,6 @@ import json
 from typing import Dict
 
 from airflow.providers.elasticsearch.hooks.elasticsearch import ElasticsearchHook
-
 from rockflow.operators.oss import OSSOperator
 
 

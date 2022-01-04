@@ -1,11 +1,9 @@
 import json
-import os
 from typing import Optional, Any, Dict
 
 import pandas as pd
 from airflow.providers.mysql.hooks.mysql import MySqlHook
 from pangres import upsert
-
 from rockflow.common.pandas_helper import map_frame
 from rockflow.operators.oss import OSSOperator
 

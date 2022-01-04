@@ -7,6 +7,7 @@ from rockflow.common.nasdaq import Nasdaq
 from rockflow.common.pandas_helper import merge_data_frame_by_column
 from rockflow.common.sse import SSE1
 from rockflow.common.szse import SZSE1
+from rockflow.operators.const import DEFAULT_POOL_SIZE
 from rockflow.operators.downloader import DownloadOperator
 from rockflow.operators.oss import OSSSaveOperator
 

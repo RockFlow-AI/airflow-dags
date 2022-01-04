@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Optional
 
 import pandas as pd
-
 from rockflow.common.pandas_helper import map_frame
 from rockflow.operators.mysql import OssToMysqlOperator
 

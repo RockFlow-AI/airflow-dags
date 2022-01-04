@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Optional
 
 import pandas as pd
-
 from rockflow.common.rename import new_symbol_with_market
 from rockflow.operators.mysql import OssBatchToMysqlOperator
 

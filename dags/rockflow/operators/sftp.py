@@ -4,6 +4,7 @@ from tempfile import NamedTemporaryFile
 from typing import Any
 
 from airflow.providers.ssh.hooks.ssh import SSHHook
+from rockflow.operators.const import DEFAULT_POOL_SIZE
 from rockflow.operators.oss import OSSOperator
 
 

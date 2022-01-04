@@ -3,7 +3,6 @@ import unittest
 import numpy as np
 import pandas as pd
 from airflow.exceptions import AirflowException
-
 from rockflow.operators.symbol import MergeCsvList
 
 

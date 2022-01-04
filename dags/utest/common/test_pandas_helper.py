@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 from pandas.testing import assert_frame_equal
-
 from rockflow.common.pandas_helper import *
 
 

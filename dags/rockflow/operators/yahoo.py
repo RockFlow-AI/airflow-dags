@@ -9,6 +9,7 @@ from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.pandas_helper import merge_data_frame_by_index
 from rockflow.common.yahoo import Yahoo
 from rockflow.operators.common import is_none_us_symbol, is_us_symbol
+from rockflow.operators.const import DEFAULT_POOL_SIZE
 from rockflow.operators.mysql import OssToMysqlOperator
 from rockflow.operators.oss import OSSOperator, OSSSaveOperator
 from stringcase import snakecase

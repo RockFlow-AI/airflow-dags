@@ -1,7 +1,6 @@
 import httpx
-from stringcase import snakecase
-
 from rockflow.common.header import user_agent_headers
+from stringcase import snakecase
 
 
 class Downloader(object):
