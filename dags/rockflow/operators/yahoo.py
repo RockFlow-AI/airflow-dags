@@ -57,7 +57,7 @@ class YahooBatchOperator(OSSOperator):
         self.symbols.apply(
             self.save_one,
             axis=1,
-            args=(self.key)
+            args=(self.key,)
         )
 
 

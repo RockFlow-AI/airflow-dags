@@ -66,7 +66,7 @@ class FutuBatchOperator(OSSOperator):
         self.symbols.apply(
             self.save_one,
             axis=1,
-            args=(self.cls)
+            args=(self.cls,)
         )
         return self.oss_key
 
