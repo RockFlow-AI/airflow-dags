@@ -4,6 +4,7 @@ import pandas as pd
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.logo import Public, Etoro
 from rockflow.operators.common import is_none_us_symbol
+from rockflow.operators.const import GLOBAL_DEBUG
 from rockflow.operators.oss import OSSOperator
 
 
@@ -23,10 +24,12 @@ class LogoBatchOperator(OSSOperator):
     def object_not_update_for_a_week(self, key: str):
         if not self.object_exists(key):
             return True
+        elif GLOBAL_DEBUG:
+            return False
         try:
             return GmtDatetimeCheck(
                 self.last_modified(key), weeks=1
-            )
+            ).check
         except Exception as e:
             self.log.error(f"error: {str(e)}")
             return True

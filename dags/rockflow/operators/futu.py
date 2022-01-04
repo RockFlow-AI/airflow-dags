@@ -9,7 +9,7 @@ import pandas as pd
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
 from rockflow.common.map_helper import join_map, join_list
-from rockflow.operators.const import DEFAULT_POOL_SIZE
+from rockflow.operators.const import DEFAULT_POOL_SIZE, GLOBAL_DEBUG
 from rockflow.operators.elasticsearch import ElasticsearchOperator
 from rockflow.operators.mysql import OssToMysqlOperator
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
@@ -32,10 +32,12 @@ class FutuBatchOperator(OSSOperator):
     def object_not_update_for_a_week(self, key: str) -> bool:
         if not self.object_exists(key):
             return True
+        elif GLOBAL_DEBUG:
+            return False
         try:
             return GmtDatetimeCheck(
                 self.last_modified(key), weeks=1
-            )
+            ).check
         except Exception as e:
             self.log.error(f"futu batch operator error: {str(e)}")
             return True

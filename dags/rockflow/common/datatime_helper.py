@@ -27,5 +27,5 @@ class GmtDatetimeCheck:
         )
 
     @property
-    def check(self):
+    def check(self) -> bool:
         return self.now > self.future
