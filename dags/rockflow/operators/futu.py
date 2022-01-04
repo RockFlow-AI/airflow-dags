@@ -177,7 +177,7 @@ class FutuFormatJson(OSSSaveOperator):
         result = [
             self.cls.format_(self.cls.language(), i)
             for i in json.load(
-                BytesIO(self.get_object_(self.bucket, self.from_key).read())
+                BytesIO(self.get_object(self.from_key).read())
             )
         ]
         return json.dumps(result, ensure_ascii=False)
@@ -237,11 +237,11 @@ class JoinMap(OSSSaveOperator):
     @property
     def content(self):
         result = join_map(
-            self.load_merge_pd(),
             join_list(
                 self.load_json(self.first),
                 self.load_json(self.second)
-            )
+            ),
+            self.load_merge_pd()  # 通过symbol map过滤
         )
         return json.dumps(result, ensure_ascii=False)
 
