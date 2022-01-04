@@ -3,7 +3,6 @@ from io import BytesIO
 from typing import Optional
 
 import pandas as pd
-
 from rockflow.common.downloader import Downloader
 
 
@@ -51,20 +50,38 @@ class Nasdaq(Downloader):
         return 60
 
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
+        def rockflow_symbol(raw: str):
+            return futu_symbol(raw)
+
+        def yahoo_symbol(raw: str):
+            return x.strip() \
+                .replace("^", "-P") \
+                .replace("/", "-").upper()
+
+        def ice_symbol(raw: str):
+            return x.strip() \
+                .replace("^", ".PR") \
+                .replace("/", ".").upper()
+
+        def futu_symbol(raw: str):
+            return "%s-US" % x.strip() \
+                .replace("^", "-") \
+                .replace("/", ".").upper()
+
         result = pd.DataFrame()
         result['raw'] = df['symbol']
         result['symbol'] = result['raw'].astype(str)
         result['rockflow'] = result['raw'].apply(
-            lambda x: x.strip().replace("^", "-P").replace("/", "-").upper()
+            lambda x: rockflow_symbol(x)
         )
         result['yahoo'] = result['raw'].apply(
-            lambda x: x.strip().replace("^", "-P").replace("/", "-").upper()
+            lambda x: yahoo_symbol(x)
         )
         result['ice'] = result['raw'].apply(
-            lambda x: x.strip().replace("^", ".PR").replace("/", "-").upper()
+            lambda x: ice_symbol(x)
         )
-        result['futu'] = result['yahoo'].apply(
-            lambda x: "%s-US" % x
+        result['futu'] = result['raw'].apply(
+            lambda x: futu_symbol(x)
         )
         result['market'] = "US"
         return result
