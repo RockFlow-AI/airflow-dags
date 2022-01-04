@@ -5,17 +5,14 @@ from multiprocessing.pool import ThreadPool as Pool
 from pathlib import Path
 from typing import Any, Dict
 
-import oss2
 import pandas as pd
-from stringcase import snakecase
-
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
 from rockflow.common.map_helper import join_map, join_list
-from rockflow.operators.const import DEFAULT_POOL_SIZE
 from rockflow.operators.elasticsearch import ElasticsearchOperator
 from rockflow.operators.mysql import OssToMysqlOperator
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
+from stringcase import snakecase
 
 
 class FutuBatchOperator(OSSOperator):
@@ -31,33 +28,29 @@ class FutuBatchOperator(OSSOperator):
     def symbols(self) -> pd.DataFrame:
         return pd.read_csv(self.get_object(self.from_key))
 
-    @staticmethod
-    def object_not_update_for_a_week(bucket: oss2.api.Bucket, key: str):
-        # TODO(speed up)
-        # if FutuBatchOperator.object_exists_(bucket, key):
-        #     return True
-        if not FutuBatchOperator.object_exists_(bucket, key):
-            return False
-        return GmtDatetimeCheck(
-            FutuBatchOperator.last_modified_(bucket, key), weeks=1
-        )
+    def object_not_update_for_a_week(self, key: str) -> bool:
+        if not self.object_exists_(key):
+            return True
+        try:
+            return GmtDatetimeCheck(
+                self.last_modified(key), weeks=1
+            )
+        except Exception as e:
+            self.log.error(f"futu batch operator error: {str(e)}")
+            return True
 
-    @staticmethod
-    def call(line: pd.Series, cls, prefix: str, proxy, bucket):
+    def save_one(self, line: pd.Series, cls):
         obj = cls(
             symbol=line['rockflow'],
             futu_ticker=line['futu'],
-            prefix=prefix,
-            proxy=proxy
+            prefix=self.prefix,
+            proxy=self.proxy
         )
-        try:
-            if not FutuBatchOperator.object_not_update_for_a_week(bucket, obj.oss_key):
-                r = obj.get()
-                if not r:
-                    return
-                FutuBatchOperator.put_object_(bucket, obj.oss_key, r.content)
-        except Exception as e:
-            print(f"Errors: {e}")
+        if self.object_not_update_for_a_week(obj.oss_key):
+            r = obj.get()
+            if not r:
+                return
+            self.put_object(obj.oss_key, r.content)
 
     @property
     def cls(self):
@@ -68,11 +61,11 @@ class FutuBatchOperator(OSSOperator):
         return f"{self.key}_{snakecase(self.cls.__name__)}"
 
     def execute(self, context: Any):
-        print(f"symbol: {self.symbols[:10]}")
+        self.log.info(f"symbol: {self.symbols}")
         self.symbols.apply(
-            FutuBatchOperator.call,
+            self.save_one,
             axis=1,
-            args=(self.cls, self.key, self.proxy, self.bucket)
+            args=(self.cls)
         )
         return self.oss_key
 
@@ -119,10 +112,12 @@ class FutuExtractHtml(OSSSaveOperator):
     def __init__(
             self,
             from_key: str,
+            pool_size: int = 16,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
+        self.pool_size = pool_size
 
     @property
     def oss_key(self):
@@ -131,29 +126,24 @@ class FutuExtractHtml(OSSSaveOperator):
             f"{self.snakecase_class_name}.json"
         )
 
-    @staticmethod
-    def symbol(obj):
+    def symbol(self, obj):
         return Path(obj.key).stem
 
-    @staticmethod
-    def extract_data(bucket, obj):
-        return FutuCompanyProfile.extract_data(
-            FutuExtractHtml.get_object_(
-                bucket, obj.key), FutuExtractHtml.symbol(obj)
-        )
-
-    @staticmethod
-    def task(bucket, obj):
+    def extract_data(self, obj):
         if obj.is_prefix():
             return
-        return FutuExtractHtml.extract_data(bucket, obj)
+        return FutuCompanyProfile.extract_data(
+            self.get_object(obj.key), self.symbol(obj)
+        )
+
+    def iterator(self):
+        return self.object_iterator(os.path.join(self.from_key, ""))
 
     @property
     def content(self):
-        with Pool(DEFAULT_POOL_SIZE) as pool:
+        with Pool(self.pool_size) as pool:
             result = pool.map(
-                lambda x: FutuExtractHtml.task(self.bucket, x), self.object_iterator_(
-                    self.bucket, os.path.join(self.from_key, ""))
+                lambda x: self.extract_data(x), self.iterator()
             )
             return json.dumps(result, ensure_ascii=False)
 

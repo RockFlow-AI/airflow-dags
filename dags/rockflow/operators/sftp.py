@@ -4,7 +4,6 @@ from tempfile import NamedTemporaryFile
 from typing import Any
 
 from airflow.providers.ssh.hooks.ssh import SSHHook
-
 from rockflow.operators.oss import OSSOperator
 
 
@@ -13,6 +12,7 @@ class SftpToOssOperator(OSSOperator):
             self,
             prefix: str,
             work_dir: str,
+            pool_size: int = 5,
             ssh_conn_id: str = 'ssh_default',
             **kwargs,
     ) -> None:
@@ -20,7 +20,7 @@ class SftpToOssOperator(OSSOperator):
         self.prefix = prefix
         self.work_dir = work_dir
         self.ssh_conn_id = ssh_conn_id
-        self.pool_size = 5
+        self.pool_size = pool_size
         self.ssh_hook = SSHHook(ssh_conn_id=self.ssh_conn_id)
 
     @property

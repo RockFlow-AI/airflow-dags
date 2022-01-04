@@ -48,7 +48,7 @@ class HistoryImportOperator(OssBatchToMysqlOperator):
                 lambda row: change_date_to_timestamp(obj, row), axis=1)
             result['symbol'] = get_symbol(obj.key)
 
-        self.log.info(f"{result[:10]}")
+        self.log.info(f"{result}")
         result.set_index("id", inplace=True)
         return result
 

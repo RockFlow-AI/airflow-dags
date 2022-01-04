@@ -2,7 +2,6 @@ import json
 import os
 
 from bs4 import BeautifulSoup
-
 from rockflow.common.downloader import Downloader
 
 
@@ -88,19 +87,6 @@ class FutuCompanyProfileEn(FutuCompanyProfile):
         new_table["exchange"] = table_dict.get("Market") if table_dict.get("Market") else table_dict.get(
             "Listed exchange")
         return new_table
-
-
-# class FutuCompanyProfileHk(FutuCompanyProfile):
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#
-#     @property
-#     def language(self):
-#         return "hk"
-#
-#     @property
-#     def url(self):
-#         return f"https://www.futunn.com/{self.language}/stock/{self.futu_ticker}/company-profile"
 
 
 class FutuCompanyProfileCn(FutuCompanyProfile):

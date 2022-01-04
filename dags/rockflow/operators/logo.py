@@ -1,8 +1,6 @@
 from typing import Any
 
-import oss2
 import pandas as pd
-
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.logo import Public, Etoro
 from rockflow.operators.common import is_none_us_symbol
@@ -22,43 +20,42 @@ class LogoBatchOperator(OSSOperator):
     def symbols(self) -> pd.DataFrame:
         return pd.read_csv(self.get_object(self.from_key))
 
-    @staticmethod
-    def object_not_update_for_a_week(bucket: oss2.api.Bucket, key: str):
-        # TODO(speed up)
-        if LogoBatchOperator.object_exists_(bucket, key):
+    def object_not_update_for_a_week(self, key: str):
+        if not self.object_exists(key):
             return True
-        if not LogoBatchOperator.object_exists_(bucket, key):
-            return False
-        return GmtDatetimeCheck(
-            LogoBatchOperator.last_modified_(bucket, key), weeks=1
-        )
+        try:
+            return GmtDatetimeCheck(
+                self.last_modified(key), weeks=1
+            )
+        except Exception as e:
+            self.log.error(f"error: {str(e)}")
+            return True
 
-    @staticmethod
-    def call(line: pd.Series, cls, prefix, proxy, bucket):
+    def save_one(self, line: pd.Series, cls):
         symbol = line['yahoo']
         if is_none_us_symbol(symbol):
             return
         obj = cls(
             symbol=symbol,
-            prefix=prefix,
-            proxy=proxy
+            prefix=self.prefix,
+            proxy=self.proxy
         )
-        if not LogoBatchOperator.object_not_update_for_a_week(bucket, obj.oss_key):
+        if self.object_not_update_for_a_week(obj.oss_key):
             r = obj.get()
             if not r:
                 return
-            LogoBatchOperator.put_object_(bucket, obj.oss_key, r.content)
+            self.put_object(obj.oss_key, r.content)
 
     @property
     def cls(self):
         raise NotImplementedError()
 
     def execute(self, context: Any):
-        self.log.info(f"symbol: {self.symbols[:10]}")
+        self.log.info(f"symbol: {self.symbols}")
         self.symbols.apply(
-            LogoBatchOperator.call,
+            self.save_one,
             axis=1,
-            args=(self.cls, self.key, self.proxy, self.bucket)
+            args=(self.cls, self.key)
         )
 
 

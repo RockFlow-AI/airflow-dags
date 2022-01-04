@@ -60,9 +60,9 @@ class OssToMysqlOperator(OSSOperator):
         self.execute_sql(f"SHOW CREATE TABLE {self.mysql_table}")
 
     def transform(self, df: Optional[pd.DataFrame]) -> Optional[pd.DataFrame]:
-        self.log.info(f"{df[:10]}")
+        self.log.info(f"{df}")
         result = map_frame(df, self.mapping)
-        self.log.info(f"{result[:10]}")
+        self.log.info(f"{result}")
         result.set_index(self.index_col, inplace=True)
         return result
 
@@ -106,9 +106,9 @@ class OssBatchToMysqlOperator(OSSOperator):
         return pd.read_csv(self.get_object(obj.key))
 
     def transform(self, obj, df: Optional[pd.DataFrame]) -> Optional[pd.DataFrame]:
-        self.log.info(f"{df[:10]}")
+        self.log.info(f"{df}")
         result = map_frame(df, self.mapping)
-        self.log.info(f"{result[:10]}")
+        self.log.info(f"{result}")
         return result
 
     def load_to_sql(self, obj, df: Optional[pd.DataFrame]):

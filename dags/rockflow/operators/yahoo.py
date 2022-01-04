@@ -4,17 +4,14 @@ import os
 from multiprocessing.pool import ThreadPool as Pool
 from typing import Any, Dict
 
-import oss2
 import pandas as pd
-from stringcase import snakecase
-
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.pandas_helper import merge_data_frame_by_index
 from rockflow.common.yahoo import Yahoo
 from rockflow.operators.common import is_none_us_symbol, is_us_symbol
-from rockflow.operators.const import DEFAULT_POOL_SIZE
 from rockflow.operators.mysql import OssToMysqlOperator
 from rockflow.operators.oss import OSSOperator, OSSSaveOperator
+from stringcase import snakecase
 
 
 class YahooBatchOperator(OSSOperator):
@@ -30,37 +27,36 @@ class YahooBatchOperator(OSSOperator):
     def symbols(self) -> pd.DataFrame:
         return pd.read_csv(self.get_object(self.from_key))
 
-    @staticmethod
-    def object_not_update_for_a_week(bucket: oss2.api.Bucket, key: str):
-        # TODO(speed up)
-        # if YahooBatchOperator.object_exists_(bucket, key):
-        #     return True
-        if not YahooBatchOperator.object_exists_(bucket, key):
-            return False
-        return GmtDatetimeCheck(
-            YahooBatchOperator.last_modified_(bucket, key), days=1
-        )
+    def object_not_update_for_a_day(self, key: str) -> bool:
+        if not self.object_exists(key):
+            return True
+        try:
+            return GmtDatetimeCheck(
+                self.last_modified(key), days=1
+            )
+        except Exception as e:
+            self.log.error(f"error: {str(e)}")
+            return True
 
-    @staticmethod
-    def call(line: pd.Series, prefix, proxy, bucket):
+    def save_one(self, line: pd.Series):
         obj = Yahoo(
             symbol=line['rockflow'],
             yahoo=line['yahoo'],
-            prefix=prefix,
-            proxy=proxy
+            prefix=self.prefix,
+            proxy=self.proxy
         )
-        if not YahooBatchOperator.object_not_update_for_a_week(bucket, obj.oss_key):
+        if self.object_not_update_for_a_day(obj.oss_key):
             r = obj.get()
             if not r:
                 return
-            YahooBatchOperator.put_object_(bucket, obj.oss_key, r.content)
+            self.put_object(obj.oss_key, r.content)
 
     def execute(self, context: Any):
-        self.log.info(f"symbol: {self.symbols[:10]}")
+        self.log.info(f"symbol: {self.symbols}")
         self.symbols.apply(
-            YahooBatchOperator.call,
+            self.save_one,
             axis=1,
-            args=(self.key, self.proxy, self.bucket)
+            args=(self.key)
         )
 
 
@@ -79,10 +75,13 @@ class YahooExtractOperator(OSSSaveOperator):
     def __init__(self,
                  from_key: str,
                  symbol_key: str,
+                 pool_size: int = 12,
                  **kwargs) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
         self.symbol_key = symbol_key
+
+        self.pool_size = pool_size
 
     @property
     def oss_key(self):
@@ -121,7 +120,7 @@ class YahooExtractOperator(OSSSaveOperator):
         return symbol_df["rockflow"].to_list()
 
     def merge_data(self):
-        with Pool(DEFAULT_POOL_SIZE) as pool:
+        with Pool(self.pool_size) as pool:
             result = pool.map(
                 lambda x: self.read_one(x), self.symbol_list
             )
