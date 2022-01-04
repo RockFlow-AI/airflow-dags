@@ -50,6 +50,7 @@ class OssToMysqlOperator(OSSOperator):
             orient='index'
         )
         result.index.rename(self.index_col, inplace=True)
+        self.log.error(result[result.index.duplicated(keep=False)])
         return result
 
     def extract_data(self) -> pd.DataFrame:
