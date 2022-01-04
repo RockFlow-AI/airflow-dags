@@ -141,7 +141,8 @@ class FutuExtractHtml(OSSSaveOperator):
     def content(self):
         with Pool(self.pool_size) as pool:
             result = pool.map(
-                lambda x: self.extract_data(x), self.path_object_iterator(self.from_key)
+                lambda x: self.extract_data(
+                    x), self.path_object_iterator(self.from_key)
             )
             return json.dumps(result, ensure_ascii=False)
 

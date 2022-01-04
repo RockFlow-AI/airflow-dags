@@ -1,4 +1,5 @@
 import os
+from multiprocessing.pool import ThreadPool as Pool
 
 import pandas as pd
 from airflow import AirflowException
@@ -138,7 +139,8 @@ class MergeCsvList(OSSSaveOperator):
     def get_data_frames(self):
         with Pool(self.pool_size) as pool:
             return pool.map(
-                lambda x: self.delete_one(x), self.path_object_iterator(self.from_key)
+                lambda x: self.delete_one(
+                    x), self.path_object_iterator(self.from_key)
             )
 
     @property

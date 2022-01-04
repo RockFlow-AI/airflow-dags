@@ -20,7 +20,7 @@ class HKEX(Downloader):
         return df[
             (df['分類'] == '股本') |
             (df['分類'] == '房地產投資信託基金')
-            ]
+        ]
 
     def format_symbol(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()

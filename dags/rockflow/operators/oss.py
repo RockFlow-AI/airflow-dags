@@ -217,7 +217,8 @@ class OSSDeleteOperator(OSSOperator):
     def execute(self, context):
         with Pool(self.pool_size) as pool:
             pool.map(
-                lambda x: self.delete_one(x), self.path_object_iterator(self.prefix)
+                lambda x: self.delete_one(
+                    x), self.path_object_iterator(self.prefix)
             )
 
 
@@ -249,5 +250,6 @@ class OSSRenameOperator(OSSOperator):
     def execute(self, context):
         with Pool(self.pool_size) as pool:
             pool.map(
-                lambda x: self.move_one(x), self.path_object_iterator(self.prefix)
+                lambda x: self.move_one(
+                    x), self.path_object_iterator(self.prefix)
             )
