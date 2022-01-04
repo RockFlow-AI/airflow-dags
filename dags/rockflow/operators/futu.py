@@ -30,7 +30,7 @@ class FutuBatchOperator(OSSOperator):
         return pd.read_csv(self.get_object(self.from_key))
 
     def object_not_update_for_a_week(self, key: str) -> bool:
-        if not self.object_exists_(key):
+        if not self.object_exists(key):
             return True
         try:
             return GmtDatetimeCheck(
