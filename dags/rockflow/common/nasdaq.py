@@ -54,17 +54,17 @@ class Nasdaq(Downloader):
             return futu_symbol(raw)
 
         def yahoo_symbol(raw: str):
-            return x.strip() \
+            return raw.strip() \
                 .replace("^", "-P") \
                 .replace("/", "-").upper()
 
         def ice_symbol(raw: str):
-            return x.strip() \
+            return raw.strip() \
                 .replace("^", ".PR") \
                 .replace("/", ".").upper()
 
         def futu_symbol(raw: str):
-            return "%s-US" % x.strip() \
+            return "%s-US" % raw.strip() \
                 .replace("^", "-") \
                 .replace("/", ".").upper()
 
