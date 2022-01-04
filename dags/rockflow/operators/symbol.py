@@ -139,7 +139,7 @@ class MergeCsvList(OSSSaveOperator):
     def get_data_frames(self):
         with Pool(self.pool_size) as pool:
             return pool.map(
-                lambda x: self.delete_one(
+                lambda x: self.read_one(
                     x), self.path_object_iterator(self.from_key)
             )
 
