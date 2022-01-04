@@ -3,6 +3,7 @@ from multiprocessing.pool import ThreadPool as Pool
 
 import pandas as pd
 from airflow import AirflowException
+
 from rockflow.common.hkex import HKEX
 from rockflow.common.nasdaq import Nasdaq
 from rockflow.common.pandas_helper import merge_data_frame_by_column

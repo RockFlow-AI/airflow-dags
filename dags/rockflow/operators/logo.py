@@ -1,6 +1,7 @@
 from typing import Any
 
 import pandas as pd
+
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.logo import Public, Etoro
 from rockflow.operators.common import is_none_us_symbol

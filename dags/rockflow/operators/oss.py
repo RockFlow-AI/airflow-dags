@@ -6,9 +6,10 @@ import oss2
 from airflow import AirflowException
 from airflow.models import BaseOperator
 from airflow.providers.alibaba.cloud.hooks.oss import OSSHook
+from stringcase import snakecase
+
 from rockflow.operators.const import DEFAULT_POOL_SIZE
 from rockflow.operators.const import DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_PROXY
-from stringcase import snakecase
 
 
 class OSSOperator(BaseOperator):
