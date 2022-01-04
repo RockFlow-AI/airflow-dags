@@ -7,3 +7,4 @@ DEFAULT_PROXY = Proxy(Variable.get("PROXY_URL"),
                       Variable.get("PROXY_PORT")).proxies
 DEFAULT_REGION = Variable.get("REGION")
 DEFAULT_BUCKET_NAME = Variable.get("BUCKET_NAME")
+GLOBAL_DEBUG = (Variable.get("DEBUG", "false") == "true")
