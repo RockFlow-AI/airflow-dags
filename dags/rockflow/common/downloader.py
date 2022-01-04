@@ -65,7 +65,8 @@ class Downloader(object):
         return r.status_code == 200
 
     def get(self) -> httpx.Response:
-        print(f"url: {self.url}, proxy: {self.proxy}")
+        print(
+            f"url: {self.url}, params: {self.params}, headers: {self.headers}, timeout: {self.timeout}, proxy: {self.proxy}")
         r = httpx.get(
             url=self.url,
             params=self.params,
