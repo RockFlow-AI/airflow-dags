@@ -112,7 +112,7 @@ class FutuExtractHtml(OSSSaveOperator):
     def __init__(
             self,
             from_key: str,
-            pool_size: int = 16,
+            pool_size: int = DEFAULT_POOL_SIZE,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
@@ -136,14 +136,11 @@ class FutuExtractHtml(OSSSaveOperator):
             self.get_object(obj.key), self.symbol(obj)
         )
 
-    def iterator(self):
-        return self.object_iterator(os.path.join(self.from_key, ""))
-
     @property
     def content(self):
         with Pool(self.pool_size) as pool:
             result = pool.map(
-                lambda x: self.extract_data(x), self.iterator()
+                lambda x: self.extract_data(x), self.path_object_iterator(self.from_key)
             )
             return json.dumps(result, ensure_ascii=False)
 

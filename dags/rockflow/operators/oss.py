@@ -1,13 +1,13 @@
 import os
+from multiprocessing.pool import ThreadPool as Pool
 from typing import Optional, Any
 
 import oss2
 from airflow import AirflowException
 from airflow.models import BaseOperator
 from airflow.providers.alibaba.cloud.hooks.oss import OSSHook
-from stringcase import snakecase
-
 from rockflow.operators.const import DEFAULT_REGION, DEFAULT_BUCKET_NAME, DEFAULT_PROXY
+from stringcase import snakecase
 
 
 class OSSOperator(BaseOperator):
@@ -52,6 +52,9 @@ class OSSOperator(BaseOperator):
 
     def object_iterator(self, prefix: str):
         return self.object_iterator_(self.bucket, prefix)
+
+    def path_object_iterator(self, prefix: str):
+        return self.object_iterator(os.path.join(prefix, ""))
 
     @staticmethod
     def get_object_(bucket: oss2.api.Bucket, key: str):
@@ -195,37 +198,38 @@ class OSSDeleteOperator(OSSOperator):
     def __init__(
             self,
             prefix: str,
+            pool_size: int = DEFAULT_POOL_SIZE,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.prefix = prefix
-
-    @property
-    def oss_prefix(self):
-        return os.path.join(self.prefix, "")
+        self.pool_size = pool_size
 
     def to_delete(self, obj):
         raise NotImplementedError()
 
+    def delete_one(self, obj):
+        if not self.to_delete(obj):
+            return
+        self.delete_object(obj.key)
+
     def execute(self, context):
-        for obj in self.object_iterator(self.oss_prefix):
-            if not self.to_delete(obj):
-                continue
-            self.delete_object(obj.key)
+        with Pool(self.pool_size) as pool:
+            pool.map(
+                lambda x: self.delete_one(x), self.path_object_iterator(self.prefix)
+            )
 
 
 class OSSRenameOperator(OSSOperator):
     def __init__(
             self,
             prefix: str,
+            pool_size: int = DEFAULT_POOL_SIZE,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.prefix = prefix
-
-    @property
-    def oss_prefix(self):
-        return os.path.join(self.prefix, "")
+        self.pool_size = pool_size
 
     def src_name(self, obj):
         return obj.key
@@ -236,8 +240,13 @@ class OSSRenameOperator(OSSOperator):
     def match(self, obj):
         return self.src_name(obj) == self.dest_name(obj)
 
+    def move_one(self, obj):
+        if self.match(obj):
+            return
+        self.move_object(self.src_name(obj), self.dest_name(obj))
+
     def execute(self, context):
-        for obj in self.object_iterator(self.oss_prefix):
-            if self.match(obj):
-                continue
-            self.move_object(self.src_name(obj), self.dest_name(obj))
+        with Pool(self.pool_size) as pool:
+            pool.map(
+                lambda x: self.move_one(x), self.path_object_iterator(self.prefix)
+            )

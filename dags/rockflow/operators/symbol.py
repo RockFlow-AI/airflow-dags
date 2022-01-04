@@ -2,7 +2,6 @@ import os
 
 import pandas as pd
 from airflow import AirflowException
-
 from rockflow.common.hkex import HKEX
 from rockflow.common.nasdaq import Nasdaq
 from rockflow.common.pandas_helper import merge_data_frame_by_column
@@ -121,25 +120,29 @@ class MergeCsvList(OSSSaveOperator):
     def __init__(
             self,
             from_key: str,
+            pool_size: int = DEFAULT_POOL_SIZE,
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
+        self.pool_size = pool_size
 
     @property
     def oss_key(self):
         return self.key
 
+    def read_one(self, obj):
+        return pd.read_csv(self.get_object(obj.key), index_col=False)
+
     def get_data_frames(self):
-        return [
-            pd.read_csv(self.get_object(obj.key), index_col=False)
-            for obj in self.object_iterator(os.path.join(self.from_key, "")) if not obj.is_prefix()
-        ]
+        with Pool(self.pool_size) as pool:
+            return pool.map(
+                lambda x: self.delete_one(x), self.path_object_iterator(self.from_key)
+            )
 
     @property
     def content(self):
-        result = merge_data_frame_by_column(
-            self.get_data_frames())
+        result = merge_data_frame_by_column(self.get_data_frames())
         if result.isna().any().any():
             raise AirflowException(f"Has Nan: {result}")
         return result.to_csv(index=False)

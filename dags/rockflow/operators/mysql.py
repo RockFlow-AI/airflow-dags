@@ -121,7 +121,7 @@ class OssBatchToMysqlOperator(OSSOperator):
         )
 
     def iterator(self):
-        return self.object_iterator(os.path.join(self.prefix, ""))
+        return self.path_object_iterator(self.prefix)
 
     def execute(self, context: Any) -> None:
         for obj in self.iterator():

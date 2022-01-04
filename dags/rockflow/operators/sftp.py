@@ -12,7 +12,7 @@ class SftpToOssOperator(OSSOperator):
             self,
             prefix: str,
             work_dir: str,
-            pool_size: int = 5,
+            pool_size: int = DEFAULT_POOL_SIZE,
             ssh_conn_id: str = 'ssh_default',
             **kwargs,
     ) -> None:

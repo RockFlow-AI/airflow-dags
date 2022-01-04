@@ -75,7 +75,7 @@ class YahooExtractOperator(OSSSaveOperator):
     def __init__(self,
                  from_key: str,
                  symbol_key: str,
-                 pool_size: int = 12,
+                 pool_size: int = DEFAULT_POOL_SIZE,
                  **kwargs) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
