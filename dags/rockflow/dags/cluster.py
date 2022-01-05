@@ -7,12 +7,12 @@ from rockflow.dags.const import *
 currencies_refresh = DAG(
     "currencies_refresh_by_hour",
     catchup=False,
+    start_date=datetime(2022, 1, 5, 0, 0),
+    schedule_interval=timedelta(hours=1),
     default_args={
         "owner": "yinxiang",
-        "start_date": datetime(2022, 1, 5, 0, 0),
+        "depends_on_past": False,
         "retries": 0,
-        "retry_delay": timedelta(minutes=1),
-        "schedule_interval": timedelta(hours=1),
     }
 )
 
@@ -30,12 +30,12 @@ SimpleHttpOperator(
 contracts_refresh = DAG(
     "contracts_refresh_daily",
     catchup=False,
+    start_date=datetime(2022, 1, 5, 1, 0),
+    schedule_interval=timedelta(days=1),
     default_args={
         "owner": "yinxiang",
-        "start_date": datetime(2022, 1, 5, 1, 0),
+        "depends_on_past": False,
         "retries": 0,
-        "retry_delay": timedelta(minutes=1),
-        "schedule_interval": timedelta(days=1),
     }
 )
 
@@ -53,12 +53,12 @@ SimpleHttpOperator(
 ticks = DAG(
     "ticks_by_minute",
     catchup=False,
+    start_date=datetime(2022, 1, 5, 1, 0),
+    schedule_interval=timedelta(minutes=1),
     default_args={
         "owner": "yinxiang",
-        "start_date": datetime(2022, 1, 5, 1, 0),
+        "depends_on_past": False,
         "retries": 0,
-        "retry_delay": timedelta(minutes=1),
-        "schedule_interval": timedelta(minutes=1),
     }
 )
 
