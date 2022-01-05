@@ -307,7 +307,7 @@ class SinkFutuProfile(OssToMysqlOperator):
             kwargs['index_col'] = "symbol"
         if 'mapping' not in kwargs:
             kwargs['mapping'] = {
-                # "symbol": "symbol",
+                "symbol": "symbol",
                 "raw": "raw",
                 "name_en": "name_en",
                 "name_cn": "name_zh",
