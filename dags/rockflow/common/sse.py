@@ -54,7 +54,6 @@ class SSE(Downloader):
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()
         result['raw'] = df.iloc[:, 0]
-        result['symbol'] = result['raw'].astype(str)
         result['rockflow'] = result['raw'].apply(
             lambda x: "%d.SH" % x
         )

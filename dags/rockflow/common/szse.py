@@ -42,9 +42,6 @@ class SZSE(Downloader):
     def to_tickers(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()
         result['raw'] = df.iloc[:, 4]
-        result['symbol'] = result['raw'].apply(
-            lambda x: "%06d" % x
-        )
         result['rockflow'] = result['raw'].apply(
             lambda x: "%05d.SZ" % x
         )

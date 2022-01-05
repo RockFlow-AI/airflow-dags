@@ -26,9 +26,6 @@ class HKEX(Downloader):
     def format_symbol(self, df: Optional[pd.DataFrame]) -> pd.DataFrame:
         result = pd.DataFrame()
         result['raw'] = df.iloc[:, 0]
-        result['symbol'] = result['raw'].apply(
-            lambda x: "%05d" % x
-        )
         result['rockflow'] = result['raw'].apply(
             lambda x: "%05d.HK" % x
         )

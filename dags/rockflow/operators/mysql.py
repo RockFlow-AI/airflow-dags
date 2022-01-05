@@ -44,6 +44,10 @@ class OssToMysqlOperator(OSSOperator):
             self.get_object(self.oss_source_key).read()
         )
 
+    def extract_index_dict_from_local_file(self):
+        with open(self.oss_source_key) as f:
+            return json.load(f)
+
     def extract_index_dict_to_df(self, dict_data) -> pd.DataFrame:
         result = pd.DataFrame.from_dict(
             dict_data,

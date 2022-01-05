@@ -307,7 +307,7 @@ class SinkFutuProfile(OssToMysqlOperator):
             kwargs['index_col'] = "symbol"
         if 'mapping' not in kwargs:
             kwargs['mapping'] = {
-                "symbol": "symbol",
+                # "symbol": "symbol",
                 "raw": "raw",
                 "name_en": "name_en",
                 "name_cn": "name_zh",
@@ -320,4 +320,14 @@ class SinkFutuProfile(OssToMysqlOperator):
     def extract_data(self) -> pd.DataFrame:
         return self.extract_index_dict_to_df(
             self.extract_index_dict()
+        )
+
+
+class SinkFutuProfileDebug(SinkFutuProfile):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    def extract_data(self) -> pd.DataFrame:
+        return self.extract_index_dict_to_df(
+            self.extract_index_dict_from_local_file()
         )

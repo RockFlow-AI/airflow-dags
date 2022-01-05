@@ -73,7 +73,6 @@ class Nasdaq(Downloader):
 
         result = pd.DataFrame()
         result['raw'] = df['symbol']
-        result['symbol'] = result['raw'].astype(str)
         result['rockflow'] = result['raw'].apply(
             lambda x: rockflow_symbol(x)
         )
