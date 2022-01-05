@@ -23,7 +23,7 @@ with DAG(
         DAG_ID,
         catchup=False,
         start_date=datetime(2022, 1, 1),
-        schedule_interval=timedelta(days=1),
+        schedule_interval=timedelta(hours=6),
         default_args={
             "owner": "daijunkai",
             "depends_on_past": False,
