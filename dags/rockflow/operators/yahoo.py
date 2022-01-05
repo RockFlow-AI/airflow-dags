@@ -57,6 +57,7 @@ class YahooBatchOperator(OSSOperator):
 
     def execute(self, context: Any):
         self.log.info(f"symbol: {self.symbols}")
+        # TODO(daijunkai)需要确认并发
         self.symbols.apply(
             self.save_one,
             axis=1
