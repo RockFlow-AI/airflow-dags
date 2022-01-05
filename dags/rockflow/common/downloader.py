@@ -66,9 +66,9 @@ class Downloader(object):
     def check(self, r: httpx.Response) -> bool:
         return r.status_code == 200
 
-    @retry(retry=retry_if_exception_type(BaseException),
+    @retry(retry=retry_if_exception_type(Exception),
            wait=wait_exponential(multiplier=1, min=4, max=10),
-           stop=stop_after_attempt(3))
+           stop=stop_after_attempt(5))
     def get(self) -> httpx.Response:
         print(
             f"url: {self.url}, params: {self.params}, headers: {self.headers}, timeout: {self.timeout}, proxy: {self.proxy}")
