@@ -27,7 +27,7 @@ with DAG(
         default_args={
             "owner": "daijunkai",
             "depends_on_past": False,
-            "retries": 5,
+            "retries": 12,
             "retry_delay": timedelta(minutes=1),
         }
 ) as symbol_dag:
