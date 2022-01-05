@@ -17,7 +17,7 @@ ice_dag_args = {
     "schedule_interval": "@daily",
 }
 
-with DAG("ice_sftp_sync", default_args=ice_dag_args) as ice_sftp_sync:
+with DAG("ice_sftp_sync", catchup=True, default_args=ice_dag_args) as ice_sftp_sync:
     sync_all_files = SftpToOssOperator(
         prefix=ice_sftp_sync.dag_id,
         work_dir="/FLOWAIHKFTPH1",

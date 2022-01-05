@@ -6,7 +6,7 @@ from rockflow.dags.const import *
 # 汇率更新
 currencies_refresh = DAG(
     "currencies_refresh_by_hour",
-    catchup=True,
+    catchup=False,
     default_args={
         "owner": "yinxiang",
         "start_date": datetime(2022, 1, 5, 0, 0),
@@ -29,7 +29,7 @@ SimpleHttpOperator(
 # 碎股及港股更新
 contracts_refresh = DAG(
     "contracts_refresh_daily",
-    catchup=True,
+    catchup=False,
     default_args={
         "owner": "yinxiang",
         "start_date": datetime(2022, 1, 5, 1, 0),
@@ -52,7 +52,7 @@ SimpleHttpOperator(
 # 实时行情聚合为1分钟
 ticks = DAG(
     "ticks_by_minute",
-    catchup=True,
+    catchup=False,
     default_args={
         "owner": "yinxiang",
         "start_date": datetime(2022, 1, 5, 1, 0),

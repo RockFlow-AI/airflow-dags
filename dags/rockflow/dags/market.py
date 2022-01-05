@@ -4,7 +4,7 @@ from airflow.models.baseoperator import chain
 from rockflow.dags.const import *
 from rockflow.operators.market import *
 
-with DAG("market_download", default_args=DEFAULT_DEBUG_ARGS) as mic:
+with DAG("market_download", catchup=False, default_args=DEFAULT_DEBUG_ARGS) as mic:
     mic_download = MicDownloadOperator(
         key=mic.dag_id
     )

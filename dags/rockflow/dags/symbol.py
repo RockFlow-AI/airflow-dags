@@ -29,7 +29,7 @@ symbol_dag_args = {
     "schedule_interval": timedelta(days=1),
 }
 
-with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
+with DAG(DAG_ID, catchup=False, default_args=symbol_dag_args) as symbol_dag:
     # ------------------------------------------------------------
 
     nasdaq = NasdaqSymbolDownloadOperator(
