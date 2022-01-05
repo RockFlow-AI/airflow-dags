@@ -1,9 +1,17 @@
+from datetime import datetime
+
 from airflow.models import DAG
 
 from rockflow.dags.const import *
 from rockflow.operators.rename import RenameOss
 
-with DAG("rename", default_args=DEFAULT_DEBUG_ARGS) as rename:
+with DAG(
+        "rename",
+        catchup=False,
+        start_date=datetime.now(),
+        schedule_interval="@once",
+        default_args=DEFAULT_DEBUG_ARGS
+) as rename:
     symbol_download_futu_company_profile_cn = RenameOss(
         task_id="symbol_download_futu_company_profile_cn",
         prefix="symbol_download_futu_company_profile_cn"

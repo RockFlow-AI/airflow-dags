@@ -1,9 +1,17 @@
+from datetime import datetime
+
 from airflow.models import DAG
 
 from rockflow.dags.const import *
 from rockflow.operators.history import HistoryImportOperatorDebug, HistoryImportOperator
 
-with DAG("history_sync", catchup=False, default_args=DEFAULT_DEBUG_ARGS) as history_sync:
+with DAG(
+        "history_sync",
+        catchup=False,
+        start_date=datetime.now(),
+        schedule_interval="@once",
+        default_args=DEFAULT_DEBUG_ARGS
+) as history_sync:
     hkex_sync = HistoryImportOperator(
         task_id='sync_hkex_history_to_mysql',
         prefix="day/hkex/",

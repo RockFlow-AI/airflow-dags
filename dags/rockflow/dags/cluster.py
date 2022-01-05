@@ -1,7 +1,7 @@
+from datetime import datetime, timedelta
+
 from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
-
-from rockflow.dags.const import *
 
 # 汇率更新
 currencies_refresh = DAG(
@@ -30,7 +30,7 @@ SimpleHttpOperator(
 contracts_refresh = DAG(
     "contracts_refresh_daily",
     catchup=False,
-    start_date=datetime(2022, 1, 5, 1, 0),
+    start_date=datetime(2022, 1, 5, 0, 0),
     schedule_interval=timedelta(days=1),
     default_args={
         "owner": "yinxiang",
@@ -53,7 +53,7 @@ SimpleHttpOperator(
 ticks = DAG(
     "ticks_by_minute",
     catchup=False,
-    start_date=datetime(2022, 1, 5, 1, 0),
+    start_date=datetime(2022, 1, 5, 0, 0),
     schedule_interval=timedelta(minutes=1),
     default_args={
         "owner": "yinxiang",

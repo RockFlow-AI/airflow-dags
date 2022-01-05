@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from airflow.models import DAG
 from airflow.models.baseoperator import chain
 
@@ -17,19 +19,18 @@ SZSE_RAW_KEY = f'{DAG_ID}_szse'
 SYMBOL_PARSE_KEY = f'{DAG_ID}_parse/'
 MERGE_CSV_KEY = f'{DAG_ID}_merge/merge.csv'
 
-symbol_dag_args = {
-    "owner": "daijunkai",
-    "depends_on_past": False,
-    "start_date": datetime(2022, 1, 1),
-    "email": ["daijunkai@flowcapai.com"],
-    "email_on_failure": True,
-    "email_on_retry": True,
-    "retries": 5,
-    "retry_delay": timedelta(minutes=1),
-    "schedule_interval": timedelta(days=1),
-}
-
-with DAG(DAG_ID, catchup=False, default_args=symbol_dag_args) as symbol_dag:
+with DAG(
+        DAG_ID,
+        catchup=False,
+        start_date=datetime(2022, 1, 1),
+        schedule_interval=timedelta(days=1),
+        default_args={
+            "owner": "daijunkai",
+            "depends_on_past": False,
+            "retries": 5,
+            "retry_delay": timedelta(minutes=1),
+        }
+) as symbol_dag:
     # ------------------------------------------------------------
 
     nasdaq = NasdaqSymbolDownloadOperator(
