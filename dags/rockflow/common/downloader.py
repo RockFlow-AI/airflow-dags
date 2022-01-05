@@ -1,5 +1,6 @@
 import httpx
 from stringcase import snakecase
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 from rockflow.common.header import user_agent_headers
 
@@ -65,6 +66,9 @@ class Downloader(object):
     def check(self, r: httpx.Response) -> bool:
         return r.status_code == 200
 
+    @retry(retry=retry_if_exception_type(BaseException),
+           wait=wait_exponential(multiplier=1, min=4, max=10),
+           stop=stop_after_attempt(3))
     def get(self) -> httpx.Response:
         print(
             f"url: {self.url}, params: {self.params}, headers: {self.headers}, timeout: {self.timeout}, proxy: {self.proxy}")
