@@ -1,4 +1,5 @@
 PUT /i_flow_ticker_stock_search
+
 {
     "settings": {
         "analysis": {
