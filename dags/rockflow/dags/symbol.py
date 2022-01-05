@@ -83,7 +83,8 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
     extract_cn = FutuExtractHtml(
         task_id="futu_extract_html_cn",
         from_key="{{ task_instance.xcom_pull('" + futu_cn.task_id + "') }}",
-        key=symbol_dag.dag_id
+        key=symbol_dag.dag_id,
+        pool_size=64
     )
 
     format_cn = FutuFormatJsonCn(
@@ -99,7 +100,8 @@ with DAG(DAG_ID, default_args=symbol_dag_args) as symbol_dag:
     extract_en = FutuExtractHtml(
         task_id="futu_extract_html_en",
         from_key="{{ task_instance.xcom_pull('" + futu_en.task_id + "') }}",
-        key=symbol_dag.dag_id
+        key=symbol_dag.dag_id,
+        pool_size=64
     )
 
     format_en = FutuFormatJsonEn(
