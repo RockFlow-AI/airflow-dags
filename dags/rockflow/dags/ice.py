@@ -8,7 +8,7 @@ from rockflow.operators.sftp import SftpToOssOperator
 ice_dag_args = {
     "owner": "daijunkai",
     "depends_on_past": False,
-    "start_date": datetime(2021, 12, 30),
+    "start_date": datetime(2022, 1, 1, 23, 30),  # 北京时间6:30(bejing)开始跑
     "email": ["daijunkai@flowcapai.com"],
     "email_on_failure": True,
     "email_on_retry": True,
@@ -26,7 +26,7 @@ with DAG("ice_sftp_sync", default_args=ice_dag_args) as ice_sftp_sync:
 
     daily_history = DailyHistoryImportOperator(
         oss_source_key=ice_sftp_sync.dag_id +
-        "/K16D75_{{ yesterday_ds_nodash }}.SRV",
+                       "/K16D75_{{ yesterday_ds_nodash }}.SRV",
         mysql_table='flow_ticker_stock_price_daily',
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
     )
