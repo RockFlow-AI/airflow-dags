@@ -25,7 +25,7 @@ class DailyHistoryImportOperator(OssToMysqlOperator):
                 "Price B Sub-Set 3 ($FS3)": "high",
                 "Price A Sub-Set 3 ($FS2)": "low",
                 "Price A Sub-Set 1 ($F4)": "close",
-                "Actual Volume (|FS26)": "volume",
+                "Actual Volume (|FS26)": "volume",  # TODO(daijunkai) 需要排查解析失败原因目前看数据有0开头可能无法判读数据类型
                 "id": "id",
             }
         super().__init__(**kwargs)
