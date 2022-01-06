@@ -105,7 +105,7 @@ class YahooExtractOperator(OSSSaveOperator):
         symbol = line[1]["rockflow"]
         if not (hash(index) % self.sharding == self.partition):
             return
-        self.log.debug(f"process {symbol} in partition [{self.partition}]")
+        self.log.info(f"process {symbol} in partition [{self.partition}]")
         symbol_key = self.get_symbol_key(symbol)
         try:
             json_dic = json.loads(
