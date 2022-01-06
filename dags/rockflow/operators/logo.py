@@ -41,9 +41,9 @@ class LogoBatchOperator(OSSOperator):
     def save_one(self, line: tuple[Hashable, pd.Series], cls):
         index = line[0]
         symbol = line[1]['yahoo']
-        print(f"index: {index}, symbol: {symbol}")
         if is_none_us_symbol(symbol):
             return
+        self.log.debug(f"index: {index}, symbol: {symbol}")
         obj = cls(
             symbol=symbol,
             prefix=self.key,
