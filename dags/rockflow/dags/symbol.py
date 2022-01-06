@@ -138,44 +138,27 @@ with DAG(
         key=symbol_dag.dag_id
     )
 
-    yahoo_extract_us_a_to_m = YahooExtractOperatorUsAToM(
-        from_key="symbol_download_yahoo",
-        key=symbol_dag.dag_id,
-        symbol_key=MERGE_CSV_KEY
-    )
+    sharding = 10
+    for i in range(sharding):
+        yahoo_extract = YahooExtractOperator(
+            task_id=f"yahoo_extract_{i}",
+            from_key="symbol_download_yahoo",
+            key=symbol_dag.dag_id,
+            symbol_key=MERGE_CSV_KEY,
+            partition=i,
+            sharding=sharding
+        )
 
-    yahoo_extract_us_n_to_z = YahooExtractOperatorUsNToZ(
-        from_key="symbol_download_yahoo",
-        key=symbol_dag.dag_id,
-        symbol_key=MERGE_CSV_KEY
-    )
+        summary_detail_mysql = SummaryDetailImportOperator(
+            task_id=f"summary_detail_mysql_{i}",
+            oss_source_key=yahoo_extract.save_key("SummaryDetail"),
+            mysql_table='flow_ticker_summary_detail',
+            mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
+        )
 
-    yahoo_extract_none_us = YahooExtractOperatorNoneUS(
-        from_key="symbol_download_yahoo",
-        key=symbol_dag.dag_id,
-        symbol_key=MERGE_CSV_KEY
-    )
-
-    summary_detail_mysql_us_a_to_m = SummaryDetailImportOperator(
-        task_id='summary_detail_mysql_us_a_to_m',
-        oss_source_key=yahoo_extract_us_a_to_m.save_key("SummaryDetail"),
-        mysql_table='flow_ticker_summary_detail',
-        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
-    )
-
-    summary_detail_mysql_us_n_to_z = SummaryDetailImportOperator(
-        task_id='summary_detail_mysql_us_n_to_z',
-        oss_source_key=yahoo_extract_us_n_to_z.save_key("SummaryDetail"),
-        mysql_table='flow_ticker_summary_detail',
-        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
-    )
-
-    summary_detail_mysql_none_us = SummaryDetailImportOperator(
-        task_id='summary_detail_mysql_none_us',
-        oss_source_key=yahoo_extract_none_us.save_key("SummaryDetail"),
-        mysql_table='flow_ticker_summary_detail',
-        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
-    )
+        yahoo_extract.set_upstream(merge_csv)
+        yahoo_extract.set_upstream(yahoo)
+        yahoo_extract.set_downstream(summary_detail_mysql)
 
 chain(
     [nasdaq, hkex, sse, szse],
@@ -195,11 +178,4 @@ chain(
 chain(
     merge_csv,
     yahoo,
-    [yahoo_extract_us_a_to_m, yahoo_extract_us_n_to_z, yahoo_extract_none_us],
-    [summary_detail_mysql_us_a_to_m, summary_detail_mysql_us_n_to_z, summary_detail_mysql_none_us],
-)
-
-chain(
-    merge_csv,
-    [yahoo_extract_us_a_to_m, yahoo_extract_us_n_to_z, yahoo_extract_none_us],
 )

@@ -10,7 +10,6 @@ from stringcase import snakecase
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.pandas_helper import merge_data_frame_by_index
 from rockflow.common.yahoo import Yahoo
-from rockflow.operators.common import is_none_us_symbol, is_us_symbol
 from rockflow.operators.const import DEFAULT_POOL_SIZE, GLOBAL_DEBUG
 from rockflow.operators.mysql import OssToMysqlOperator
 from rockflow.operators.oss import OSSOperator, OSSSaveOperator
@@ -85,11 +84,15 @@ class YahooExtractOperator(OSSSaveOperator):
     def __init__(self,
                  from_key: str,
                  symbol_key: str,
+                 partition: int,  # 分区编号
+                 sharding: int,  # 分片数量
                  pool_size: int = DEFAULT_POOL_SIZE,
                  **kwargs) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
         self.symbol_key = symbol_key
+        self.partition = partition
+        self.sharding = sharding
 
         self.pool_size = pool_size
 
@@ -97,12 +100,12 @@ class YahooExtractOperator(OSSSaveOperator):
     def oss_key(self):
         return self.key
 
-    def split(self, symbol):
-        raise NotImplementedError()
-
-    def read_one(self, symbol):
-        if not self.split(symbol):
+    def read_one(self, line: tuple[Hashable, pd.Series]):
+        index = line[0]
+        symbol = line[1]["rockflow"]
+        if not (hash(index) % self.sharding == self.partition):
             return
+        self.log.debug(f"process {symbol} in partition [{self.partition}]")
         symbol_key = self.get_symbol_key(symbol)
         try:
             json_dic = json.loads(
@@ -124,15 +127,13 @@ class YahooExtractOperator(OSSSaveOperator):
             return
 
     @property
-    def symbol_list(self):
-        symbol_df = pd.read_csv(self.get_object(
-            self.symbol_key), index_col=False)
-        return symbol_df["rockflow"].to_list()
+    def symbols(self) -> pd.DataFrame:
+        return pd.read_csv(self.get_object(self.symbol_key), index_col=False)
 
     def merge_data(self):
         with Pool(self.pool_size) as pool:
             result = pool.map(
-                lambda x: self.read_one(x), self.symbol_list
+                lambda x: self.read_one(x), self.symbols.iterrows()
             )
             return result
 
@@ -157,42 +158,6 @@ class YahooExtractOperator(OSSSaveOperator):
     def execute(self, context):
         for x in self.content:
             self.put_object(self.save_key(x[0]), x[1])
-
-
-class YahooExtractOperatorUS(YahooExtractOperator):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-    def split(self, symbol):
-        return is_us_symbol(symbol)
-
-    def split_by_s(self, symbol: str):
-        s = symbol[0:1]
-        return s >= 'A' and s <= 'M'
-
-
-class YahooExtractOperatorUsAToM(YahooExtractOperatorUS):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-    def split(self, symbol):
-        return super().split(symbol) and self.split_by_s(symbol)
-
-
-class YahooExtractOperatorUsNToZ(YahooExtractOperatorUS):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-    def split(self, symbol):
-        return super().split(symbol) and not self.split_by_s(symbol)
-
-
-class YahooExtractOperatorNoneUS(YahooExtractOperator):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-    def split(self, symbol):
-        return is_none_us_symbol(symbol)
 
 
 class SummaryDetailImportOperator(OssToMysqlOperator):
