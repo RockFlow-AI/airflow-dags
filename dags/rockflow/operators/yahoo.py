@@ -157,8 +157,10 @@ class YahooExtractOperator(OSSSaveOperator):
             yield result
 
     def execute(self, context):
-        for x in self.content:
-            self.put_object(self.save_key(x[0]), x[1])
+        with Pool(self.pool_size) as pool:
+            pool.map(
+                lambda x: self.put_object(self.save_key(x[0]), x[1]), self.content
+            )
 
 
 class SummaryDetailImportOperator(OssToMysqlOperator):
