@@ -195,11 +195,11 @@ chain(
 chain(
     merge_csv,
     yahoo,
-    [yahoo_extract_us, yahoo_extract_none_us],
-    [summary_detail_mysql_us, summary_detail_mysql_none_us],
+    [yahoo_extract_us_a_to_m, yahoo_extract_us_n_to_z, yahoo_extract_none_us],
+    [summary_detail_mysql_us_a_to_m, summary_detail_mysql_us_n_to_z, summary_detail_mysql_none_us],
 )
 
 chain(
     merge_csv,
-    [yahoo_extract_us, yahoo_extract_none_us],
+    [yahoo_extract_us_a_to_m, yahoo_extract_us_n_to_z, yahoo_extract_none_us],
 )
