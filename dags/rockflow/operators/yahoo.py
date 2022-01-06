@@ -166,6 +166,26 @@ class YahooExtractOperatorUS(YahooExtractOperator):
     def split(self, symbol):
         return is_us_symbol(symbol)
 
+    def split_by_s(self, symbol: str):
+        s = symbol[0:1]
+        return s >= 'A' and s >= 'M'
+
+
+class YahooExtractOperatorUsAToM(YahooExtractOperatorUS):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    def split(self, symbol):
+        return super().split(symbol) and self.split_by_s(symbol)
+
+
+class YahooExtractOperatorUsNToZ(YahooExtractOperatorUS):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    def split(self, symbol):
+        return super().split(symbol) and not self.split_by_s(symbol)
+
 
 class YahooExtractOperatorNoneUS(YahooExtractOperator):
     def __init__(self, **kwargs) -> None:
