@@ -1,5 +1,5 @@
 from multiprocessing.pool import ThreadPool as Pool
-from typing import Any
+from typing import Any, Hashable
 
 import pandas as pd
 
@@ -38,8 +38,10 @@ class LogoBatchOperator(OSSOperator):
             self.log.error(f"error: {str(e)}")
             return True
 
-    def save_one(self, line: pd.Series, cls):
-        symbol = line['yahoo']
+    def save_one(self, line: tuple[Hashable, pd.Series], cls):
+        index = line[0]
+        symbol = line[1]['yahoo']
+        print(f"index: {index}, symbol: {symbol}")
         if is_none_us_symbol(symbol):
             return
         obj = cls(
@@ -66,7 +68,7 @@ class LogoBatchOperator(OSSOperator):
         # )
         with Pool(self.pool_size) as pool:
             pool.map(
-                lambda x: self.save_one(x, self.cls), self.symbols
+                lambda x: self.save_one(x, self.cls), self.symbols.iterrows()
             )
 
 
