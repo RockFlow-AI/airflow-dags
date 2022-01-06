@@ -2,7 +2,7 @@ import json
 import logging
 import os
 from multiprocessing.pool import ThreadPool as Pool
-from typing import Any, Dict
+from typing import Any, Hashable, Dict
 
 import pandas as pd
 from stringcase import snakecase
@@ -20,10 +20,12 @@ class YahooBatchOperator(OSSOperator):
     def __init__(self,
                  from_key: str,
                  key: str,
+                 pool_size: int = DEFAULT_POOL_SIZE,
                  **kwargs) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
         self.key = key
+        self.pool_size = pool_size
 
     @property
     def symbols(self) -> pd.DataFrame:
@@ -42,10 +44,10 @@ class YahooBatchOperator(OSSOperator):
             self.log.error(f"error: {str(e)}")
             return True
 
-    def save_one(self, line: pd.Series):
+    def save_one(self, line: tuple[Hashable, pd.Series]):
         obj = Yahoo(
-            symbol=line['rockflow'],
-            yahoo=line['yahoo'],
+            symbol=line[1]['rockflow'],
+            yahoo=line[1]['yahoo'],
             prefix=self.key,
             proxy=self.proxy
         )
@@ -57,11 +59,15 @@ class YahooBatchOperator(OSSOperator):
 
     def execute(self, context: Any):
         self.log.info(f"symbol: {self.symbols}")
-        # TODO(daijunkai)需要确认并发
-        self.symbols.apply(
-            self.save_one,
-            axis=1
-        )
+        # # TODO(daijunkai)需要确认并发
+        # self.symbols.apply(
+        #     self.save_one,
+        #     axis=1
+        # )
+        with Pool(self.pool_size) as pool:
+            pool.map(
+                lambda x: self.save_one(x), self.symbols.iterrows()
+            )
 
 
 class YahooBatchOperatorDebug(YahooBatchOperator):
@@ -70,7 +76,7 @@ class YahooBatchOperatorDebug(YahooBatchOperator):
 
     @property
     def symbols(self) -> pd.DataFrame:
-        return pd.read_csv(self.get_object(self.from_key))[:100]
+        return super().symbols[:100]
 
 
 class YahooExtractOperator(OSSSaveOperator):
