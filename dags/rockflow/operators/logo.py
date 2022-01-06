@@ -59,7 +59,7 @@ class LogoBatchOperator(OSSOperator):
         self.symbols.apply(
             self.save_one,
             axis=1,
-            args=(self.cls, self.key)
+            args=(self.cls,)
         )
 
 
