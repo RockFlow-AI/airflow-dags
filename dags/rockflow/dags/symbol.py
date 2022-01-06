@@ -85,7 +85,7 @@ with DAG(
         task_id="futu_extract_html_cn",
         from_key="{{ task_instance.xcom_pull('" + futu_cn.task_id + "') }}",
         key=symbol_dag.dag_id,
-        pool_size=64
+        pool_size=32
     )
 
     format_cn = FutuFormatJsonCn(
@@ -102,7 +102,7 @@ with DAG(
         task_id="futu_extract_html_en",
         from_key="{{ task_instance.xcom_pull('" + futu_en.task_id + "') }}",
         key=symbol_dag.dag_id,
-        pool_size=64
+        pool_size=32
     )
 
     format_en = FutuFormatJsonEn(
