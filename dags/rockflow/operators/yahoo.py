@@ -168,7 +168,7 @@ class YahooExtractOperatorUS(YahooExtractOperator):
 
     def split_by_s(self, symbol: str):
         s = symbol[0:1]
-        return s >= 'A' and s >= 'M'
+        return s >= 'A' and s <= 'M'
 
 
 class YahooExtractOperatorUsAToM(YahooExtractOperatorUS):
