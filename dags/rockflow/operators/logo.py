@@ -1,3 +1,4 @@
+from multiprocessing.pool import ThreadPool as Pool
 from typing import Any
 
 import pandas as pd
@@ -5,7 +6,7 @@ import pandas as pd
 from rockflow.common.datatime_helper import GmtDatetimeCheck
 from rockflow.common.logo import Public, Etoro
 from rockflow.operators.common import is_none_us_symbol
-from rockflow.operators.const import GLOBAL_DEBUG
+from rockflow.operators.const import GLOBAL_DEBUG, DEFAULT_POOL_SIZE
 from rockflow.operators.oss import OSSOperator
 
 
@@ -13,10 +14,12 @@ class LogoBatchOperator(OSSOperator):
     def __init__(self,
                  from_key: str,
                  key: str,
+                 pool_size: int = DEFAULT_POOL_SIZE,
                  **kwargs) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
         self.key = key
+        self.pool_size = pool_size
 
     @property
     def symbols(self) -> pd.DataFrame:
@@ -56,11 +59,15 @@ class LogoBatchOperator(OSSOperator):
 
     def execute(self, context: Any):
         self.log.info(f"symbol: {self.symbols}")
-        self.symbols.apply(
-            self.save_one,
-            axis=1,
-            args=(self.cls,)
-        )
+        # self.symbols.apply(
+        #     self.save_one,
+        #     axis=1,
+        #     args=(self.cls,)
+        # )
+        with Pool(self.pool_size) as pool:
+            pool.map(
+                lambda x: self.save_one(x, self.cls), self.symbols
+            )
 
 
 class PublicLogoBatchOperator(LogoBatchOperator):
@@ -78,7 +85,7 @@ class PublicLogoBatchOperatorDebug(PublicLogoBatchOperator):
 
     @property
     def symbols(self) -> pd.DataFrame:
-        return pd.read_csv(self.get_object(self.from_key))[:100]
+        return super().symbols[:100]
 
 
 class EtoroLogoBatchOperator(LogoBatchOperator):
@@ -96,4 +103,4 @@ class EtoroLogoBatchOperatorDebug(EtoroLogoBatchOperator):
 
     @property
     def symbols(self) -> pd.DataFrame:
-        return pd.read_csv(self.get_object(self.from_key))[:100]
+        return super().symbols[:100]
