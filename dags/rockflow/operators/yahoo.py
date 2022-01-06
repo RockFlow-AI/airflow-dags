@@ -141,7 +141,8 @@ class YahooExtractOperator(OSSSaveOperator):
         return os.path.join(self.from_key, symbol + '.json')
 
     def save_key(self, key):
-        return os.path.join(self.key + '_' + snakecase(key), self.snakecase_class_name + '.json')
+        file_name = f"{self.snakecase_class_name}_part_{self.partition}_of_{self.sharding}.json"
+        return os.path.join(self.key + '_' + snakecase(key), file_name)
 
     @property
     def content(self):
