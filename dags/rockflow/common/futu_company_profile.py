@@ -34,7 +34,7 @@ class FutuCompanyProfile(Downloader):
 
     @staticmethod
     def extract_data(fp, symbol):
-        soup = BeautifulSoup(fp, features="lxml")
+        soup = BeautifulSoup(fp, "lxml")
         table_dict = {}
         for row in soup.findAll(name="div", attrs={"class": "company-item"}):
             try:

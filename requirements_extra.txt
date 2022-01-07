@@ -5,7 +5,6 @@ beautifulsoup4
 stringcase
 elasticsearch==7.10.0
 pangres
-plyvel
 tenacity
 cchardet
 apache-airflow-providers-alibaba
