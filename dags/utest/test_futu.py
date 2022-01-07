@@ -1,9 +1,9 @@
 import unittest
 
-from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn
+from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompanyProfileEn, FutuCompanyProfile
 from rockflow.common.proxy import local_proxy
 from rockflow.dags.symbol import MERGE_CSV_KEY, sink_futu_profile_op
-from rockflow.operators.futu import JoinMap
+from rockflow.operators.futu import JoinMap, FutuExtractHtmlDebug
 
 
 class Test(unittest.TestCase):
@@ -37,6 +37,20 @@ class Test(unittest.TestCase):
 
     def test_sink_futu_profile_op(self):
         self.assertIsNone(sink_futu_profile_op.execute(""))
+
+    def test_extract_html(self):
+        extract_cn = FutuExtractHtmlDebug(
+            task_id="futu_extract_html_cn",
+            from_key="symbol_download_futu_company_profile_cn",
+            key="symbol_download",
+            pool_size=32
+        )
+        self.assertIsNotNone(extract_cn.execute(""))
+
+    def test_FutuCompanyProfile(self):
+        for i in range(100):
+            with open("00001.HK.html") as f:
+                FutuCompanyProfile.extract_data(f, "00001.HK")
 
 
 if __name__ == '__main__':

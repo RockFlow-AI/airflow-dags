@@ -140,14 +140,25 @@ class FutuExtractHtml(OSSSaveOperator):
             self.get_object(obj.key), self.symbol(obj)
         )
 
+    def iterator(self):
+        return self.path_object_iterator(self.from_key)
+
     @property
     def content(self):
         with Pool(self.pool_size) as pool:
             result = pool.map(
-                lambda x: self.extract_data(
-                    x), self.path_object_iterator(self.from_key)
+                lambda x: self.extract_data(x), self.iterator()
             )
             return json.dumps(result, ensure_ascii=False)
+
+
+class FutuExtractHtmlDebug(FutuExtractHtml):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    def iterator(self):
+        from itertools import islice
+        return islice(super().iterator(), 100)
 
 
 class FutuFormatJson(OSSSaveOperator):
