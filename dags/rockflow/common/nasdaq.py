@@ -44,6 +44,9 @@ class Nasdaq(Downloader):
 
     @property
     def proxy(self):
+        """
+        强制不走代理，失败原因未知，需要工具测试下
+        """
         return None
 
     @property
