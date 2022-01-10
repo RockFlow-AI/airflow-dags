@@ -38,9 +38,9 @@ class LogoImportOperator(OSSOperator):
     def src_file(self, line: pd.Series) -> str:
         from pypinyin import pinyin, Style
 
-        symbol = line["symbol"]
-        name_en = line["name_en"]
-        name_cn = line["name_cn"]
+        symbol = str(line["symbol"])
+        name_en = str(line["name_en"])
+        name_cn = str(line["name_cn"])
 
         symbol_file = self.oss_src(symbol)
         if self.object_exists_(self.avatar_bucket, symbol_file):
