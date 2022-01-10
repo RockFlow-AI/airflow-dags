@@ -45,11 +45,11 @@ class LogoImportOperator(OSSOperator):
         symbol_file = self.oss_src(symbol)
         if self.object_exists_(self.avatar_bucket, symbol_file):
             return symbol_file
-        result = symbol
+        result = symbol[0:1]
         if name_en:
-            result = name_en
+            result = name_en[0:1]
         elif name_cn:
-            result = name_cn
+            result = name_cn[0:1]
         return self.oss_src(
             pinyin(result, style=Style.FIRST_LETTER)[0][0][0:1].upper()
         )
