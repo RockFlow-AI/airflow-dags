@@ -36,6 +36,8 @@ class LogoImportOperator(OSSOperator):
         return result
 
     def src_file(self, line: pd.Series) -> str:
+        from pypinyin import pinyin, Style
+
         symbol = line["symbol"]
         name_en = line["name_en"]
         name_cn = line["name_cn"]
@@ -45,12 +47,11 @@ class LogoImportOperator(OSSOperator):
             return symbol_file
         if name_en:
             return self.oss_src(
-                name_en[0:1]
+                pinyin(name_en, style=Style.FIRST_LETTER)[0][0].upper()
             )
         if name_cn:
-            from pypinyin import pinyin, Style
             return self.oss_src(
-                pinyin(name_cn, style=Style.FIRST_LETTER)[0][0]
+                pinyin(name_cn, style=Style.FIRST_LETTER)[0][0].upper()
             )
 
     def dest_file(self, line: pd.Series) -> str:
