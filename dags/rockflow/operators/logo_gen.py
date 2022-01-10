@@ -1,0 +1,76 @@
+import json
+from multiprocessing.pool import ThreadPool as Pool
+from typing import Any, Hashable
+
+import oss2
+import pandas as pd
+
+from rockflow.operators.const import DEFAULT_POOL_SIZE
+from rockflow.operators.oss import OSSOperator
+
+
+class LogoImportOperator(OSSOperator):
+    def __init__(self,
+                 from_key: str,
+                 avatar_bucker_name: str,
+                 pool_size: int = DEFAULT_POOL_SIZE,
+                 **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.from_key = from_key
+        self.avatar_bucker_name = avatar_bucker_name
+        self.pool_size = pool_size
+
+    @property
+    def avatar_bucket(self) -> oss2.api.Bucket:
+        return self.oss_hook.get_bucket(self.avatar_bucker_name)
+
+    @property
+    def symbols(self) -> pd.DataFrame:
+        result = pd.DataFrame.from_dict(
+            json.loads(
+                self.get_object(self.from_key).read()
+            ),
+            orient='index'
+        )
+        result.index.rename("symbol", inplace=True)
+        return result
+
+    def src_file(self, line: pd.Series) -> str:
+        symbol = line["symbol"]
+        name_en = line["name_en"]
+        name_cn = line["name_cn"]
+
+        symbol_file = self.oss_src(symbol)
+        if self.object_exists_(self.avatar_bucket, symbol_file):
+            return symbol_file
+        if name_en:
+            return self.oss_src(
+                name_en[0:1]
+            )
+        if name_cn:
+            from pypinyin import pinyin, Style
+            return self.oss_src(
+                pinyin(name_cn, style=Style.FIRST_LETTER)[0][0]
+            )
+
+    def dest_file(self, line: pd.Series) -> str:
+        return self.oss_dest(line["symbol"])
+
+    def oss_src(self, file):
+        return f"company/source/{file}.jpg"
+
+    def oss_dest(self, file):
+        return f"company/public/{file}.jpg"
+
+    def save_one(self, line: tuple[Hashable, pd.Series]):
+        index = line[0]
+        symbol = line[1]
+        self.log.debug(f"index: {index}, symbol: {symbol}")
+        self.copy_object_(self.avatar_bucket, self.src_file(symbol), self.dest_file(symbol))
+
+    def execute(self, context: Any):
+        self.log.info(f"symbol: {self.symbols}")
+        with Pool(self.pool_size) as pool:
+            pool.map(
+                lambda x: self.save_one(x), self.symbols.iterrows()
+            )

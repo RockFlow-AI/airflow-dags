@@ -4,7 +4,9 @@ from airflow.models import DAG
 
 from rockflow.dags.const import *
 from rockflow.dags.symbol import MERGE_CSV_KEY
+from rockflow.operators.const import AVATAR_BUCKET_NAME
 from rockflow.operators.logo import *
+from rockflow.operators.logo_gen import LogoImportOperator
 
 with DAG(
         "logo_download",
@@ -35,4 +37,9 @@ with DAG(
         task_id="etoro_logo_download_debug",
         from_key=MERGE_CSV_KEY,
         key=logo_download.dag_id
+    )
+
+    logo_import = LogoImportOperator(
+        from_key="symbol_download_join_map/join_map.json",
+        avatar_bucker_name=AVATAR_BUCKET_NAME,
     )
