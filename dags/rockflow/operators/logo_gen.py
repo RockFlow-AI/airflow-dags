@@ -45,14 +45,14 @@ class LogoImportOperator(OSSOperator):
         symbol_file = self.oss_src(symbol)
         if self.object_exists_(self.avatar_bucket, symbol_file):
             return symbol_file
+        result = symbol
         if name_en:
-            return self.oss_src(
-                pinyin(name_en, style=Style.FIRST_LETTER)[0][0].upper()
-            )
-        if name_cn:
-            return self.oss_src(
-                pinyin(name_cn, style=Style.FIRST_LETTER)[0][0].upper()
-            )
+            result = name_en
+        elif name_cn:
+            result = name_cn
+        return self.oss_src(
+            pinyin(result, style=Style.FIRST_LETTER)[0][0].upper()
+        )
 
     def dest_file(self, line: pd.Series) -> str:
         return self.oss_dest(line["symbol"])
