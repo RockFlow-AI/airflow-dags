@@ -94,3 +94,120 @@ SimpleHttpOperator(
     extra_options={"timeout": 500},
     dag=ticks_10m,
 )
+
+
+# 1分钟行情聚合为15分钟
+ticks_15m = DAG(
+    "ticks_by_15_minutes",
+    catchup=False,
+    start_date=datetime(2022, 2, 10, 0, 0),
+    schedule_interval=timedelta(minutes=15),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks_15m',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?timeframe=15m',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=ticks_15m,
+)
+
+# 15分钟行情聚合为30钟
+ticks_30m = DAG(
+    "ticks_by_30_minutes",
+    catchup=False,
+    start_date=datetime(2022, 2, 10, 0, 0),
+    schedule_interval=timedelta(minutes=30),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks_30m',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?timeframe=30m',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=ticks_30m,
+)
+
+# 30分钟行情聚合为1小时
+ticks_1h = DAG(
+    "ticks_by_1_hours",
+    catchup=False,
+    start_date=datetime(2022, 2, 10, 0, 0),
+    schedule_interval=timedelta(minutes=60),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks_1h',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?timeframe=1h',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=ticks_1h,
+)
+
+
+# 1小时行情聚合为4小时
+ticks_4h = DAG(
+    "ticks_by_4_hours",
+    catchup=False,
+    start_date=datetime(2022, 2, 10, 0, 0),
+    schedule_interval=timedelta(hours=4),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks_4h',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?timeframe=4h',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=ticks_4h,
+)
+
+# 天级行情聚合为周级行情
+ticks_1w = DAG(
+    "ticks_by_1_week",
+    catchup=False,
+    start_date=datetime(2022, 2, 12, 0, 0),
+    schedule_interval=timedelta(hours=168),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks_1w',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?timeframe=1w',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=ticks_1w,
+)
