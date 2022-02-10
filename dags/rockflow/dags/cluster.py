@@ -71,3 +71,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 30},
     dag=ticks,
 )
+
+# 1分钟行情聚合为10分钟
+ticks_10m = DAG(
+    "ticks_by_10_minutes",
+    catchup=False,
+    start_date=datetime(2022, 2, 10, 0, 0),
+    schedule_interval=timedelta(minutes=10),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks_10m',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?timeframe=10m',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 500},
+    dag=ticks_10m,
+)
