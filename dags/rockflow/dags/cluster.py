@@ -234,3 +234,49 @@ SimpleHttpOperator(
     extra_options={"timeout": 60000},
     dag=tick_ice_1d,
 )
+
+# 解析Kline 美股 数据
+tick_kline_us_1d = DAG(
+    "ticks_resolve_kline_us_1d",
+    catchup=False,
+    start_date=datetime(2022, 2, 20, 8, 0),
+    schedule_interval=timedelta(hours=24),
+    default_args={
+        "owner": "maoboxuan",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='tick_kline_us_1d',
+    method='GET',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/kline/us',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60000},
+    dag=tick_kline_us_1d,
+)
+
+# 解析Kline 港股 数据
+tick_kline_hk_1d = DAG(
+    "ticks_resolve_kline_hk_1d",
+    catchup=False,
+    start_date=datetime(2022, 2, 20, 8, 0),
+    schedule_interval=timedelta(hours=24),
+    default_args={
+        "owner": "maoboxuan",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='tick_kline_hk_1d',
+    method='GET',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/kline/hk',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60000},
+    dag=tick_kline_hk_1d,
+)
