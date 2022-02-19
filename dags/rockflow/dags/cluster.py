@@ -211,3 +211,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 1000},
     dag=ticks_1w,
 )
+
+# 解析ice数据
+ice_1d = DAG(
+    "ticks_by_1_week",
+    catchup=False,
+    start_date=datetime(2022, 2, 19, 20, 0),
+    schedule_interval=timedelta(hours=24),
+    default_args={
+        "owner": "maoboxuan",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks_1w',
+    method='GET',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ice',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60000},
+    dag=ice_1d,
+)
