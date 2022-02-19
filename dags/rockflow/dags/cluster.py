@@ -213,8 +213,8 @@ SimpleHttpOperator(
 )
 
 # 解析ice数据
-ice_1d = DAG(
-    "ice_1d",
+tick_ice_1d = DAG(
+    "ticks_resolve_ice_1d",
     catchup=False,
     start_date=datetime(2022, 2, 19, 20, 0),
     schedule_interval=timedelta(hours=24),
@@ -232,5 +232,5 @@ SimpleHttpOperator(
     endpoint='/ticker/inner/ice',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60000},
-    dag=ice_1d,
+    dag=tick_ice_1d,
 )
