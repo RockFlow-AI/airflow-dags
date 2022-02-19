@@ -214,7 +214,7 @@ SimpleHttpOperator(
 
 # 解析ice数据
 ice_1d = DAG(
-    "ticks_by_1_week",
+    "ice_1d",
     catchup=False,
     start_date=datetime(2022, 2, 19, 20, 0),
     schedule_interval=timedelta(hours=24),
@@ -226,7 +226,7 @@ ice_1d = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='ticks_1w',
+    task_id='tick_ice_1d',
     method='GET',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/ice',
