@@ -285,7 +285,7 @@ SimpleHttpOperator(
 ticks_dev = DAG(
     "ticks_by_minute_dev",
     catchup=False,
-    start_date=datetime(2022, 2, 22, 0, 0),
+    start_date=datetime(2022, 2, 22, 0, 0, 10),
     schedule_interval=timedelta(minutes=1),
     default_args={
         "owner": "yinxiang",
