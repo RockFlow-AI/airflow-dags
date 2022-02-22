@@ -298,7 +298,7 @@ SimpleHttpOperator(
     task_id='ticks_dev',
     method='GET',
     http_conn_id='httpbin',
-    endpoint='/get?time={{ airflow.macros.ds_format(ts, "%Y-%m-%dT%H:%M:%S.%f%z", "%Y-%m-%d %H:%M:%S") }}',
+    endpoint='/get?time={{ macros.ds_format(ts, "%Y-%m-%dT%H:%M:%S.%f%z", "%Y-%m-%d %H:%M:%S") }}',
     extra_options={"timeout": 60},
     dag=ticks_dev,
 )
