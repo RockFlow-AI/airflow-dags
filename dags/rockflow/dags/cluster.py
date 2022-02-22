@@ -302,3 +302,24 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=ticks_dev,
 )
+
+ticks_1m_dev = DAG(
+    "ticks_by_minute_1m_dev",
+    catchup=False,
+    start_date=datetime(2022, 2, 22, 0, 0, 10),
+    schedule_interval=timedelta(minutes=1),
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks_1m_dev',
+    method='GET',
+    http_conn_id='httpbin',
+    endpoint='/get?time={{ macros.ds_format(ts - macros.timedelta(minutes=1), "%Y-%m-%dT%H:%M:%S.%f%z", "%Y-%m-%d %H:%M:%S") }}',
+    extra_options={"timeout": 60},
+    dag=ticks_1m_dev,
+)
