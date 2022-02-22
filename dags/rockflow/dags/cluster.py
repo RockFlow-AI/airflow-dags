@@ -280,3 +280,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 60000},
     dag=tick_kline_hk_1d,
 )
+
+
+ticks_dev = DAG(
+    "ticks_by_minute_dev",
+    catchup=False,
+    start_date=datetime(2022, 2, 22, 0, 0),
+    schedule_interval='@once',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks_dev',
+    method='GET',
+    http_conn_id='httpbin',
+    endpoint='/get?time={{ dag_run.logical_date }}&ts={{ ts }}',
+    extra_options={"timeout": 60},
+    dag=ticks_dev,
+)
