@@ -298,7 +298,7 @@ SimpleHttpOperator(
     task_id='ticks_dev',
     method='GET',
     http_conn_id='httpbin',
-    endpoint='/get?time={{ dag_run.logical_date }}&ts={{ ts }}',
+    endpoint='/get?time={{ ds_format(ts, "%Y-%m-%dT%H:%M:%S.%f%z", "%Y-%m-%d %H:%M:%S") }}',
     extra_options={"timeout": 60},
     dag=ticks_dev,
 )
