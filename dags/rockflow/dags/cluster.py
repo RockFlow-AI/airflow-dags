@@ -319,7 +319,7 @@ SimpleHttpOperator(
     task_id='ticks_1m_dev',
     method='GET',
     http_conn_id='httpbin',
-    endpoint='/get?time={{ ((macros.datetime.fromisoformat(ts) - macros.timedelta(minutes=1)).strftime("%Y-%m-%d %H:%M:%S") }}',
+    endpoint='/get?time={{ (macros.datetime.fromisoformat(ts) - macros.timedelta(minutes=1)).strftime("%Y-%m-%d %H:%M:%S") }}',
     extra_options={"timeout": 60},
     dag=ticks_1m_dev,
 )
