@@ -55,7 +55,7 @@ ticks = DAG(
     "ticks_by_minute",
     catchup=False,
     start_date=datetime(2022, 1, 5, 0, 0),
-    schedule_interval=timedelta(minutes=1),
+    schedule_interval='*/1 * * * *',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
@@ -63,15 +63,42 @@ ticks = DAG(
     }
 )
 
-SimpleHttpOperator(
+ticks_on_time = SimpleHttpOperator(
     task_id='ticks',
     method='PATCH',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/ticks',
+    endpoint='/ticker/inner/ticks?time={{ macros.ds_format(ts, "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%d %H:%M:%S") }}',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=ticks,
 )
+
+ticks_delay_1m = SimpleHttpOperator(
+    task_id='ticks_delay_1m',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?time={{ (macros.datetime.fromisoformat(ts) - macros.timedelta(minutes=1)).strftime("%Y-%m-%d %H:%M:%S") }}',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=ticks,
+)
+
+ticks_delay_3m = SimpleHttpOperator(
+    task_id='ticks_delay_3m',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?time={{ (macros.datetime.fromisoformat(ts) - macros.timedelta(minutes=3)).strftime("%Y-%m-%d %H:%M:%S") }}',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=ticks,
+)
+
+ticks_on_time.pre_execute = lambda _: time.sleep(10)
+ticks_on_time.post_execute = lambda _: time.sleep(10)
+ticks_delay_1m.post_execute = lambda _: time.sleep(10)
+
+ticks_on_time >> ticks_delay_1m >> ticks_delay_3m
+
 
 # 1分钟行情聚合为10分钟
 ticks_10m = DAG(
@@ -281,38 +308,3 @@ SimpleHttpOperator(
     extra_options={"timeout": 60000},
     dag=tick_kline_hk_1d,
 )
-
-
-ticks_dev = DAG(
-    "ticks_by_minute_dev",
-    catchup=False,
-    start_date=datetime(2022, 2, 22, 0, 0),
-    schedule_interval='*/1 * * * *',
-    default_args={
-        "owner": "yinxiang",
-        "depends_on_past": False,
-        "retries": 0,
-    }
-)
-
-ticks_dev_task1 = SimpleHttpOperator(
-    task_id='ticks_dev',
-    method='GET',
-    http_conn_id='httpbin',
-    endpoint='/get?time={{ macros.ds_format(ts, "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%d %H:%M:%S") }}',
-    extra_options={"timeout": 60},
-    dag=ticks_dev,
-)
-
-ticks_dev.post_execute = lambda _: time.sleep(20)
-
-ticks_dev_task2 = SimpleHttpOperator(
-    task_id='ticks_1m_dev',
-    method='GET',
-    http_conn_id='httpbin',
-    endpoint='/get?time={{ (macros.datetime.fromisoformat(ts) - macros.timedelta(minutes=1)).strftime("%Y-%m-%d %H:%M:%S") }}',
-    extra_options={"timeout": 60},
-    dag=ticks_dev,
-)
-
-ticks_dev_task1 >> ticks_dev_task2
