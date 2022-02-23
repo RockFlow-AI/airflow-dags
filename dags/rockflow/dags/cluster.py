@@ -93,9 +93,9 @@ ticks_delay_3m = SimpleHttpOperator(
     dag=ticks,
 )
 
-ticks_on_time.pre_execute = lambda _: time.sleep(10)
-ticks_on_time.post_execute = lambda _: time.sleep(10)
-ticks_delay_1m.post_execute = lambda _: time.sleep(10)
+ticks_on_time.pre_execute = lambda **x: time.sleep(10)
+ticks_on_time.post_execute = lambda **x: time.sleep(10)
+ticks_delay_1m.post_execute = lambda **x: time.sleep(10)
 
 ticks_on_time >> ticks_delay_1m >> ticks_delay_3m
 
