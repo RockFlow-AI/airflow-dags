@@ -95,9 +95,8 @@ ticks_delay_3m = SimpleHttpOperator(
 
 ticks_on_time.pre_execute = lambda **x: time.sleep(10)
 ticks_on_time.post_execute = lambda **x: time.sleep(10)
-ticks_delay_1m.post_execute = lambda **x: time.sleep(10)
 
-ticks_on_time >> ticks_delay_1m >> ticks_delay_3m
+ticks_on_time >> ticks_delay_1m
 
 
 # 1分钟行情聚合为10分钟
