@@ -90,6 +90,29 @@ ticks_on_time >> ticks_delay_1m
 
 
 # 1分钟行情聚合为10分钟
+ticks_5m = DAG(
+    "ticks_by_10_minutes",
+    catchup=False,
+    start_date=datetime(2022, 2, 23, 0, 0),
+    schedule_interval=timedelta(minutes=5),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks_10m',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?timeframe=5m',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 300},
+    dag=ticks_5m,
+)
+
+# 1分钟行情聚合为10分钟
 ticks_10m = DAG(
     "ticks_by_10_minutes",
     catchup=False,
