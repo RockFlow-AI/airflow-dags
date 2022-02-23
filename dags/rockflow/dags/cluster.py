@@ -67,7 +67,7 @@ ticks_on_time = SimpleHttpOperator(
     task_id='ticks',
     method='PATCH',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/ticks?time={{ macros.ds_format(ts, "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%d %H:%M:%S") }}',
+    endpoint='/ticker/inner/ticks?time={{ macros.ds_format(ts, "%Y-%m-%dT%H:%M:%S.%f%z", "%Y-%m-%d %H:%M:%S") }}',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=ticks,
