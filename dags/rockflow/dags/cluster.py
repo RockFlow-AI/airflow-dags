@@ -1,3 +1,4 @@
+import time
 from datetime import datetime, timedelta
 
 from airflow.models import DAG
@@ -285,8 +286,8 @@ SimpleHttpOperator(
 ticks_dev = DAG(
     "ticks_by_minute_dev",
     catchup=False,
-    start_date=datetime(2022, 2, 22, 0, 0, 10),
-    schedule_interval=timedelta(minutes=1),
+    start_date=datetime(2022, 2, 22, 0, 0),
+    schedule_interval='*/1 * * * *',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
@@ -294,7 +295,7 @@ ticks_dev = DAG(
     }
 )
 
-SimpleHttpOperator(
+ticks_dev_task1 = SimpleHttpOperator(
     task_id='ticks_dev',
     method='GET',
     http_conn_id='httpbin',
@@ -303,23 +304,15 @@ SimpleHttpOperator(
     dag=ticks_dev,
 )
 
-ticks_1m_dev = DAG(
-    "ticks_by_minute_1m_dev",
-    catchup=False,
-    start_date=datetime(2022, 2, 22, 0, 0, 10),
-    schedule_interval=timedelta(minutes=1),
-    default_args={
-        "owner": "yinxiang",
-        "depends_on_past": False,
-        "retries": 0,
-    }
-)
+ticks_dev.post_execute = lambda _: time.sleep(20)
 
-SimpleHttpOperator(
+ticks_dev_task2 = SimpleHttpOperator(
     task_id='ticks_1m_dev',
     method='GET',
     http_conn_id='httpbin',
     endpoint='/get?time={{ (macros.datetime.fromisoformat(ts) - macros.timedelta(minutes=1)).strftime("%Y-%m-%d %H:%M:%S") }}',
     extra_options={"timeout": 60},
-    dag=ticks_1m_dev,
+    dag=ticks_dev,
 )
+
+ticks_dev_task1 >> ticks_dev_task2
