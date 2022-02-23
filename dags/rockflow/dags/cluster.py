@@ -89,9 +89,9 @@ ticks_on_time.post_execute = lambda **x: time.sleep(10)
 ticks_on_time >> ticks_delay_1m
 
 
-# 1分钟行情聚合为10分钟
+# 1分钟行情聚合为5分钟
 ticks_5m = DAG(
-    "ticks_by_10_minutes",
+    "ticks_by_5_minutes",
     catchup=False,
     start_date=datetime(2022, 2, 23, 0, 0),
     schedule_interval=timedelta(minutes=5),
@@ -103,7 +103,7 @@ ticks_5m = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='ticks_10m',
+    task_id='ticks_5m',
     method='PATCH',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/ticks?timeframe=5m',
