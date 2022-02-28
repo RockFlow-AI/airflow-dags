@@ -1,4 +1,5 @@
 import time
+import pytz
 from datetime import datetime, timedelta
 
 from airflow.models import DAG
@@ -256,7 +257,7 @@ SimpleHttpOperator(
 daily_last_tick_hk = DAG(
     "daily_last_tick_hk",
     catchup=False,
-    start_date=datetime(2022, 2, 28, tz='Asia/Hong_Kong'),
+    start_date=datetime(2022, 2, 28, tzinfo=pytz.timezone('Asia/Hong_Kong')),
     schedule_interval='30 16 * * 1-5',
     default_args={
         "owner": "yinxiang",
@@ -279,7 +280,7 @@ ticks_on_time = SimpleHttpOperator(
 daily_last_tick_us = DAG(
     "daily_last_tick_us",
     catchup=False,
-    start_date=datetime(2022, 2, 28, tz='America/New_York'),
+    start_date=datetime(2022, 2, 28, tzinfo=pytz.timezone('America/New_York')),
     schedule_interval='30 20 * * 1-5',
     default_args={
         "owner": "yinxiang",
