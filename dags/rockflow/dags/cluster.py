@@ -252,6 +252,53 @@ SimpleHttpOperator(
     dag=ticks_1w,
 )
 
+# 实时行情收盘后OHLC数据落库
+daily_last_tick_hk = DAG(
+    "daily_last_tick_hk",
+    catchup=False,
+    start_date=datetime(2022, 2, 28, tz='Asia/Hong_Kong'),
+    schedule_interval='30 16 * * 1-5',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+ticks_on_time = SimpleHttpOperator(
+    task_id='ticks',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/markets/HK/ticks/latest',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=daily_last_tick_hk,
+)
+
+daily_last_tick_us = DAG(
+    "daily_last_tick_us",
+    catchup=False,
+    start_date=datetime(2022, 2, 28, tz='America/New_York'),
+    schedule_interval='30 20 * * 1-5',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+ticks_on_time = SimpleHttpOperator(
+    task_id='ticks',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/markets/US/ticks/latest',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=daily_last_tick_us,
+)
+
 # 解析ice数据
 tick_ice_1d = DAG(
     "ticks_resolve_ice_1d",
