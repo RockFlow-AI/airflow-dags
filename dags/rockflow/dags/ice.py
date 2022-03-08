@@ -2,8 +2,6 @@ from datetime import datetime, timedelta
 
 from airflow.models import DAG
 
-from rockflow.dags.const import *
-from rockflow.operators.ice import DailyHistoryImportOperator
 from rockflow.operators.sftp import SftpToOssOperator
 
 prefix = "ice_sftp_sync"
@@ -24,13 +22,6 @@ with DAG(
         work_dir="/FLOWAIHKFTPH1",
         ssh_conn_id="ftp_ice"
     )
-    daily_history = DailyHistoryImportOperator(
-        oss_source_key=prefix +
-                       "/K16D75_{{ ds_nodash }}.SRV",  # 当天收盘跑当天的
-        mysql_table='flow_ticker_stock_price_daily',
-        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
-    )
-    sync_all_files.set_downstream(daily_history)
 
 with DAG(
         "ice_sftp_sync_night",
@@ -48,11 +39,3 @@ with DAG(
         work_dir="/FLOWAIHKFTPH1",
         ssh_conn_id="ftp_ice"
     )
-
-    daily_history = DailyHistoryImportOperator(
-        oss_source_key=prefix +
-                       "/K16D75_{{ ds_nodash }}.SRV",  # 当天收盘跑当天的
-        mysql_table='flow_ticker_stock_price_daily',
-        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
-    )
-    sync_all_files.set_downstream(daily_history)
