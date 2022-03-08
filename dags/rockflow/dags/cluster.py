@@ -289,7 +289,6 @@ daily_last_tick_us = DAG(
         "retry_delay": timedelta(minutes=5),
     }
 )
-
 ticks_on_time = SimpleHttpOperator(
     task_id='ticks',
     method='POST',
@@ -300,71 +299,97 @@ ticks_on_time = SimpleHttpOperator(
     dag=daily_last_tick_us,
 )
 
-# 解析ice数据
-tick_ice_1d = DAG(
-    "ticks_resolve_ice_1d",
+# 三方前一天美股tick数据dev
+DEV_daily_previous_tick_us = DAG(
+    "DEV_daily_previous_tick_us",
     catchup=False,
-    start_date=datetime(2022, 2, 19, 20, 0),
-    schedule_interval=timedelta(hours=24),
+    start_date=pendulum.datetime(2022, 3, 8, tz='America/New_York'),
+    schedule_interval='45 22 * * 1-5',
     default_args={
-        "owner": "maoboxuan",
+        "owner": "jingjiadong",
         "depends_on_past": False,
         "retries": 0,
     }
 )
 
 SimpleHttpOperator(
-    task_id='tick_ice_1d',
-    method='GET',
+    task_id='DEV_daily_previous_tick_us',
+    method='POST',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/ice',
+    endpoint='/inner/kline/ld?step=2&timeframe=1d&adjustment=forward&markets=US',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60000},
-    dag=tick_ice_1d,
+    extra_options={"timeout": 100},
+    dag=DEV_daily_previous_tick_us,
 )
 
-# 解析Kline 美股 数据
-tick_kline_us_1d = DAG(
-    "ticks_resolve_kline_us_1d",
+
+# 三方前一天美股tick数据prod
+daily_previous_tick_us = DAG(
+    "daily_previous_tick_us",
     catchup=False,
-    start_date=datetime(2022, 2, 20, 8, 0),
-    schedule_interval=timedelta(hours=24),
+    start_date=pendulum.datetime(2022, 3, 8, tz='America/New_York'),
+    schedule_interval='30 22 * * 1-5',
     default_args={
-        "owner": "maoboxuan",
+        "owner": "jingjiadong",
         "depends_on_past": False,
         "retries": 0,
     }
 )
 
 SimpleHttpOperator(
-    task_id='tick_kline_us_1d',
-    method='GET',
+    task_id='daily_previous_tick_us',
+    method='POST',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/kline/us',
+    endpoint='/inner/kline/ld?step=2&timeframe=1d&adjustment=forward&markets=US',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60000},
-    dag=tick_kline_us_1d,
+    extra_options={"timeout": 100},
+    dag=daily_previous_tick_us,
 )
 
-# 解析Kline 港股 数据
-tick_kline_hk_1d = DAG(
-    "ticks_resolve_kline_hk_1d",
+
+# 三方前一天港股tick数据dev
+DEV_daily_previous_tick_hk = DAG(
+    "DEV_daily_previous_tick_hk",
     catchup=False,
-    start_date=datetime(2022, 2, 20, 8, 0),
-    schedule_interval=timedelta(hours=24),
+    start_date=pendulum.datetime(2022, 3, 8, tz='Asia/Hong_Kong'),
+    schedule_interval='30 20 * * 1-5',
     default_args={
-        "owner": "maoboxuan",
+        "owner": "jingjiadong",
         "depends_on_past": False,
         "retries": 0,
     }
 )
 
 SimpleHttpOperator(
-    task_id='tick_kline_hk_1d',
-    method='GET',
+    task_id='DEV_daily_previous_tick_hk',
+    method='POST',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/kline/hk',
+    endpoint='/inner/kline/ld?step=2&timeframe=1d&adjustment=forward&markets=HK',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60000},
-    dag=tick_kline_hk_1d,
+    extra_options={"timeout": 100},
+    dag=DEV_daily_previous_tick_hk,
+)
+
+
+# 三方前一天港股tick数据dev
+daily_previous_tick_hk = DAG(
+    "daily_previous_tick_hk",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 3, 8, tz='Asia/Hong_Kong'),
+    schedule_interval='15 20 * * 1-5',
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='daily_previous_tick_hk',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/inner/kline/ld?step=2&timeframe=1d&adjustment=forward&markets=HK',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 100},
+    dag=daily_previous_tick_hk,
 )
