@@ -124,12 +124,12 @@ with DAG(
         elasticsearch_conn_id='elasticsearch_default'
     )
 
-    sink_futu_profile_op = SinkFutuProfile(
-        oss_source_key="{{ task_instance.xcom_pull('" +
-                       join_map.task_id + "') }}",
-        mysql_table='flow_ticker_stock_profile',
-        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
-    )
+    # sink_futu_profile_op = SinkFutuProfile(
+    #     oss_source_key="{{ task_instance.xcom_pull('" +
+    #                    join_map.task_id + "') }}",
+    #     mysql_table='flow_ticker_stock_profile',
+    #     mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
+    # )
 
     # ------------------------------------------------------------
 
@@ -172,7 +172,8 @@ chain(
     [extract_cn, extract_en],
     [format_cn, format_en],
     join_map,
-    [sink_es, sink_futu_profile_op],
+    # [sink_es, sink_futu_profile_op],
+    [sink_es],
 )
 
 chain(
