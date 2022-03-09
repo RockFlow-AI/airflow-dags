@@ -89,7 +89,6 @@ ticks_on_time.post_execute = lambda **x: time.sleep(10)
 
 ticks_on_time >> ticks_delay_1m
 
-
 # 1分钟行情聚合为5分钟
 ticks_5m = DAG(
     "ticks_by_5_minutes",
@@ -135,7 +134,6 @@ SimpleHttpOperator(
     extra_options={"timeout": 500},
     dag=ticks_10m,
 )
-
 
 # 1分钟行情聚合为15分钟
 ticks_15m = DAG(
@@ -205,7 +203,6 @@ SimpleHttpOperator(
     extra_options={"timeout": 1000},
     dag=ticks_1h,
 )
-
 
 # 1小时行情聚合为4小时
 ticks_4h = DAG(
@@ -322,7 +319,6 @@ SimpleHttpOperator(
     dag=DEV_daily_previous_tick_us,
 )
 
-
 # 三方前一天美股tick数据prod
 daily_previous_tick_us = DAG(
     "daily_previous_tick_us",
@@ -346,7 +342,6 @@ SimpleHttpOperator(
     dag=daily_previous_tick_us,
 )
 
-
 # 三方前一天港股tick数据dev
 DEV_daily_previous_tick_hk = DAG(
     "DEV_daily_previous_tick_hk",
@@ -369,7 +364,6 @@ SimpleHttpOperator(
     extra_options={"timeout": 100},
     dag=DEV_daily_previous_tick_hk,
 )
-
 
 # 三方前一天港股tick数据dev
 daily_previous_tick_hk = DAG(
@@ -398,12 +392,13 @@ SimpleHttpOperator(
 daily_statement = DAG(
     "daily_statement",
     catchup=False,
-    start_date=datetime(2022, 3, 10, 0, 0),
-    schedule_interval=timedelta(hours=1),
+    start_date=pendulum.datetime(2022, 3, 10, tz='Asia/Hong_Kong'),
+    schedule_interval='30 16 * * 1-5',
     default_args={
         "owner": "maoboxuan",
         "depends_on_past": False,
         "retries": 3,
+        "retry_delay": timedelta(minutes=5),
     }
 )
 
