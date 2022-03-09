@@ -414,5 +414,5 @@ SimpleHttpOperator(
     endpoint='/inner/statements/daily',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
-    dag=currencies_refresh,
+    dag=daily_statement,
 )
