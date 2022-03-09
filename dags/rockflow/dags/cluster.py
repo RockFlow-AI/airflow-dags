@@ -393,3 +393,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 100},
     dag=daily_previous_tick_hk,
 )
+
+# 日结单
+daily_statement = DAG(
+    "daily_statement",
+    catchup=False,
+    start_date=datetime(2022, 3, 10, 0, 0),
+    schedule_interval=timedelta(hours=1),
+    default_args={
+        "owner": "maoboxuan",
+        "depends_on_past": False,
+        "retries": 3,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='daily_statement',
+    method='GET',
+    http_conn_id='flow-statement-service',
+    endpoint='/inner/statements/daily',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=currencies_refresh,
+)
