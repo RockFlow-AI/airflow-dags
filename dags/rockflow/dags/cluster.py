@@ -9,8 +9,8 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 currencies_refresh = DAG(
     "currencies_refresh_by_hour",
     catchup=False,
-    start_date=datetime(2022, 1, 5, 0, 0),
-    schedule_interval=timedelta(hours=1),
+    start_date=pendulum.datetime(2022, 3, 22, tz='America/New_York'),
+    schedule_interval='00 0-23 * * 1-5',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
