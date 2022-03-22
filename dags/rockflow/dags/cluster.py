@@ -457,26 +457,3 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=hourly_pending_account_sync,
 )
-
-dummy_task = DAG(
-    "dummy_task",
-    catchup=False,
-    start_date=pendulum.datetime(2022, 3, 16, tz='America/New_York'),
-    schedule_interval='00 0-23 * * 1-5',
-    default_args={
-        "owner": "yinxiang",
-        "depends_on_past": False,
-        "retries": 5,
-        "retry_delay": timedelta(minutes=1),
-    }
-)
-
-SimpleHttpOperator(
-    task_id='dummy_task',
-    method='POST',
-    http_conn_id='flow-portfolio-service',
-    endpoint='/portfolio/inner/accounts/refresh?status=0&limit=20',
-    response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
-    dag=dummy_task,
-)
