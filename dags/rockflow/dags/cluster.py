@@ -416,7 +416,7 @@ daily_open_account_sync = DAG(
     "daily_open_account_sync",
     catchup=False,
     start_date=pendulum.datetime(2022, 3, 16, tz='America/New_York'),
-    schedule_interval='00 20 * * 1-5',
+    schedule_interval='00 20 * * *',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
@@ -439,7 +439,7 @@ hourly_pending_account_sync = DAG(
     "hourly_pending_account_sync",
     catchup=False,
     start_date=pendulum.datetime(2022, 3, 16, tz='America/New_York'),
-    schedule_interval='00 0-23 * * 1-5',
+    schedule_interval='00 0-23 * * *',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
