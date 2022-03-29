@@ -320,8 +320,6 @@ class SinkFutuProfile(OssToMysqlOperator):
             kwargs['mapping'] = {
                 "symbol": "symbol",
                 "raw": "raw",
-                "name_en": "name_en",
-                "name_cn": "name_zh",
                 "profile_en": "profile_en",
                 "profile_cn": "profile_zh",
                 "market": "market",

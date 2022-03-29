@@ -61,24 +61,6 @@ with DAG(
         key=SYMBOL_PARSE_KEY
     )
 
-    sse = SseSymbolDownloadOperator(
-        key=SSE_RAW_KEY
-    )
-
-    sse_parse = SseSymbolParser(
-        from_key="{{ task_instance.xcom_pull('" + sse.task_id + "') }}",
-        key=SYMBOL_PARSE_KEY
-    )
-
-    szse = SzseSymbolDownloadOperator(
-        key=SZSE_RAW_KEY
-    )
-
-    szse_parse = SzseSymbolParser(
-        from_key="{{ task_instance.xcom_pull('" + szse.task_id + "') }}",
-        key=SYMBOL_PARSE_KEY
-    )
-
     merge_csv = MergeCsvList(
         from_key=SYMBOL_PARSE_KEY,
         key=MERGE_CSV_KEY
@@ -134,12 +116,12 @@ with DAG(
         elasticsearch_conn_id='elasticsearch_default'
     )
 
-    # sink_futu_profile_op = SinkFutuProfile(
-    #     oss_source_key="{{ task_instance.xcom_pull('" +
-    #                    join_map.task_id + "') }}",
-    #     mysql_table='flow_ticker_stock_profile',
-    #     mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
-    # )
+    sink_futu_profile_op = SinkFutuProfile(
+        oss_source_key="{{ task_instance.xcom_pull('" +
+                       join_map.task_id + "') }}",
+        mysql_table='flow_ticker_stock_profile',
+        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER
+    )
 
     # ------------------------------------------------------------
 
@@ -182,8 +164,7 @@ chain(
     [extract_cn, extract_en],
     [format_cn, format_en],
     join_map,
-    # [sink_es, sink_futu_profile_op],
-    [sink_es],
+    [sink_es, sink_futu_profile_op],
 )
 
 chain(
