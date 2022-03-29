@@ -42,6 +42,15 @@ with DAG(
         key=SYMBOL_PARSE_KEY
     )
 
+    nyse = NyseSymbolDownloadOperator(
+        key=NASDAQ_RAW_KEY
+    )
+
+    nyse_parse = NyseSymbolParser(
+        from_key="{{ task_instance.xcom_pull('" + nyse.task_id + "') }}",
+        key=SYMBOL_PARSE_KEY
+    )
+
     hkex = HkexSymbolDownloadOperator(
         key=HKEX_RAW_KEY
     )
@@ -161,8 +170,8 @@ with DAG(
         yahoo_extract.set_downstream(summary_detail_mysql)
 
 chain(
-    [nasdaq, hkex, sse, szse],
-    [nasdaq_parse, hkex_parse, sse_parse, szse_parse],
+    [nasdaq, nyse, hkex, sse, szse],
+    [nasdaq_parse, nyse_parse, hkex_parse, sse_parse, szse_parse],
     merge_csv,
 )
 

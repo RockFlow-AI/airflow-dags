@@ -8,4 +8,6 @@ DEFAULT_PROXY = Proxy(Variable.get("PROXY_URL"),
 DEFAULT_REGION = Variable.get("REGION")
 DEFAULT_BUCKET_NAME = Variable.get("BUCKET_NAME")
 AVATAR_BUCKET_NAME = Variable.get("BUCKET_NAME_AVATAR")
+APOLLO_HOST = Variable.get("APOLLO_HOST")
+APOLLO_PORT = Variable.get("APOLLO_PORT")
 GLOBAL_DEBUG = (Variable.get("DEBUG", "false") == "true")

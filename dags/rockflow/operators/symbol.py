@@ -4,8 +4,9 @@ from multiprocessing.pool import ThreadPool as Pool
 import pandas as pd
 from airflow import AirflowException
 
-from rockflow.common.hkex import HKEX
-from rockflow.common.nasdaq import Nasdaq
+from rockflow.common.apollo_nasdaq import ApolloNasdaq
+from rockflow.common.apollo_nyse import ApolloNYSE
+from rockflow.common.apollo_hkex import ApolloHKEX
 from rockflow.common.pandas_helper import merge_data_frame_by_column
 from rockflow.common.sse import SSE1
 from rockflow.common.szse import SZSE1
@@ -20,7 +21,16 @@ class NasdaqSymbolDownloadOperator(DownloadOperator):
 
     @property
     def downloader_cls(self):
-        return Nasdaq
+        return ApolloNasdaq
+
+
+class NyseSymbolDownloadOperator(DownloadOperator):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def downloader_cls(self):
+        return ApolloNYSE
 
 
 class HkexSymbolDownloadOperator(DownloadOperator):
@@ -29,7 +39,7 @@ class HkexSymbolDownloadOperator(DownloadOperator):
 
     @property
     def downloader_cls(self):
-        return HKEX
+        return ApolloHKEX
 
 
 class SseSymbolDownloadOperator(DownloadOperator):
@@ -89,7 +99,16 @@ class NasdaqSymbolParser(SymbolParser):
 
     @property
     def exchange(self):
-        return Nasdaq
+        return ApolloNasdaq
+
+
+class NyseSymbolParser(SymbolParser):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def exchange(self):
+        return ApolloNYSE
 
 
 class HkexSymbolParser(SymbolParser):
@@ -98,7 +117,7 @@ class HkexSymbolParser(SymbolParser):
 
     @property
     def exchange(self):
-        return HKEX
+        return ApolloHKEX
 
 
 class SseSymbolParser(SymbolParser):
