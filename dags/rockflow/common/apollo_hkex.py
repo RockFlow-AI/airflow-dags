@@ -21,6 +21,8 @@ class ApolloHKEX(ApolloSymbolDownloader):
             lambda x: x[1:]
         )
         result['ice'] = result['raw']
-        result['futu'] = result['raw'].strip().replace(".", "-")
+        result['futu'] = result['raw'].apply(
+            lambda x: x.strip().replace(".", "-")
+        )
         result['market'] = "HK"
         return result
