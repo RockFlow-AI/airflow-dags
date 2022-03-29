@@ -73,7 +73,7 @@ class OssToMysqlOperator(OSSOperator):
     def load_to_sql(self, df: Optional[pd.DataFrame]):
         engine = self.mysql_hook.get_sqlalchemy_engine()
         return upsert(
-            engine=engine,
+            engine,
             df=df,
             table_name=self.mysql_table,
             if_row_exists='update',
@@ -118,7 +118,7 @@ class OssBatchToMysqlOperator(OSSOperator):
     def load_to_sql(self, obj, df: Optional[pd.DataFrame]):
         engine = self.mysql_hook.get_sqlalchemy_engine()
         return upsert(
-            engine=engine,
+            engine,
             df=df,
             table_name=self.mysql_table,
             if_row_exists='update',
