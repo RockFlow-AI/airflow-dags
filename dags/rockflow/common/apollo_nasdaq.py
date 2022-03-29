@@ -2,7 +2,7 @@ from typing import Optional
 
 import pandas as pd
 
-from rockflow.common.downloader import ApolloSymbolDownloader
+from rockflow.common.apollo_symbol_downloader import ApolloSymbolDownloader
 
 
 class ApolloNasdaq(ApolloSymbolDownloader):
