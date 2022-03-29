@@ -12,6 +12,7 @@ from rockflow.operators.yahoo import *
 DAG_ID = "symbol_download"
 
 NASDAQ_RAW_KEY = f'{DAG_ID}_nasdaq'
+NYSE_RAW_KEY = f'{DAG_ID}_nyse'
 HKEX_RAW_KEY = f'{DAG_ID}_hkex'
 SSE_RAW_KEY = f'{DAG_ID}_sse'
 SZSE_RAW_KEY = f'{DAG_ID}_szse'
@@ -43,7 +44,7 @@ with DAG(
     )
 
     nyse = NyseSymbolDownloadOperator(
-        key=NASDAQ_RAW_KEY
+        key=NYSE_RAW_KEY
     )
 
     nyse_parse = NyseSymbolParser(
