@@ -171,8 +171,8 @@ with DAG(
         yahoo_extract.set_downstream(summary_detail_mysql)
 
 chain(
-    [nasdaq, nyse, hkex, sse, szse],
-    [nasdaq_parse, nyse_parse, hkex_parse, sse_parse, szse_parse],
+    [nasdaq, nyse, hkex],
+    [nasdaq_parse, nyse_parse, hkex_parse],
     merge_csv,
 )
 
