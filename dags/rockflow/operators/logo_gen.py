@@ -51,7 +51,7 @@ class LogoImportOperator(OSSOperator):
         elif name_cn:
             result = name_cn[0:1]
         return self.oss_src(
-            pinyin(result, style=Style.FIRST_LETTER)[0][0][0:1].upper()
+            f"_{pinyin(result, style=Style.FIRST_LETTER)[0][0][0:1].upper()}"
         )
 
     def dest_file(self, line: pd.Series) -> str:
