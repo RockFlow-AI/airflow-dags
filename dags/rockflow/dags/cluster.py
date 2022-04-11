@@ -457,3 +457,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=hourly_pending_account_sync,
 )
+
+weekly_pending_order_sync = DAG(
+    "weekly_pending_order_sync",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 4, 11, tz='America/New_York'),
+    schedule_interval='00 08 * * SUN',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=1),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='weekly_pending_order_sync',
+    method='PATCH',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/orders',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=weekly_pending_order_sync,
+)
