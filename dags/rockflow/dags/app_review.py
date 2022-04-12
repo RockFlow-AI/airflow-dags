@@ -2,7 +2,7 @@ from datetime import datetime
 
 from airflow.models import DAG
 
-from dags.rockflow.operators.google_translate import GoogleTranslateOperator
+from rockflow.operators.google_translate import GoogleTranslateOperator
 
 with DAG(
         "app_review_translate",
