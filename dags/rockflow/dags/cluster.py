@@ -475,7 +475,7 @@ monthly_statement = DAG(
 SimpleHttpOperator(
     task_id='monthly_statement',
     method='GET',
-    http_conn_id='monthly_statement-service',
+    http_conn_id='flow-statement-service',
     endpoint='/inner/statements/monthly',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
