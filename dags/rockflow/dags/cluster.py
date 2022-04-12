@@ -393,7 +393,7 @@ daily_statement = DAG(
     "daily_statement",
     catchup=False,
     start_date=pendulum.datetime(2022, 3, 10, tz='Asia/Hong_Kong'),
-    schedule_interval='30 16 * * 1-5',
+    schedule_interval='0 0 16 * * ?',
     default_args={
         "owner": "maoboxuan",
         "depends_on_past": False,
@@ -479,4 +479,28 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=weekly_pending_order_sync,
+)
+
+# 月结单
+monthly_statement = DAG(
+    "monthly_statement",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 3, 10, tz='Asia/Hong_Kong'),
+    schedule_interval='0 0 16 2 * ?',
+    default_args={
+        "owner": "maoboxuan",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='monthly_statement',
+    method='GET',
+    http_conn_id='flow-statement-service',
+    endpoint='/inner/statements/monthly',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=monthly_statement,
 )
