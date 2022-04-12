@@ -39,7 +39,6 @@ class GoogleTranslateOperator(OSSOperator):
         self.put_object(key=self.oss_key, content=json)
 
     def execute(self, context: Any):
-        self.log.info(f"symbol: {self.symbols}")
         with Pool(self.pool_size) as pool:
             pool.map(
                 lambda x: self.translate(x), self.files
