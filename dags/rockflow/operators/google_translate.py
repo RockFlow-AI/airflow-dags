@@ -22,7 +22,7 @@ class GoogleTranslateOperator(OSSOperator):
     def translate(self, file: str):
         review_lang = []
         translated_review = []
-        df = pd.read_json(self.get_object(f"{self.path}/{file}", orient='table'))
+        df = pd.read_json(self.get_object(f"{self.path}/{file}"), orient='table')
 
         trans = Translator(proxies=self.proxy)
 
