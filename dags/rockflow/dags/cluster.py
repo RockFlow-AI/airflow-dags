@@ -486,7 +486,7 @@ monthly_statement = DAG(
     "monthly_statement",
     catchup=False,
     start_date=pendulum.datetime(2022, 4, 13, tz='Asia/Hong_Kong'),
-    schedule_interval='0 16 * * 2',
+    schedule_interval='0 16 2 * *',
     default_args={
         "owner": "maoboxuan",
         "depends_on_past": False,
