@@ -393,7 +393,7 @@ daily_statement = DAG(
     "daily_statement",
     catchup=False,
     start_date=pendulum.datetime(2022, 3, 10, tz='Asia/Hong_Kong'),
-    schedule_interval='0 16 * * 1-5',
+    schedule_interval='0 16 * * *',
     default_args={
         "owner": "maoboxuan",
         "depends_on_past": False,
