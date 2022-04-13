@@ -393,7 +393,7 @@ daily_statement = DAG(
     "daily_statement",
     catchup=False,
     start_date=pendulum.datetime(2022, 3, 10, tz='Asia/Hong_Kong'),
-    schedule_interval='0 0 16 * *',
+    schedule_interval='0 16 * * 1-5',
     default_args={
         "owner": "maoboxuan",
         "depends_on_past": False,
@@ -485,8 +485,8 @@ SimpleHttpOperator(
 monthly_statement = DAG(
     "monthly_statement",
     catchup=False,
-    start_date=pendulum.datetime(2022, 3, 10, tz='Asia/Hong_Kong'),
-    schedule_interval='0 0 16 2 *',
+    start_date=pendulum.datetime(2022, 4, 13, tz='Asia/Hong_Kong'),
+    schedule_interval='0 16 * * 2',
     default_args={
         "owner": "maoboxuan",
         "depends_on_past": False,
