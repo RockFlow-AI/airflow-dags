@@ -22,6 +22,7 @@ class ApolloNasdaq(ApolloSymbolDownloader):
         def yahoo_symbol(raw: str):
             return raw.strip() \
                 .replace("^", "-P") \
+                .replace(".", "-") \
                 .replace("/", "-").upper()
 
         def ice_symbol(raw: str):
