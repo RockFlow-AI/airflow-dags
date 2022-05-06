@@ -111,7 +111,7 @@ with DAG(
 
     sink_es = SinkFutuSearch(
         from_key="{{ task_instance.xcom_pull('" + join_map.task_id + "') }}",
-        elasticsearch_index_name='i_flow_ticker_quote_search',
+        elasticsearch_index_name='i_flow_ticker_stock_search',
         elasticsearch_index_setting=search_setting,
         elasticsearch_conn_id='elasticsearch_default'
     )
