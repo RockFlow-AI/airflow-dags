@@ -216,6 +216,6 @@ class MysqlToOssOperator(OSSOperator):
         return df_oss.to_json(orient='index', force_ascii=False)
 
     def execute(self, context: Any) -> str:
-        self.log.info(f"Loading MySql table {self.mysql_table} to {self.oss_source_key}...")
+        self.log.info(f"Loading MySql table {self.mysql_table} to {self.oss_dst_key}...")
         self.put_object(key=self.oss_dst_key, content=self.__transform())
         return self.oss_dst_key
