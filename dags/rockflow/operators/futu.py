@@ -13,6 +13,7 @@ from rockflow.common.futu_company_profile import FutuCompanyProfileCn, FutuCompa
 from rockflow.common.map_helper import join_map, join_list
 from rockflow.operators.const import DEFAULT_POOL_SIZE, GLOBAL_DEBUG
 from rockflow.operators.elasticsearch import ElasticsearchOperator
+from rockflow.operators.mysql import MysqlToOssOperator
 from rockflow.operators.mysql import OssToMysqlOperator
 from rockflow.operators.oss import OSSSaveOperator, OSSOperator
 
@@ -340,3 +341,12 @@ class SinkFutuProfileDebug(SinkFutuProfile):
         return self.extract_index_dict_to_df(
             self.extract_index_dict_from_local_file()
         )
+
+
+class SinkFutuRenameCompany(MysqlToOssOperator):
+    def __init__(self, **kwargs) -> None:
+        if 'index_col' not in kwargs:
+            kwargs['index_col'] = "symbol"
+        if 'oss_dst_key' not in kwargs:
+            kwargs['oss_dst_key'] = self.snakecase_class_name
+        super().__init__(**kwargs)

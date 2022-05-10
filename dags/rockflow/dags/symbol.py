@@ -109,8 +109,15 @@ with DAG(
         key=symbol_dag.dag_id
     )
 
+    sink_futu_rename_company = SinkFutuRenameCompany(
+        oss_src_key="{{ task_instance.xcom_pull('" + join_map.task_id + "') }}",
+        mysql_table='flow_ticker_stock_profile',
+        mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER,
+        key=symbol_dag.dag_id,
+    )
+
     sink_es = SinkFutuSearch(
-        from_key="{{ task_instance.xcom_pull('" + join_map.task_id + "') }}",
+        from_key="{{ task_instance.xcom_pull('" + sink_futu_rename_company.task_id + "') }}",
         elasticsearch_index_name='i_flow_ticker_quote_search',
         elasticsearch_index_setting=search_setting,
         elasticsearch_conn_id='elasticsearch_default'
@@ -164,7 +171,9 @@ chain(
     [extract_cn, extract_en],
     [format_cn, format_en],
     join_map,
-    [sink_es, sink_futu_profile_op],
+    [sink_futu_profile_op],
+    [sink_futu_rename_company],
+    [sink_es],
 )
 
 chain(

@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Optional, Any, Dict
 
 import pandas as pd
@@ -147,3 +148,75 @@ class OssBatchToMysqlOperatorDebug(OssBatchToMysqlOperator):
     def iterator(self):
         from itertools import islice
         return islice(super().iterator(), 10)
+
+
+class MysqlToOssOperator(OSSOperator):
+    template_fields = ["oss_src_key"]
+
+    def __init__(
+            self,
+            oss_src_key: str,
+            oss_dst_key: str,
+            index_col: Any,
+            mapping: Dict[str, str],
+            mysql_table: str,
+            mysql_conn_id: str = 'mysql_default',
+            **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.oss_src_key = oss_src_key
+        self.oss_dst_key = os.path.join(
+            f"{self.key}_{oss_dst_key}",
+            f"{oss_dst_key}.json"
+        )
+        self.mysql_table = mysql_table
+        self.mysql_conn_id = mysql_conn_id
+        self.index_col = index_col
+        self.mapping = mapping
+
+        self.mysql_hook = MySqlHook(mysql_conn_id=self.mysql_conn_id)
+
+    def __extract_index_dict(self):
+        return json.loads(
+            self.get_object(self.oss_src_key).read()
+        )
+
+    def __extract_index_dict_to_df(self, dict_data) -> pd.DataFrame:
+        result = pd.DataFrame.from_dict(
+            dict_data,
+            orient='index'
+        )
+        result.index.rename(self.index_col, inplace=True)
+        self.log.error(result[result.index.duplicated(keep=False)])
+        return result
+
+    def __extract_data(self) -> pd.DataFrame:
+        return self.__extract_index_dict_to_df(
+            self.__extract_index_dict()
+        )
+
+    def __load_from_sql(self):
+        conn = self.mysql_hook.get_conn()
+        cur = conn.cursor()
+
+        df = pd.DataFrame(columns=['symbol', 'name_en', 'name_zh'])
+        cur.execute(f"SELECT symbol, name_en, name_zh FROM {self.mysql_table}")
+
+        result = cur.fetchmany(100)
+        while result:
+            self.log.info(f"Fetched from {self.mysql_table}: {result}")
+            df = df.append(pd.DataFrame(result, columns=['symbol', 'name_en', 'name_zh']), ignore_index=True)
+            result = cur.fetchmany(100)
+        return df
+
+    def __transform(self):
+        df_oss = self.__extract_data()
+        df_db = self.__load_from_sql()
+        df_oss['name_en'] = df_oss['symbol'].map(df_db.set_index('symbol')['name_en'])
+        df_oss['name_cn'] = df_oss['symbol'].map(df_db.set_index('symbol')['name_zh'])
+        return df_oss.to_json(orient='index', force_ascii=False)
+
+    def execute(self, context: Any) -> str:
+        self.log.info(f"Loading MySql table {self.mysql_table} to {self.oss_source_key}...")
+        self.put_object(key=self.oss_dst_key, content=self.__transform())
+        return self.oss_dst_key
