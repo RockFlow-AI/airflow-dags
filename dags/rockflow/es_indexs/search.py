@@ -22,6 +22,12 @@ search_setting = {
                     "keep_full_pinyin": "false",
                     "keep_none_chinese_in_first_letter": "false",
                     "type": "pinyin"
+                },
+                "quote_smartcn_stop": {
+                    "type": "smartcn_stop",
+                    "stopwords": [
+                        "_smartcn_"
+                    ]
                 }
             },
             "analyzer": {
@@ -44,9 +50,31 @@ search_setting = {
                         "auto_complete_filter"
                     ],
                     "tokenizer": "one_ngram_tokenizer"
+                },
+                "auto_complete_pinyin_analyzer": {
+                    "tokenizer": "all_pinyin_tokenizer",
+                    "filter": [
+                        "auto_complete_filter"
+                    ]
+                },
+                "all_pinyin_analyzer": {
+                    "tokenizer": "all_pinyin_tokenizer"
+                },
+                "quote_smartcn_analyzer": {
+                    "tokenizer": "smartcn_tokenizer",
+                    "filter": [
+                        "porter_stem",
+                        "quote_smartcn_stop"
+                    ]
                 }
             },
             "tokenizer": {
+                "all_pinyin_tokenizer": {
+                    "keep_first_letter": "true",
+                    "keep_none_chinese_in_first_letter": "true",
+                    "type": "pinyin",
+                    "keep_full_pinyin": "true"
+                },
                 "one_ngram_tokenizer": {
                     "type": "ngram",
                     "min_gram": 1,
@@ -82,8 +110,16 @@ search_setting = {
             },
             "name_zh": {
                 "type": "text",
-                "analyzer": "prefix_pinyin_analyzer",
-                "search_analyzer": "one_ngram_search_analyzer"
+                "analyzer": "quote_smartcn_analyzer",
+                "fields": {
+                    "pinyin": {
+                        "type": "text",
+                        "store": False,
+                        "term_vector": "with_offsets",
+                        "analyzer": "auto_complete_pinyin_analyzer",
+                        "search_analyzer": "all_pinyin_analyzer"
+                    }
+                }
             },
             "profile_en": {
                 "type": "keyword"
