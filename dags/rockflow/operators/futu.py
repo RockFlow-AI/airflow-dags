@@ -348,14 +348,6 @@ class SinkFutuRenameCompany(MysqlToOssOperator):
     def __init__(self, **kwargs) -> None:
         if 'index_col' not in kwargs:
             kwargs['index_col'] = "symbol"
-        if 'mapping' not in kwargs:
-            kwargs['mapping'] = {
-                "symbol": "symbol",
-                "raw": "raw",
-                "profile_en": "profile_en",
-                "profile_cn": "profile_zh",
-                "market": "market",
-            }
         if 'oss_dst_key' not in kwargs:
             kwargs['oss_dst_key'] = self.snakecase_class_name
         super().__init__(**kwargs)

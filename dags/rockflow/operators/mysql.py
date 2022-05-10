@@ -157,8 +157,8 @@ class MysqlToOssOperator(OSSOperator):
             self,
             oss_src_key: str,
             oss_dst_key: str,
+            key: str,
             index_col: Any,
-            mapping: Dict[str, str],
             mysql_table: str,
             mysql_conn_id: str = 'mysql_default',
             **kwargs,
@@ -166,13 +166,12 @@ class MysqlToOssOperator(OSSOperator):
         super().__init__(**kwargs)
         self.oss_src_key = oss_src_key
         self.oss_dst_key = os.path.join(
-            f"{self.key}_{oss_dst_key}",
+            f"{key}_{oss_dst_key}",
             f"{oss_dst_key}.json"
         )
         self.mysql_table = mysql_table
         self.mysql_conn_id = mysql_conn_id
         self.index_col = index_col
-        self.mapping = mapping
 
         self.mysql_hook = MySqlHook(mysql_conn_id=self.mysql_conn_id)
 
