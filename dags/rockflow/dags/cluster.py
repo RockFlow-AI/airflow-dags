@@ -10,7 +10,7 @@ currencies_refresh = DAG(
     "currencies_refresh_by_hour",
     catchup=False,
     start_date=pendulum.datetime(2022, 3, 22, tz='America/New_York'),
-    schedule_interval='00 0-23 * * 1-5',
+    schedule_interval='30 0 * * 1-5',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
