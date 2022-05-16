@@ -426,13 +426,13 @@ hourly_open_account_sync = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='daily_open_account_sync',
+    task_id='hourly_open_account_sync',
     method='POST',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/accounts/refresh?status=1&limit=20&firstDepositReceived=true',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
-    dag=daily_open_account_sync,
+    dag=hourly_open_account_sync,
 )
 
 hourly_pending_account_sync = DAG(
