@@ -412,11 +412,11 @@ SimpleHttpOperator(
     dag=daily_statement,
 )
 
-daily_open_account_sync = DAG(
+hourly_open_account_sync = DAG(
     "daily_open_account_sync",
     catchup=False,
     start_date=pendulum.datetime(2022, 3, 16, tz='America/New_York'),
-    schedule_interval='00 20 * * *',
+    schedule_interval='0/30 0-23 * * SUN-FRI',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
