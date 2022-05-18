@@ -218,7 +218,7 @@ def yahoo_task_partition(shards, src_key, dst_key, mysql_conn_id, upstream):
     for i in range(shards):
         yahoo_extract = YahooExtractOperator(
             task_id=f"yahoo_extract_{i}",
-            from_key="symbol_download_yahoo",
+            from_key=f"{dst_key}_yahoo",
             key=dst_key,
             symbol_key=src_key,
             partition=i,
