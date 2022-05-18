@@ -15,6 +15,7 @@ DAG_ID = "symbol_download_hk"
 HKEX_RAW_KEY = f'{DAG_ID}_hkex'
 
 SYMBOL_PARSE_KEY = f'{DAG_ID}_parse/'
+SYMBOL_SOURCE_KEY = f'{SYMBOL_PARSE_KEY}apollohkex.csv'
 
 with DAG(
         DAG_ID,
@@ -42,7 +43,7 @@ with DAG(
     # ------------------------------------------------------------
 
     futu_cn = FutuBatchOperatorCn(
-        from_key="{{ task_instance.xcom_pull('" + symbol_source.task_id + "') }}",
+        from_key=SYMBOL_SOURCE_KEY,
         key=symbol_dag.dag_id
     )
 
@@ -59,7 +60,7 @@ with DAG(
     )
 
     futu_en = FutuBatchOperatorEn(
-        from_key="{{ task_instance.xcom_pull('" + symbol_source.task_id + "') }}",
+        from_key=SYMBOL_SOURCE_KEY,
         key=symbol_dag.dag_id
     )
 
@@ -78,7 +79,7 @@ with DAG(
     join_map = JoinMap(
         first="{{ task_instance.xcom_pull('" + format_cn.task_id + "') }}",
         second="{{ task_instance.xcom_pull('" + format_en.task_id + "') }}",
-        merge_key="{{ task_instance.xcom_pull('" + symbol_source.task_id + "') }}",
+        merge_key=SYMBOL_SOURCE_KEY,
         key=symbol_dag.dag_id
     )
 
@@ -106,7 +107,8 @@ with DAG(
 
     yahoo = yahoo_task_partition(
         shards=10,
-        key=symbol_dag.dag_id,
+        src_key=SYMBOL_SOURCE_KEY,
+        dst_key=symbol_dag.dag_id,
         mysql_conn_id=MYSQL_CONNECTION_FLOW_TICKER,
         upstream=symbol_source,
     )

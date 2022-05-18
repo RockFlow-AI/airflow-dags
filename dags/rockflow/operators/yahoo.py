@@ -208,10 +208,10 @@ class SummaryDetailImportOperator(OssToMysqlOperator):
         )
 
 
-def yahoo_task_partition(shards, key, mysql_conn_id, upstream):
+def yahoo_task_partition(shards, src_key, dst_key, mysql_conn_id, upstream):
     yahoo = YahooBatchOperator(
-        from_key="{{ task_instance.xcom_pull('" + upstream.task_id + "') }}",
-        key=key,
+        from_key=src_key,
+        key=dst_key,
         pool_size=1,
     )
 
@@ -219,8 +219,8 @@ def yahoo_task_partition(shards, key, mysql_conn_id, upstream):
         yahoo_extract = YahooExtractOperator(
             task_id=f"yahoo_extract_{i}",
             from_key="symbol_download_yahoo",
-            key=key,
-            symbol_key="{{ task_instance.xcom_pull('" + upstream.task_id + "') }}",
+            key=dst_key,
+            symbol_key=src_key,
             partition=i,
             sharding=shards
         )
