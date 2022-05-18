@@ -513,7 +513,7 @@ dam_account_creation = DAG(
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
-        "retries": 0
+        "retries": 0,
     }
 )
 
@@ -523,7 +523,7 @@ SimpleHttpOperator(
     http_conn_id='flow-master-account',
     endpoint='/inner/masterAccounts/dam/accounts/creation/task',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 600},
+    extra_options={"timeout": 1000},
     dag=dam_account_creation,
 )
 
@@ -535,16 +535,16 @@ dam_account_status_query = DAG(
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
-        "retries": 0
+        "retries": 0,
     }
 )
 
 SimpleHttpOperator(
-    task_id='dam_account_status_query',
+    task_id='dam_account_creation',
     method='POST',
     http_conn_id='flow-account-channel',
     endpoint='/inner/ib/dam/account/status',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 600},
+    extra_options={"timeout": 1000},
     dag=dam_account_status_query,
 )
