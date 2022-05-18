@@ -231,8 +231,8 @@ SimpleHttpOperator(
 ticks_1w = DAG(
     "ticks_by_1_week",
     catchup=False,
-    start_date=datetime(2022, 2, 12, 12, 0),
-    schedule_interval=timedelta(hours=168),
+    start_date=datetime(2022, 5, 22, 12, 0),
+    schedule_interval='0 12 * * 6',
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
