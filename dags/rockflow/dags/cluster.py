@@ -509,7 +509,7 @@ dam_account_creation = DAG(
     "dam_account_creation",
     catchup=False,
     start_date=pendulum.datetime(2022, 5, 18),
-    schedule_interval='1/30 * * * *',
+    schedule_interval=timedelta(minutes=30),
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
@@ -525,4 +525,26 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
     dag=dam_account_creation,
+)
+
+dam_account_status_query = DAG(
+    "dam_account_status_query",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 5, 18),
+    schedule_interval=timedelta(minutes=30),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='dam_account_status_query',
+    method='POST',
+    http_conn_id='flow-account-channel',
+    endpoint='/inner/ib/dam/account/status',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=dam_account_status_query,
 )
