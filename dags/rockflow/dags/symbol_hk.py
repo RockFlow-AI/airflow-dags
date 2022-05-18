@@ -8,6 +8,7 @@ from rockflow.es_indexs.search import search_setting
 from rockflow.operators.futu import *
 from rockflow.operators.symbol import *
 from rockflow.operators.yahoo import *
+import pendulum
 
 DAG_ID = "symbol_download_hk"
 
@@ -18,12 +19,12 @@ SYMBOL_PARSE_KEY = f'{DAG_ID}_parse/'
 with DAG(
         DAG_ID,
         catchup=False,
-        start_date=datetime(2022, 1, 1),
-        schedule_interval=timedelta(hours=8),
+        start_date=pendulum.datetime(2022, 5, 18, tz='Asia/Hong_Kong'),
+        schedule_interval='50 23 * * 1-5',
         default_args={
             "owner": "daijunkai",
             "depends_on_past": False,
-            "retries": 12,
+            "retries": 0,
             "retry_delay": timedelta(minutes=1),
         }
 ) as symbol_dag:
