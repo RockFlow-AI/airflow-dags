@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 from multiprocessing.pool import ThreadPool as Pool
 from typing import Any, Hashable, Dict
 
@@ -55,6 +56,7 @@ class YahooBatchOperator(OSSOperator):
             if not r:
                 return
             self.put_object(obj.oss_key, r.content)
+            time.sleep(0.5)
 
     def execute(self, context: Any):
         self.log.info(f"symbol: {self.symbols}")
@@ -204,3 +206,34 @@ class SummaryDetailImportOperator(OssToMysqlOperator):
         return self.extract_index_dict_to_df(
             self.format_dict(self.extract_index_dict())
         )
+
+
+def yahoo_task_partition(shards, key, mysql_conn_id, upstream):
+    yahoo = YahooBatchOperator(
+        from_key="{{ task_instance.xcom_pull('" + upstream.task_id + "') }}",
+        key=key,
+        pool_size=1,
+    )
+
+    for i in range(shards):
+        yahoo_extract = YahooExtractOperator(
+            task_id=f"yahoo_extract_{i}",
+            from_key="symbol_download_yahoo",
+            key=key,
+            symbol_key="{{ task_instance.xcom_pull('" + upstream.task_id + "') }}",
+            partition=i,
+            sharding=shards
+        )
+
+        summary_detail_mysql = SummaryDetailImportOperator(
+            task_id=f"summary_detail_mysql_{i}",
+            oss_source_key=yahoo_extract.save_key("SummaryDetail"),
+            mysql_table='flow_ticker_summary_detail',
+            mysql_conn_id=mysql_conn_id
+        )
+
+        yahoo_extract.set_upstream(upstream)
+        yahoo_extract.set_upstream(yahoo)
+        yahoo_extract.set_downstream(summary_detail_mysql)
+
+    return yahoo
