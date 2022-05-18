@@ -509,7 +509,7 @@ dam_account_creation = DAG(
     "dam_account_creation",
     catchup=False,
     start_date=pendulum.datetime(2022, 5, 19),
-    schedule_interval='1/30 * * * ?',
+    schedule_interval='1/30 * * * *',
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
