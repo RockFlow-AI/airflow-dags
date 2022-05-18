@@ -508,7 +508,7 @@ SimpleHttpOperator(
 dam_account_creation = DAG(
     "dam_account_creation",
     catchup=False,
-    start_date=pendulum.datetime(2022, 5, 19),
+    start_date=pendulum.datetime(2022, 5, 18),
     schedule_interval='1/30 * * * *',
     default_args={
         "owner": "jingjiadong",
