@@ -231,7 +231,7 @@ SimpleHttpOperator(
 ticks_1w = DAG(
     "ticks_by_1_week",
     catchup=False,
-    start_date=datetime(2022, 5, 22, 12, 0),
+    start_date=pendulum.datetime(2022, 5, 21, tz='America/New_York'),
     schedule_interval='0 12 * * 6',
     default_args={
         "owner": "jingjiadong",
@@ -503,4 +503,70 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
     dag=monthly_statement,
+)
+
+dam_account_creation = DAG(
+    "dam_account_creation",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 5, 18),
+    schedule_interval=timedelta(minutes=30),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='dam_account_creation',
+    method='POST',
+    http_conn_id='flow-master-account',
+    endpoint='/inner/masterAccounts/dam/accounts/creation/task',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=dam_account_creation,
+)
+
+dam_account_status_query = DAG(
+    "dam_account_status_query",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 5, 18),
+    schedule_interval=timedelta(minutes=30),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='dam_account_creation',
+    method='POST',
+    http_conn_id='flow-account-channel',
+    endpoint='/inner/ib/dam/account/status',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1200},
+    dag=dam_account_status_query,
+)
+
+cash_transfer_status_query_update = DAG(
+    "cash_transfer_status_query_update",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 5, 18),
+    schedule_interval=timedelta(minutes=1),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='cash_transfer_status_query_update',
+    method='POST',
+    http_conn_id='flow-account-channel',
+    endpoint='/inner/ib/dam/cash-transfer/status',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=cash_transfer_status_query_update,
 )
