@@ -161,6 +161,7 @@ class MysqlToOssOperator(OSSOperator):
             index_col: Any,
             mysql_table: str,
             mysql_conn_id: str = 'mysql_default',
+            mysql_criteria: str = '',
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
@@ -171,6 +172,7 @@ class MysqlToOssOperator(OSSOperator):
         )
         self.mysql_table = mysql_table
         self.mysql_conn_id = mysql_conn_id
+        self.mysql_criteria = mysql_criteria
         self.index_col = index_col
 
         self.mysql_hook = MySqlHook(mysql_conn_id=self.mysql_conn_id)
@@ -199,7 +201,7 @@ class MysqlToOssOperator(OSSOperator):
         cur = conn.cursor()
 
         df = pd.DataFrame(columns=['symbol', 'name_en', 'name_zh'])
-        cur.execute(f"SELECT symbol, name_en, name_zh FROM {self.mysql_table}")
+        cur.execute(f"SELECT symbol, name_en, name_zh FROM {self.mysql_table} {self.mysql_criteria}")
 
         result = cur.fetchmany(100)
         while result:
@@ -211,6 +213,10 @@ class MysqlToOssOperator(OSSOperator):
     def __transform(self):
         df_oss = self.__extract_data()
         df_db = self.__load_from_sql()
+        if df_oss.empty:
+            df_db['index'] = df_db['symbol']
+            return df_db.to_json(orient='index', force_ascii=False)
+
         df_oss['name_en'] = df_oss['symbol'].map(df_db.set_index('symbol')['name_en'])
         df_oss['name_cn'] = df_oss['symbol'].map(df_db.set_index('symbol')['name_zh'])
         return df_oss.to_json(orient='index', force_ascii=False)
