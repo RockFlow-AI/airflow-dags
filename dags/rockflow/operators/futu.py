@@ -307,6 +307,7 @@ class SinkFutuSearch(SinkEs):
                 ("raw", "raw"),
                 ("name_en", "name_en"),
                 ("name_cn", "name_zh"),
+                ("name_zh", "name_zh"),
                 ("profile_en", "profile_en"),
                 ("profile_cn", "profile_zh"),
                 ("market", "market"),
