@@ -200,13 +200,13 @@ class MysqlToOssOperator(OSSOperator):
         conn = self.mysql_hook.get_conn()
         cur = conn.cursor()
 
-        df = pd.DataFrame(columns=['symbol', 'raw', 'name_en', 'name_zh'])
-        cur.execute(f"SELECT symbol, raw, name_en, name_zh FROM {self.mysql_table} {self.mysql_criteria}")
+        df = pd.DataFrame(columns=['symbol', 'raw', 'name_en', 'name_zh', 'market'])
+        cur.execute(f"SELECT symbol, raw, name_en, name_zh, market FROM {self.mysql_table} {self.mysql_criteria}")
 
         result = cur.fetchmany(100)
         while result:
             self.log.info(f"Fetched from {self.mysql_table}: {result}")
-            df = df.append(pd.DataFrame(result, columns=['symbol', 'raw', 'name_en', 'name_zh']), ignore_index=True)
+            df = df.append(pd.DataFrame(result, columns=['symbol', 'raw', 'name_en', 'name_zh', 'market']), ignore_index=True)
             result = cur.fetchmany(100)
         return df
 
