@@ -21,7 +21,7 @@ class CfdSinkCompany(MysqlToOssOperator):
             kwargs['oss_dst_key'] = self.snakecase_class_name
         super().__init__(**kwargs)
 
-    def __extract_data(self) -> pd.DataFrame:
+    def extract_data(self) -> pd.DataFrame:
         return pd.DataFrame()
 
 

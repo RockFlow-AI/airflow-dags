@@ -191,7 +191,7 @@ class MysqlToOssOperator(OSSOperator):
         self.log.error(result[result.index.duplicated(keep=False)])
         return result
 
-    def __extract_data(self) -> pd.DataFrame:
+    def extract_data(self) -> pd.DataFrame:
         return self.__extract_index_dict_to_df(
             self.__extract_index_dict()
         )
@@ -211,7 +211,7 @@ class MysqlToOssOperator(OSSOperator):
         return df
 
     def __transform(self):
-        df_oss = self.__extract_data()
+        df_oss = self.extract_data()
         df_db = self.__load_from_sql()
         if df_oss.empty:
             df_db['index'] = df_db['symbol']
