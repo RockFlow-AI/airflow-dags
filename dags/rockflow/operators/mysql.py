@@ -200,13 +200,13 @@ class MysqlToOssOperator(OSSOperator):
         conn = self.mysql_hook.get_conn()
         cur = conn.cursor()
 
-        df = pd.DataFrame(columns=['symbol', 'name_en', 'name_zh'])
-        cur.execute(f"SELECT symbol, name_en, name_zh FROM {self.mysql_table} {self.mysql_criteria}")
+        df = pd.DataFrame(columns=['symbol', 'raw', 'name_en', 'name_zh'])
+        cur.execute(f"SELECT symbol, raw, name_en, name_zh FROM {self.mysql_table} {self.mysql_criteria}")
 
         result = cur.fetchmany(100)
         while result:
             self.log.info(f"Fetched from {self.mysql_table}: {result}")
-            df = df.append(pd.DataFrame(result, columns=['symbol', 'name_en', 'name_zh']), ignore_index=True)
+            df = df.append(pd.DataFrame(result, columns=['symbol', 'raw', 'name_en', 'name_zh']), ignore_index=True)
             result = cur.fetchmany(100)
         return df
 
@@ -214,7 +214,8 @@ class MysqlToOssOperator(OSSOperator):
         df_oss = self.extract_data()
         df_db = self.__load_from_sql()
         if df_oss.empty:
-            df_db['index'] = df_db['symbol']
+            df_db['name'] = df_db['symbol']
+            df_db.index.rename('name', inplace=True)
             return df_db.to_json(orient='index', force_ascii=False)
 
         df_oss['name_en'] = df_oss['symbol'].map(df_db.set_index('symbol')['name_en'])
