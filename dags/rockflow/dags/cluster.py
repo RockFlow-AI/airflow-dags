@@ -448,7 +448,7 @@ hourly_pending_account_sync = DAG(
     }
 )
 
-SimpleHttpOperator(
+hourly_pending_account_task = SimpleHttpOperator(
     task_id='hourly_pending_account_sync',
     method='POST',
     http_conn_id='flow-portfolio-service',
@@ -458,7 +458,7 @@ SimpleHttpOperator(
     dag=hourly_pending_account_sync,
 )
 
-SimpleHttpOperator(
+hourly_open_account_task = SimpleHttpOperator(
     task_id='hourly_open_account_sync',
     method='POST',
     http_conn_id='flow-portfolio-service',
@@ -467,6 +467,8 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=hourly_pending_account_sync,
 )
+
+hourly_open_account_task >> hourly_pending_account_task
 
 weekly_pending_order_sync = DAG(
     "weekly_pending_order_sync",
