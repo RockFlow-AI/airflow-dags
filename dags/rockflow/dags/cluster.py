@@ -413,7 +413,7 @@ SimpleHttpOperator(
 )
 
 hourly_open_account_sync = DAG(
-    "daily_open_account_sync",
+    "hourly_open_account_sync",
     catchup=False,
     start_date=pendulum.datetime(2022, 3, 16, tz='America/New_York'),
     schedule_interval='0/30 0-23 * * SUN-FRI',
@@ -450,6 +450,16 @@ hourly_pending_account_sync = DAG(
 
 SimpleHttpOperator(
     task_id='hourly_pending_account_sync',
+    method='POST',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/accounts/refresh?status=0&limit=20&firstDepositReceived=false',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=hourly_pending_account_sync,
+)
+
+SimpleHttpOperator(
+    task_id='hourly_open_account_sync',
     method='POST',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/accounts/refresh?status=1&limit=20&firstDepositReceived=false',
