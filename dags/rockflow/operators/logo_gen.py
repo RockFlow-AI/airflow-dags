@@ -12,17 +12,17 @@ from rockflow.operators.oss import OSSOperator
 class LogoImportOperator(OSSOperator):
     def __init__(self,
                  from_key: str,
-                 avatar_bucker_name: str,
+                 avatar_bucket_name: str,
                  pool_size: int = DEFAULT_POOL_SIZE,
                  **kwargs) -> None:
         super().__init__(**kwargs)
         self.from_key = from_key
-        self.avatar_bucker_name = avatar_bucker_name
+        self.avatar_bucket_name = avatar_bucket_name
         self.pool_size = pool_size
 
     @property
     def avatar_bucket(self) -> oss2.api.Bucket:
-        return self.oss_hook.get_bucket(self.avatar_bucker_name)
+        return self.oss_hook.get_bucket(self.avatar_bucket_name)
 
     @property
     def symbols(self) -> pd.DataFrame:
