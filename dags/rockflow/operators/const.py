@@ -6,6 +6,7 @@ DEFAULT_POOL_SIZE = int(Variable.get("THREAD_POOL_SIZE", "24"))
 DEFAULT_PROXY = Proxy(Variable.get("PROXY_URL"),
                       Variable.get("PROXY_PORT")).proxies
 DEFAULT_REGION = Variable.get("REGION")
+AVATAR_REGION = Variable.get("REGION_AVATAR")
 DEFAULT_BUCKET_NAME = Variable.get("BUCKET_NAME")
 AVATAR_BUCKET_NAME = Variable.get("BUCKET_NAME_AVATAR")
 APOLLO_HOST = Variable.get("APOLLO_HOST")

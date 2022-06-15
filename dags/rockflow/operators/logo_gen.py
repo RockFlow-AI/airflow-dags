@@ -5,6 +5,7 @@ from typing import Any, Hashable
 import oss2
 import pandas as pd
 
+from rockflow.operators.const import AVATAR_REGION
 from rockflow.operators.const import DEFAULT_POOL_SIZE
 from rockflow.operators.oss import OSSOperator
 
@@ -15,7 +16,7 @@ class LogoImportOperator(OSSOperator):
                  avatar_bucket_name: str,
                  pool_size: int = DEFAULT_POOL_SIZE,
                  **kwargs) -> None:
-        super().__init__(**kwargs)
+        super().__init__(region=AVATAR_REGION, **kwargs)
         self.from_key = from_key
         self.avatar_bucket_name = avatar_bucket_name
         self.pool_size = pool_size
