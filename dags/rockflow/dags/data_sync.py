@@ -16,7 +16,6 @@ mysql_to_sensor = DAG(
     }
 )
 k = DockerOperator(
-    name="mysql_to_sensor",
     image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/flow-data-connector:1.0.0",
     api_version='auto',
     task_id="mysql_to_sensor",
