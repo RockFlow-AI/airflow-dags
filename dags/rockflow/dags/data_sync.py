@@ -1,6 +1,6 @@
 import pendulum
 from airflow.models import DAG
-from airflow.operators.docker_operator import DockerOperator
+from airflow.operators.python import PythonOperator
 from kubernetes.client import models as k8s
 
 mysql_to_sensor = DAG(
@@ -15,11 +15,8 @@ mysql_to_sensor = DAG(
         "retries": 0,
     }
 )
-k = DockerOperator(
-    image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/flow-data-connector:1.0.0",
-    api_version='auto',
+k = PythonOperator(
     task_id="mysql_to_sensor",
-    auto_remove=True,
     dag=mysql_to_sensor,
     executor_config={
         "pod_override": k8s.V1Pod(
@@ -41,6 +38,7 @@ k = DockerOperator(
                     ),
                     k8s.V1Container(
                         name='flow-data-connector',
+                        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/flow-data-connector:1.0.0",
                         volume_mounts=[
                             k8s.V1VolumeMount(name='connector-pvc',
                                               mount_path='/data/flow-data-connector',
