@@ -5,7 +5,7 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
 )
 from kubernetes.client import models as k8s
 
-from rockflow.operators.const import K8S_CONFIG_FILE
+from rockflow.operators.const import K8S_CONFIG_FILE, K8S_DATA_NAMESPACE
 
 mysql_to_sensor = DAG(
     "mysql_to_sensor",
@@ -22,7 +22,7 @@ mysql_to_sensor = DAG(
 
 k = KubernetesPodOperator(
     name="mysql_to_sensor",
-    namespace="data",
+    namespace=K8S_DATA_NAMESPACE,
     image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/flow-data-connector:1.0.0",
     image_pull_secrets=[k8s.V1LocalObjectReference('registry-tmp')],
     labels={"app.kubernetes.io/name": "flow-data-connector"},
