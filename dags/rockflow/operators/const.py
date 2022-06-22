@@ -11,3 +11,5 @@ AVATAR_BUCKET_NAME = Variable.get("BUCKET_NAME_AVATAR")
 APOLLO_HOST = Variable.get("APOLLO_HOST")
 APOLLO_PORT = Variable.get("APOLLO_PORT")
 GLOBAL_DEBUG = (Variable.get("DEBUG", "false") == "true")
+
+K8S_CONFIG_FILE = Variable.get("K8S_CONFIG_FILE")
