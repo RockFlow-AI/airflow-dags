@@ -15,7 +15,6 @@ mysql_to_sensor = DAG(
         "retries": 0,
     }
 )
-
 k = DockerOperator(
     name="mysql_to_sensor",
     image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/flow-data-connector:1.0.0",
@@ -37,11 +36,19 @@ k = DockerOperator(
                         config_map=k8s.V1ConfigMapEnvSource(name='flow-data-connector-config'),
                     ),
                 ],
-                volume_mounts=[
-                    k8s.V1VolumeMount(name='connector-pvc', mount_path='/data/flow-data-connector', sub_path=None,
-                                      read_only=False),
-                    k8s.V1VolumeMount(name='connector-config', mount_path="/config.yml", sub_path='config.yml',
-                                      read_only=True),
+                containers=[
+                    k8s.V1Container(
+                        volume_mounts=[
+                            k8s.V1VolumeMount(name='connector-pvc',
+                                              mount_path='/data/flow-data-connector',
+                                              sub_path=None,
+                                              read_only=False),
+                            k8s.V1VolumeMount(name='connector-config',
+                                              mount_path="/config.yml",
+                                              sub_path='config.yml',
+                                              read_only=True),
+                        ],
+                    )
                 ],
             ),
         ),
