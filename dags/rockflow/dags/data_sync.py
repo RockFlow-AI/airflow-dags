@@ -44,7 +44,6 @@ k = KubernetesPodOperator(
     ],
     is_delete_operator_pod=True,
     in_cluster=False,
-    config_file=K8S_CONFIG_FILE,
     get_logs=True,
     dag=mysql_to_sensor,
 )
