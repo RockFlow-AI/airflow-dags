@@ -7,7 +7,7 @@ with DAG(
         "mysql_to_sensor",
         catchup=False,
         start_date=pendulum.datetime(2022, 3, 22, tz='America/New_York'),
-        schedule_interval='30 0 * * 1-5',
+        schedule_interval='45 20 * * 1-5',
         concurrency=1,
         default_args={
             "owner": "yinxiang",
@@ -42,7 +42,7 @@ with DAG(
                         ),
                         k8s.V1Container(
                             name='flow-data-connector',
-                            image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/flow-data-connector:1.0.0",
+                            image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/flow-data-connector:1.0.1",
                             volume_mounts=[
                                 k8s.V1VolumeMount(name='connector-pvc',
                                                   mount_path='/data/flow-data-connector',
