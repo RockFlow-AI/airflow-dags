@@ -1,11 +1,7 @@
 import pendulum
 from airflow.models import DAG
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
-    KubernetesPodOperator,
-)
+from airflow.operators.docker_operator import DockerOperator
 from kubernetes.client import models as k8s
-
-from rockflow.operators.const import K8S_CONFIG_FILE, K8S_DATA_NAMESPACE
 
 mysql_to_sensor = DAG(
     "mysql_to_sensor",
@@ -20,33 +16,34 @@ mysql_to_sensor = DAG(
     }
 )
 
-k = KubernetesPodOperator(
+k = DockerOperator(
     name="mysql_to_sensor",
-    namespace=K8S_DATA_NAMESPACE,
     image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/flow-data-connector:1.0.0",
-    image_pull_secrets=[k8s.V1LocalObjectReference('registry-tmp')],
-    labels={"app.kubernetes.io/name": "flow-data-connector"},
+    api_version='auto',
     task_id="mysql_to_sensor",
-    do_xcom_push=True,
-    volumes=[
-        k8s.V1Volume(
-            name='connector-pvc',
-            persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='flow-data-connector-pvc'),
-        ),
-        k8s.V1Volume(
-            name='connector-config',
-            config_map=k8s.V1ConfigMapEnvSource(name='flow-data-connector-config'),
-        ),
-    ],
-    volume_mounts=[
-        k8s.V1VolumeMount(name='connector-pvc', mount_path='/data/flow-data-connector', sub_path=None, read_only=False),
-        k8s.V1VolumeMount(name='connector-config', mount_path="/config.yml", sub_path='config.yml', read_only=True),
-    ],
-    is_delete_operator_pod=True,
-    in_cluster=False,
-    config_file=None,
-    get_logs=True,
+    auto_remove=True,
     dag=mysql_to_sensor,
+    executor_config={
+        "pod_override": k8s.V1Pod(
+            spec=k8s.V1PodSpec(
+                volumes=[
+                    k8s.V1Volume(
+                        name='connector-pvc',
+                        persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(
+                            claim_name='flow-data-connector-pvc'),
+                    ),
+                    k8s.V1Volume(
+                        name='connector-config',
+                        config_map=k8s.V1ConfigMapEnvSource(name='flow-data-connector-config'),
+                    ),
+                ],
+                volume_mounts=[
+                    k8s.V1VolumeMount(name='connector-pvc', mount_path='/data/flow-data-connector', sub_path=None,
+                                      read_only=False),
+                    k8s.V1VolumeMount(name='connector-config', mount_path="/config.yml", sub_path='config.yml',
+                                      read_only=True),
+                ],
+            ),
+        ),
+    },
 )
-
-k.dry_run()
