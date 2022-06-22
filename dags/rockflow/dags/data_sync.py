@@ -5,8 +5,7 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
 )
 from kubernetes.client import models as k8s
 
-# 汇率更新
-from dags.rockflow.operators.const import K8S_CONFIG_FILE
+from rockflow.operators.const import K8S_CONFIG_FILE
 
 mysql_to_sensor = DAG(
     "mysql_to_sensor",
