@@ -37,6 +37,9 @@ k = DockerOperator(
                 ],
                 containers=[
                     k8s.V1Container(
+                        name="base",
+                    ),
+                    k8s.V1Container(
                         name='flow-data-connector',
                         volume_mounts=[
                             k8s.V1VolumeMount(name='connector-pvc',
