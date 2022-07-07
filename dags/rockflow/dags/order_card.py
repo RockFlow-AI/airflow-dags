@@ -10,7 +10,7 @@ order_card_popUp = DAG(
     "order_card_popUp",
     catchup=False,
     start_date=pendulum.datetime(2022, 3, 10, tz='Asia/Hong_Kong'),
-    schedule_interval='*/30 * * * * ?',
+    schedule_interval='*/30 * * * *',
     default_args={
         "owner": "maoboxuan",
         "depends_on_past": False,
