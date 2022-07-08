@@ -87,7 +87,9 @@ except AttributeError:
 # List of all the objects that will be deleted. Comment out the DB objects you
 # want to skip.
 DATABASE_OBJECTS = ['BaseJob', 'DagRun', 'TaskInstance', 'Log', 'XCom', 'SlaMiss', 'DagModel', 'TaskReschedule',
-                    'TaskFail', 'RenderedTaskInstanceFields', 'ImportError', 'Task', 'TaskSet']
+                    'TaskFail', 'RenderedTaskInstanceFields', 'ImportError',
+                    # 'Task', 'TaskSet',
+                    ]
 
 session = settings.Session()
 
