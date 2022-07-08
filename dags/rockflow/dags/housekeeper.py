@@ -393,7 +393,7 @@ def cleanup_function(**context):
 
 for db_object in DATABASE_OBJECTS:
     cleanup_op = PythonOperator(
-        task_id="cleanup_" + str(db_object["airflow_db_model"].__name__),
+        task_id='cleanup_' + str(db_object),
         python_callable=cleanup_function,
         params={'object_name': db_object},
         dag=dag
