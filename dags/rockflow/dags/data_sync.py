@@ -42,7 +42,7 @@ with DAG(
                         ),
                         k8s.V1Container(
                             name='flow-data-connector',
-                            image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/flow-data-connector:1.1.0",
+                            image="rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/flow-data-connector:1.1.0",
                             volume_mounts=[
                                 k8s.V1VolumeMount(name='connector-pvc',
                                                   mount_path='/data/flow-data-connector',
