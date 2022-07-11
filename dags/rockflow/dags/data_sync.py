@@ -2,7 +2,7 @@ import pendulum
 from airflow.models import DAG
 from airflow.operators.python import PythonOperator
 from kubernetes.client import models as k8s
-from rockflow.operators.const import CONTAINER_REPO
+from rockflow.operators.const import CONTAINER_REPO, DW_CONNECTOR_VERSION
 
 with DAG(
         "mysql_to_sensor",
@@ -43,7 +43,7 @@ with DAG(
                         ),
                         k8s.V1Container(
                             name='flow-data-connector',
-                            image=f"{CONTAINER_REPO}/flow-data-connector:1.1.0",
+                            image=f"{CONTAINER_REPO}/flow-data-connector:{DW_CONNECTOR_VERSION}",
                             volume_mounts=[
                                 k8s.V1VolumeMount(name='connector-pvc',
                                                   mount_path='/data/flow-data-connector',
