@@ -20,7 +20,7 @@ SimpleHttpOperator(
     task_id='DAILY_HALA_ALL_SENDING',
     method='POST',
     http_conn_id='flow-notification',
-    endpoint='/inner/kline/ld?step=2&timeframe=1d&adjustment=forward&markets=US',
+    endpoint='/push/inner/task/all/days/HALA',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
     dag=DAILY_HALA_ALL_SENDING,
