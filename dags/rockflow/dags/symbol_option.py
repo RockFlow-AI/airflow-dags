@@ -27,7 +27,7 @@ class OptionSinkCompany(MysqlToOssOperator):
 
     def post_process(self, df: pd.DataFrame) -> pd.DataFrame:
         self.log.info('Post processing...')
-        for x in df:
+        for _, x in df.iterrows():
             try:
                 # sample symbol: 'IBM   220708C00135500'
                 option_symbol = x['symbol']
