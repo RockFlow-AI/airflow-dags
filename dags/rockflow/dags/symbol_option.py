@@ -22,9 +22,11 @@ class OptionSinkCompany(MysqlToOssOperator):
         super().__init__(**kwargs)
 
     def extract_data(self) -> pd.DataFrame:
+        self.log.info('Extracting data...')
         return pd.DataFrame()
 
     def post_process(self, df: pd.DataFrame) -> pd.DataFrame:
+        self.log.info('Post processing...')
         for x in df:
             try:
                 # sample symbol: 'IBM   220708C00135500'

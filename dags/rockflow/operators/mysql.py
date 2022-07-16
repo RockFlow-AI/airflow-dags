@@ -194,6 +194,7 @@ class MysqlToOssOperator(OSSOperator):
         return result
 
     def extract_data(self) -> pd.DataFrame:
+        self.log.info('Extracting data...')
         return self.__extract_index_dict_to_df(
             self.__extract_index_dict()
         )
@@ -230,6 +231,7 @@ class MysqlToOssOperator(OSSOperator):
         raise ValueError(f"No such symbol {symbol}")
 
     def post_process(self, df: pd.DataFrame) -> pd.DataFrame:
+        self.log.info('Post processing...')
         return df
 
     def __transform(self):
