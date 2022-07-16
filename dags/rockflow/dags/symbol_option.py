@@ -9,6 +9,7 @@ from rockflow.es_indexs.search import search_setting
 from rockflow.operators.futu import *
 from rockflow.operators.mysql import MysqlToOssOperator
 from rockflow.operators.symbol import *
+import pendulum
 
 DAG_ID = "symbol_download_option"
 
@@ -49,8 +50,8 @@ class OptionSinkCompany(MysqlToOssOperator):
 with DAG(
         DAG_ID,
         catchup=False,
-        start_date=datetime.now(),
-        schedule_interval="@once",
+        start_date=pendulum.datetime(2022, 7, 16, tz='America/New_York'),
+        schedule_interval='50 23 * * 1-5',
         default_args={
             "owner": "yinxiang",
             "depends_on_past": False,
