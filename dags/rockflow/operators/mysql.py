@@ -165,6 +165,7 @@ class MysqlToOssOperator(OSSOperator):
             **kwargs,
     ) -> None:
         super().__init__(**kwargs)
+        self.columns = ['symbol', 'raw', 'name_en', 'name_zh', 'market']
         self.oss_src_key = oss_src_key
         self.oss_dst_key = os.path.join(
             f"{key}_{oss_dst_key}",
@@ -176,6 +177,7 @@ class MysqlToOssOperator(OSSOperator):
         self.index_col = index_col
 
         self.mysql_hook = MySqlHook(mysql_conn_id=self.mysql_conn_id)
+        self.symbols = {}
 
     def __extract_index_dict(self):
         return json.loads(
@@ -196,23 +198,43 @@ class MysqlToOssOperator(OSSOperator):
             self.__extract_index_dict()
         )
 
-    def __load_from_sql(self):
+    def __load_all_from_sql(self) -> pd.DataFrame:
         conn = self.mysql_hook.get_conn()
         cur = conn.cursor()
 
-        df = pd.DataFrame(columns=['symbol', 'raw', 'name_en', 'name_zh', 'market'])
-        cur.execute(f"SELECT symbol, raw, name_en, name_zh, market FROM {self.mysql_table} {self.mysql_criteria}")
+        df = pd.DataFrame(columns=self.columns)
+        cur.execute(f"SELECT {','.join(self.columns)} FROM {self.mysql_table} {self.mysql_criteria}")
 
         result = cur.fetchmany(100)
         while result:
             self.log.info(f"Fetched from {self.mysql_table}: {result}")
-            df = df.append(pd.DataFrame(result, columns=['symbol', 'raw', 'name_en', 'name_zh', 'market']), ignore_index=True)
+            df = df.append(pd.DataFrame(result, columns=self.columns), ignore_index=True)
             result = cur.fetchmany(100)
+        return df
+
+    def load_one_from_sql(self, symbol: str) -> dict:
+        if symbol in self.symbols:
+            return self.symbols[symbol]
+
+        conn = self.mysql_hook.get_conn()
+        cur = conn.cursor()
+
+        cur.execute(f"SELECT {','.join(self.columns)} FROM {self.mysql_table} WHERE symbol = {symbol}")
+
+        result = cur.fetchone()
+        if result:
+            self.log.info(f"Fetched from {self.mysql_table}: {result}")
+            self.symbols[symbol] = dict(zip(self.columns, result))
+            return self.symbols[symbol]
+
+        raise ValueError(f"No such symbol {symbol}")
+
+    def post_process(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
     def __transform(self):
         df_oss = self.extract_data()
-        df_db = self.__load_from_sql()
+        df_db = self.__load_all_from_sql()
         if df_oss.empty:
             df_db['name'] = df_db['symbol']
             df_db.set_index('name', inplace=True)
@@ -220,6 +242,7 @@ class MysqlToOssOperator(OSSOperator):
 
         df_oss['name_en'] = df_oss['symbol'].map(df_db.set_index('symbol')['name_en'])
         df_oss['name_cn'] = df_oss['symbol'].map(df_db.set_index('symbol')['name_zh'])
+        df_oss = self.post_process(df_oss)
         return df_oss.to_json(orient='index', force_ascii=False)
 
     def execute(self, context: Any) -> str:
