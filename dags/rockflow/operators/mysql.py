@@ -220,7 +220,7 @@ class MysqlToOssOperator(OSSOperator):
         conn = self.mysql_hook.get_conn()
         cur = conn.cursor()
 
-        cur.execute(f"SELECT {','.join(self.columns)} FROM {self.mysql_table} WHERE symbol = {symbol}")
+        cur.execute(f"SELECT {','.join(self.columns)} FROM {self.mysql_table} WHERE symbol = '{symbol}'")
 
         result = cur.fetchone()
         if result:
