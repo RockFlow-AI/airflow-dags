@@ -240,6 +240,7 @@ class MysqlToOssOperator(OSSOperator):
         if df_oss.empty:
             df_db['name'] = df_db['symbol']
             df_db.set_index('name', inplace=True)
+            df_db = self.post_process(df_db)
             return df_db.to_json(orient='index', force_ascii=False)
 
         df_oss['name_en'] = df_oss['symbol'].map(df_db.set_index('symbol')['name_en'])
