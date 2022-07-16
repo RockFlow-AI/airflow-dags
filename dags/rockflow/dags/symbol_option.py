@@ -32,7 +32,7 @@ class OptionSinkCompany(MysqlToOssOperator):
             try:
                 # sample symbol: 'IBM   220708C00135500'
                 option_symbol = x['symbol']
-                strike = f"{option_symbol[13:18]}.{option_symbol[18:21]}".rstrip('.0')
+                strike = f"{option_symbol[13:18]}.{option_symbol[18:21]}".strip('.0')
                 is_call = "C" == option_symbol[12:13]
                 op_en = 'Over' if is_call else 'Below'
                 op_zh = '涨过' if is_call else '跌过'
