@@ -43,7 +43,7 @@ def option_algorithm_task() -> PythonOperator:
 
 
 with DAG(
-        "option_algorithm_us_09:30_09:50",
+        "option_algorithm_us_09-30_09-50",
         catchup=False,
         start_date=pendulum.datetime(2022, 7, 22, tz='America/New_York'),
         schedule_interval='30-50/10 09 * * 1-5',
@@ -57,7 +57,7 @@ with DAG(
     task_us_1 = option_algorithm_task()
 
 with DAG(
-        "option_algorithm_us_10:00_19:50",
+        "option_algorithm_us_10-00_19-50",
         catchup=False,
         start_date=pendulum.datetime(2022, 7, 22, tz='America/New_York'),
         schedule_interval='*/10 10-19 * * 1-5',
@@ -71,7 +71,7 @@ with DAG(
     task_us_2 = option_algorithm_task()
 
 with DAG(
-        "option_algorithm_us_20:00",
+        "option_algorithm_us_20-00",
         catchup=False,
         start_date=pendulum.datetime(2022, 7, 22, tz='America/New_York'),
         schedule_interval='0 20 * * 1-5',
