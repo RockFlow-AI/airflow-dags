@@ -11,7 +11,7 @@ def option_algorithm_task(dag, shard: int) -> PythonOperator:
 
     return PythonOperator(
         dag=dag,
-        task_id="option_algorithm_us",
+        task_id=f"option_algorithm_us_{str(shard).zfill(2)}",
         python_callable=callback,
         executor_config={
             "pod_override": k8s.V1Pod(
