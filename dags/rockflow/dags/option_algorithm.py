@@ -35,7 +35,10 @@ def option_algorithm_task(dag, shard: int) -> PythonOperator:
                                                   sub_path='config.yml',
                                                   read_only=True),
                             ],
-                            env=[k8s.V1EnvVar(name="OPTION_SHARD", value=shard)],
+                            env=[
+                                k8s.V1EnvVar(name="OPTION_SHARD", value=shard),
+                                k8s.V1EnvVar(name="OPTION_SHARDS", value=OPTION_ALGO_SHARDS),
+                            ],
                         )
                     ],
                 ),
