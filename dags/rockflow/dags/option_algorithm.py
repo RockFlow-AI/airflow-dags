@@ -34,6 +34,10 @@ def option_algorithm_task(dag, shard: int) -> PythonOperator:
                                                   mount_path="/config.yml",
                                                   sub_path='config.yml',
                                                   read_only=True),
+                                k8s.V1VolumeMount(name='logs',
+                                                  mount_path="/opt/airflow/logs",
+                                                  sub_path=None,
+                                                  read_only=False),
                             ],
                             env=[
                                 k8s.V1EnvVar(name="OPTION_SHARD", value=shard),
