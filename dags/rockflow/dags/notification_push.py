@@ -30,7 +30,7 @@ SimpleHttpOperator(
 DAILY_DUSK_ALL_SENDING = DAG(
     "DAILY_DUSK_ALL_SENDING",
     catchup=False,
-    start_date=pendulum.datetime(2022, 7, 14, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2022, 7, 29, tz='Asia/Shanghai'),
     schedule_interval='30 18 * * *',
     default_args={
         "owner": "jingjiadong",
@@ -52,7 +52,7 @@ SimpleHttpOperator(
 DAILY_NOON_ALL_SENDING = DAG(
     "DAILY_NOON_ALL_SENDING",
     catchup=False,
-    start_date=pendulum.datetime(2022, 7, 14, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2022, 7, 30, tz='Asia/Shanghai'),
     schedule_interval='30 12 * * *',
     default_args={
         "owner": "jingjiadong",
