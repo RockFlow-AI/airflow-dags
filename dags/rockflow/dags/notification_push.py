@@ -26,6 +26,51 @@ SimpleHttpOperator(
     dag=DAILY_HALA_ALL_SENDING,
 )
 
+
+DAILY_DUSK_ALL_SENDING = DAG(
+    "DAILY_DUSK_ALL_SENDING",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 7, 14, tz='Asia/Shanghai'),
+    schedule_interval='30 18 * * *',
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='DAILY_DUSK_ALL_SENDING',
+    method='POST',
+    http_conn_id='flow-notification',
+    endpoint='/push/inner/task/all/days/DUSK',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=DAILY_DUSK_ALL_SENDING,
+)
+
+DAILY_NOON_ALL_SENDING = DAG(
+    "DAILY_NOON_ALL_SENDING",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 7, 14, tz='Asia/Shanghai'),
+    schedule_interval='30 18 * * *',
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='DAILY_NOON_ALL_SENDING',
+    method='POST',
+    http_conn_id='flow-notification',
+    endpoint='/push/inner/task/all/days/NOON',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=DAILY_NOON_ALL_SENDING,
+)
+
 US_MARKET_OPEN_NOTIFICATION = DAG(
     "US_MARKET_OPEN_NOTIFICATION",
     catchup=False,
