@@ -8,7 +8,7 @@ with DAG(
         "mysql_to_sensor",
         catchup=False,
         start_date=pendulum.datetime(2022, 3, 22, tz='America/New_York'),
-        schedule_interval='45 20 * * *',
+        schedule_interval='0 */1 * * *',
         concurrency=1,
         default_args={
             "owner": "yinxiang",
