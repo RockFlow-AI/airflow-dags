@@ -1,9 +1,8 @@
-import time
 import pendulum
-from datetime import datetime, timedelta
-
+import time
 from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
+from datetime import datetime, timedelta
 
 # 汇率更新
 currencies_refresh = DAG(
@@ -286,6 +285,33 @@ daily_last_tick_us = DAG(
         "retry_delay": timedelta(minutes=5),
     }
 )
+
+daily_last_tick_osus = DAG(
+    "daily_last_tick_osus",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 2, 28, tz='America/New_York'),
+    schedule_interval='30 20 * * 1-5',
+    default_args={
+        "owner": "jiemin",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+expiry_option_osus = DAG(
+    "expiry_option_osus",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 2, 28, tz='America/New_York'),
+    schedule_interval='0 0 * * 2-6',
+    default_args={
+        "owner": "jiemin",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
 ticks_on_time = SimpleHttpOperator(
     task_id='ticks',
     method='POST',
@@ -294,6 +320,26 @@ ticks_on_time = SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=daily_last_tick_us,
+)
+
+ticks_on_time = SimpleHttpOperator(
+    task_id='ticks',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/markets/OSUS/ticks/latest',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=daily_last_tick_osus,
+)
+
+SimpleHttpOperator(
+    task_id='options',
+    method='PUT',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks/options/expiry',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=expiry_option_osus,
 )
 
 # 三方前一天美股tick数据dev
