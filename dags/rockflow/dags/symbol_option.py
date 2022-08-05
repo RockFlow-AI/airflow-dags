@@ -104,3 +104,27 @@ ticks_on_time = SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=daily_last_tick_us_option,
 )
+
+
+option_chain_us = DAG(
+    "option_chain_us",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 2, 28, tz='America/New_York'),
+    schedule_interval='0 3 * * 1-5',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+option_chain_us = SimpleHttpOperator(
+    task_id='option_chain_us',
+    method='POST',
+    http_conn_id='flow-feed-tick-ice',
+    endpoint='/ice/inner/snapshots',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=option_chain_us,
+)
