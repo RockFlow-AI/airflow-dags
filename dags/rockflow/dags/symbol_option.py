@@ -41,6 +41,7 @@ class OptionSinkCompany(MysqlToOssOperator):
                 underlying = super().load_one_from_sql(option_symbol[:6].rstrip(' '))
                 x['name_en'] = f"{underlying['symbol']} {underlying['name_en']} {op_en} {strike} {maturity_date}"
                 x['name_zh'] = f"{underlying['symbol']} {underlying['name_zh']} {op_zh} {strike} {maturity_date}"
+                x['expiry_date'] = f"{maturity_date}"
                 self.log.info(f"Option name in en: {x['name_en']} and in zh: {x['name_zh']}")
             except ValueError:
                 self.log.warn(f"No underlying found for option {x['symbol']}")
