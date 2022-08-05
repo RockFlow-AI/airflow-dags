@@ -55,7 +55,7 @@ with DAG(
         f"option_algorithm_us_09-30_09-50",
         catchup=False,
         start_date=pendulum.datetime(2022, 7, 22, tz='America/New_York'),
-        schedule_interval='30-50/10 09 * * 1-5',
+        schedule_interval='30-50/30 09 * * 1-5',
         concurrency=1,
         default_args={
             "owner": "yinxiang",
@@ -70,7 +70,7 @@ with DAG(
         f"option_algorithm_us_10-00_19-50",
         catchup=False,
         start_date=pendulum.datetime(2022, 7, 22, tz='America/New_York'),
-        schedule_interval='*/10 10-19 * * 1-5',
+        schedule_interval='*/30 10-19 * * 1-5',
         concurrency=1,
         default_args={
             "owner": "yinxiang",
