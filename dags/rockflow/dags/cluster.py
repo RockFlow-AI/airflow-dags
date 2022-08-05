@@ -287,8 +287,8 @@ daily_last_tick_us = DAG(
     }
 )
 
-expiry_option_osus = DAG(
-    "expiry_option_osus",
+clean_expiry_option_osus = DAG(
+    "clean_expiry_option_osus",
     catchup=False,
     start_date=pendulum.datetime(2022, 2, 28, tz='America/New_York'),
     schedule_interval='0 0 * * 2-6',
@@ -307,7 +307,7 @@ SimpleHttpOperator(
     endpoint='/ticker/inner/ticks/options/expiry',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
-    dag=expiry_option_osus,
+    dag=clean_expiry_option_osus,
 )
 
 
