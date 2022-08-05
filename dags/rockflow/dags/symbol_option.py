@@ -119,7 +119,7 @@ option_chain_us = DAG(
     }
 )
 
-option_chain_us = SimpleHttpOperator(
+option_chain_us_task = SimpleHttpOperator(
     task_id='option_chain_us',
     method='POST',
     http_conn_id='flow-feed-tick-ice',
