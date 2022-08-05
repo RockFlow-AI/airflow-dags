@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from airflow.models import DAG
 from airflow.models.baseoperator import chain
+from airflow.providers.http.operators.http import SimpleHttpOperator
 
 import pandas as pd
 from rockflow.dags.const import *
@@ -28,7 +29,7 @@ class OptionSinkCompany(MysqlToOssOperator):
 
     def post_process(self, df: pd.DataFrame) -> pd.DataFrame:
         self.log.info('Post processing...')
-        for _, x in df.iterrows():
+        for i, x in df.iterrows():
             try:
                 # sample symbol: 'IBM   220708C00135500'
                 option_symbol = x['symbol']
@@ -41,6 +42,7 @@ class OptionSinkCompany(MysqlToOssOperator):
                 underlying = super().load_one_from_sql(option_symbol[:6].rstrip(' '))
                 x['name_en'] = f"{underlying['symbol']} {underlying['name_en']} {op_en} {strike} {maturity_date}"
                 x['name_zh'] = f"{underlying['symbol']} {underlying['name_zh']} {op_zh} {strike} {maturity_date}"
+                df.at[i, 'expiry_date'] = datetime.strptime(maturity_date, '%y%m%d').strftime('%Y-%m-%d')
                 self.log.info(f"Option name in en: {x['name_en']} and in zh: {x['name_zh']}")
             except ValueError:
                 self.log.warn(f"No underlying found for option {x['symbol']}")
@@ -77,4 +79,28 @@ with DAG(
 chain(
     [option_sink_company],
     [sink_es],
+)
+
+
+daily_last_tick_us_option = DAG(
+    "daily_last_tick_us_option",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 2, 28, tz='America/New_York'),
+    schedule_interval='30 20 * * 1-5',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+ticks_on_time = SimpleHttpOperator(
+    task_id='ticks',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/markets/OSUS/ticks/latest',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=daily_last_tick_us_option,
 )

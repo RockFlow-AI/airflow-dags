@@ -311,6 +311,7 @@ class SinkFutuSearch(SinkEs):
                 ("profile_en", "profile_en"),
                 ("profile_cn", "profile_zh"),
                 ("market", "market"),
+                ("expiry_date", "expiry_date"),
             ]
         super().__init__(**kwargs)
 
