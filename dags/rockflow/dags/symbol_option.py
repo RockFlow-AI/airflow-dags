@@ -28,7 +28,7 @@ class OptionSinkCompany(MysqlToOssOperator):
 
     def post_process(self, df: pd.DataFrame) -> pd.DataFrame:
         self.log.info('Post processing...')
-        for _, x in df.iterrows():
+        for i, x in df.iterrows():
             try:
                 # sample symbol: 'IBM   220708C00135500'
                 option_symbol = x['symbol']
@@ -41,7 +41,7 @@ class OptionSinkCompany(MysqlToOssOperator):
                 underlying = super().load_one_from_sql(option_symbol[:6].rstrip(' '))
                 x['name_en'] = f"{underlying['symbol']} {underlying['name_en']} {op_en} {strike} {maturity_date}"
                 x['name_zh'] = f"{underlying['symbol']} {underlying['name_zh']} {op_zh} {strike} {maturity_date}"
-                x['expiry_date'] = f"{maturity_date}"
+                df.at[i, 'expiry_date'] = datetime.strptime(maturity_date, '%y%m%d').strftime('%Y-%m-%d')
                 self.log.info(f"Option name in en: {x['name_en']} and in zh: {x['name_zh']}")
             except ValueError:
                 self.log.warn(f"No underlying found for option {x['symbol']}")
