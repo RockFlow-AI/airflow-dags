@@ -26,10 +26,10 @@ SimpleHttpOperator(
     dag=dam_account_status_query,
 )
 
-cash_transfer_status_query_update = DAG(
-    "cash_transfer_status_query_update",
+cash_transfer_status_checking = DAG(
+    "cash_transfer_status_checking",
     catchup=False,
-    start_date=pendulum.datetime(2022, 5, 18),
+    start_date=pendulum.datetime(2022, 8, 25),
     schedule_interval=timedelta(minutes=1),
     default_args={
         "owner": "jingjiadong",
@@ -39,13 +39,35 @@ cash_transfer_status_query_update = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='cash_transfer_status_query_update',
+    task_id='cash_transfer_status_checking',
     method='POST',
     http_conn_id='flow-account-channel',
-    endpoint='/inner/ib/dam/cash-transfer/status',
+    endpoint='/inner/ib/dam/cash-transfer/status/1',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 1000},
-    dag=cash_transfer_status_query_update,
+    dag=cash_transfer_status_checking,
+)
+
+cash_transfer_status_redo = DAG(
+    "cash_transfer_status_redo",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 8, 25),
+    schedule_interval=timedelta(minutes=1),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='cash_transfer_status_redo',
+    method='POST',
+    http_conn_id='flow-account-channel',
+    endpoint='/inner/ib/dam/cash-transfer/status/2',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=cash_transfer_status_redo,
 )
 
 
