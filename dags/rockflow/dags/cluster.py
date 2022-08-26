@@ -551,3 +551,27 @@ SimpleHttpOperator(
     extra_options={"timeout": 1000},
     dag=dam_account_creation,
 )
+
+# NFT 权限查看
+nft_mint_check = DAG(
+    "nft_mint_check",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 8, 26, tz='Asia/Hong_Kong'),
+    schedule_interval='0 16 2 * *',
+    default_args={
+        "owner": "maoboxuan",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='nft_mint_check',
+    method='GET',
+    http_conn_id='flow-user-profile',
+    endpoint='/profile/inner/nft/assets/checkPermission',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=nft_mint_check,
+)
