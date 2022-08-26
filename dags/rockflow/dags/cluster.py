@@ -568,7 +568,7 @@ nft_mint_check = DAG(
 
 SimpleHttpOperator(
     task_id='nft_mint_check',
-    method='GET',
+    method='POST',
     http_conn_id='flow-user-profile',
     endpoint='/profile/inner/nft/assets/checkPermission',
     response_check=lambda response: response.json()['code'] == 200,
