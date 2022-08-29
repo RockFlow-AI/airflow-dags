@@ -310,6 +310,29 @@ SimpleHttpOperator(
     dag=clean_expiry_option_osus,
 )
 
+increment_search_push = DAG(
+    "increment_search_push",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 2, 28, tz='America/New_York'),
+    schedule_interval='0 0 * * 2-6',
+    default_args={
+        "owner": "jiemin",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='search',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/searches/increment',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=increment_search_push,
+)
+
 
 ticks_on_time = SimpleHttpOperator(
     task_id='ticks',
