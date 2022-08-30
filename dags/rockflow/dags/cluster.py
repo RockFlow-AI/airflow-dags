@@ -327,7 +327,7 @@ SimpleHttpOperator(
     task_id='search',
     method='PATCH',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/searches/increment',
+    endpoint='/ticker/inner/searches/increment?market=OSUS',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=increment_search_push,
