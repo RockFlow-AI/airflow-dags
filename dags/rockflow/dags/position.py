@@ -10,7 +10,7 @@ position_estimate_overwrite = DAG(
     "position_estimate_overwrite",
     catchup=False,
     start_date=pendulum.datetime(2022, 8, 19, tz='America/New_York'),
-    schedule_interval='10 20 * * 1-5',
+    schedule_interval='10 20 * * 0-5',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
