@@ -4,6 +4,29 @@ from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
 from datetime import timedelta
 
+
+dam_account_creation = DAG(
+    "dam_account_creation",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 5, 18),
+    schedule_interval=timedelta(minutes=30),
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='dam_account_creation',
+    method='POST',
+    http_conn_id='flow-master-account',
+    endpoint='/inner/masterAccounts/dam/accounts/creation/task',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=dam_account_creation,
+)
+
 dam_account_status_query = DAG(
     "dam_account_status_query",
     catchup=False,
@@ -17,7 +40,7 @@ dam_account_status_query = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='dam_account_creation',
+    task_id='dam_account_status_query',
     method='POST',
     http_conn_id='flow-account-channel',
     endpoint='/inner/ib/dam/account/status',
