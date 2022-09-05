@@ -12,7 +12,7 @@ ticks = DAG(
     start_date=datetime(2022, 1, 5, 0, 0),
     schedule_interval='*/1 * * * *',
     default_args={
-        "owner": "yinxiang",
+        "owner": "jingjiadong",
         "depends_on_past": False,
         "retries": 0,
     }
@@ -211,7 +211,7 @@ daily_last_tick_hk = DAG(
     start_date=pendulum.datetime(2022, 2, 28, tz='Asia/Hong_Kong'),
     schedule_interval='30 16 * * 1-5',
     default_args={
-        "owner": "yinxiang",
+        "owner": "jingjiadong",
         "depends_on_past": False,
         "retries": 5,
         "retry_delay": timedelta(minutes=5),
@@ -234,7 +234,7 @@ daily_last_tick_us = DAG(
     start_date=pendulum.datetime(2022, 2, 28, tz='America/New_York'),
     schedule_interval='30 20 * * 1-5',
     default_args={
-        "owner": "yinxiang",
+        "owner": "jingjiadong",
         "depends_on_past": False,
         "retries": 5,
         "retry_delay": timedelta(minutes=5),
@@ -304,7 +304,7 @@ daily_last_tick_us_option_aggregation = DAG(
     start_date=pendulum.datetime(2022, 9, 2, tz='America/New_York'),
     schedule_interval='30 20 * * 1-5',
     default_args={
-        "owner": "yinxiang",
+        "owner": "jingjiadong",
         "depends_on_past": False,
         "retries": 5,
         "retry_delay": timedelta(minutes=5),
@@ -350,7 +350,7 @@ daily_last_minute_us_aggregation = DAG(
     start_date=pendulum.datetime(2022, 9, 2, tz='America/New_York'),
     schedule_interval='1 16 * * 1-5',
     default_args={
-        "owner": "yinxiang",
+        "owner": "jingjiadong",
         "depends_on_past": False,
         "retries": 0
     }
@@ -364,4 +364,28 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=daily_last_minute_us_aggregation,
+)
+
+# 美股期权分片缓存过期清理
+option_osus_sharding_symbols_housekeeping = DAG(
+    "option_osus_sharding_symbols_housekeeping",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 9, 5, tz='America/New_York'),
+    schedule_interval='0 1 * * *',
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks',
+    method='DELETE',
+    http_conn_id='flow-mr-aggregation',
+    endpoint='/aggregation/inner/expiration/OSUS/symbols',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=option_osus_sharding_symbols_housekeeping,
 )
