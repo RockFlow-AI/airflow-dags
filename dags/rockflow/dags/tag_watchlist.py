@@ -18,7 +18,7 @@ TAG_WATCHLIST_US_DAY = DAG(
 
 SimpleHttpOperator(
     task_id='TAG_WATCHLIST_US_DAY',
-    method='POST',
+    method='PUT',
     http_conn_id='flow-mr-option',
     endpoint='/watchlist/inner/tag-watchlist/tasks?period=DAY',
     response_check=lambda response: response.json()['code'] == 200,
@@ -40,7 +40,7 @@ TAG_WATCHLIST_US_MINUTE = DAG(
 
 SimpleHttpOperator(
     task_id='TAG_WATCHLIST_US_MINUTE',
-    method='POST',
+    method='PUT',
     http_conn_id='flow-mr-option',
     endpoint='/watchlist/inner/tag-watchlist/tasks?period=MINUTE',
     response_check=lambda response: response.json()['code'] == 200,
