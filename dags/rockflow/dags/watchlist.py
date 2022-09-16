@@ -8,7 +8,7 @@ WATCHLIST_US_DAY = DAG(
     "WATCHLIST_US_DAY",
     catchup=False,
     start_date=pendulum.datetime(2022, 9, 8, tz='America/New_York'),
-    schedule_interval='0 0 * * 2-6',
+    schedule_interval='0 17 * * 1-5',
     default_args={
         "owner": "chenborui",
         "depends_on_past": False,
