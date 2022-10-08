@@ -3,7 +3,7 @@ from datetime import datetime
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
 
-statements_daily = DAG(
+ledger_statement_by_daily = DAG(
     "ledger_statement_by_daily",
     catchup=False,
     start_date=datetime(2022, 1, 5, 0, 0),
@@ -15,12 +15,12 @@ statements_daily = DAG(
     }
 )
 
-statements_on_time = SimpleHttpOperator(
-    task_id='statements_daily',
+SimpleHttpOperator(
+    task_id='ledger_statement_by_daily',
     method='PATCH',
     http_conn_id='flow-ledger',
     endpoint='/ledger/inner/statement/daily',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
-    dag=statements_daily,
+    dag=ledger_statement_by_daily,
 )
