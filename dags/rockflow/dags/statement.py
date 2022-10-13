@@ -1,17 +1,18 @@
 from airflow.models import DAG
-from datetime import datetime
+from datetime import datetime, timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
 
 ledger_statement_by_daily = DAG(
     "ledger_statement_by_daily",
     catchup=False,
-    start_date=datetime(2022, 1, 5, 0, 0),
+    start_date=datetime(2022, 10, 13, 0, 0),
     schedule_interval='0 0 8 * * *',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
-        "retries": 0,
+        "retries": 16,
+        "retry_delay": timedelta(minutes=30)
     }
 )
 
