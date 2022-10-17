@@ -19,7 +19,7 @@ ledger_statement_by_daily = DAG(
 SimpleHttpOperator(
     task_id='ledger_statement_by_daily',
     method='PATCH',
-    http_conn_id='flow-ledger-latest',
+    http_conn_id='flow-ledger',
     endpoint='/ledger/inner/statement/daily',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
