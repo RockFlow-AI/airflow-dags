@@ -1,10 +1,12 @@
-import json
-import time
+import pytz
 from airflow.models import DAG
-from datetime import datetime, timedelta
+from datetime import datetime
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
-task_time = int(round(time.time() * 1000))
+task_time = int(round(datetime.datetime
+                      .now(tz=pytz.timezone('UTC'))
+                      .replace(hour=8, minute=0, second=0,microsecond=0)
+                      .timestamp() * 1000))
 
 interest_path = '/ledger/inner/interest/task?time={task_time}'.format(task_time=task_time)
 
