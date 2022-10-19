@@ -22,7 +22,7 @@ SimpleHttpOperator(
     method='PATCH',
     http_conn_id='flow-ledger',
     endpoint='/ledger/inner/interest/task',
-    request_params={"time": task_time},
+    request_params={'time': task_time},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=ledger_interest_daily_calculator,
