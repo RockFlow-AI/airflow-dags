@@ -27,7 +27,7 @@ SimpleHttpOperator(
 )
 
 statement_new_by_daily = DAG(
-    "ledger_statement_by_daily",
+    "statement_new_by_daily",
     catchup=False,
     start_date=datetime(2022, 10, 13, 0, 0),
     schedule_interval='30 8 * * 1-7',
@@ -46,5 +46,5 @@ SimpleHttpOperator(
     endpoint='/inner/statements/daily',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
-    dag=ledger_statement_by_daily,
+    dag=statement_new_by_daily,
 )
