@@ -3,7 +3,7 @@ from airflow.models import DAG
 from datetime import datetime
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
-task_time = int(round(datetime.datetime
+task_time = int(round(datetime
                       .now(tz=pytz.timezone('UTC'))
                       .replace(hour=8, minute=0, second=0,microsecond=0)
                       .timestamp() * 1000))
