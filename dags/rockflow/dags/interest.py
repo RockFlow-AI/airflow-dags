@@ -20,7 +20,7 @@ ledger_interest_daily_calculator = DAG(
 
 SimpleHttpOperator(
     task_id='ledger_interest_daily_calculator',
-    method='PATCH',
+    method='POST',
     http_conn_id='flow-ledger',
     endpoint='/ledger/inner/interest/task',
     data=json.dumps({'time': task_time}),
