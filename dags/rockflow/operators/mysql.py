@@ -252,3 +252,15 @@ class MysqlToOssOperator(OSSOperator):
         self.log.info(f"Loading MySql table {self.mysql_table} to {self.oss_dst_key}...")
         self.put_object(key=self.oss_dst_key, content=self.__transform())
         return self.oss_dst_key
+
+
+class SqlAwareSinkCompany(MysqlToOssOperator):
+    def __init__(self, **kwargs) -> None:
+        if 'index_col' not in kwargs:
+            kwargs['index_col'] = "symbol"
+        if 'oss_dst_key' not in kwargs:
+            kwargs['oss_dst_key'] = self.snakecase_class_name
+        super().__init__(**kwargs)
+
+    def extract_data(self) -> pd.DataFrame:
+        return pd.DataFrame()
