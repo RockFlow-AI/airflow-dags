@@ -8,7 +8,7 @@ from rockflow.es_indexs.search import search_setting
 from rockflow.operators.futu import *
 from rockflow.operators.symbol import *
 
-from dags.rockflow.operators.mysql import SqlAwareSinkCompany
+from rockflow.operators.mysql import SqlAwareSinkCompany
 
 DAG_ID = "symbol_download_cfd"
 
