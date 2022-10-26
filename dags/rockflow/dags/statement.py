@@ -48,3 +48,27 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=statement_new_by_daily,
 )
+
+
+statement_sync_ftp_file = DAG(
+    "statement_sync_ftp_file",
+    catchup=False,
+    start_date=datetime(2022, 10, 22, 0, 0),
+    schedule_interval='30 7 * * 1-7',
+    default_args={
+        "owner": "chenborui",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=30)
+    }
+)
+
+SimpleHttpOperator(
+    task_id='statement_sync_ftp_file',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statements/ftpFiles/sync',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=statement_sync_ftp_file,
+)
