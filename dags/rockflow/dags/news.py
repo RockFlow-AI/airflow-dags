@@ -40,7 +40,7 @@ SimpleHttpOperator(
     task_id='unpopular_stock_news_refresh',
     method='POST',
     http_conn_id='flow-news',
-    endpoint='/news/inner/headlines/reload?popular=true',
+    endpoint='/news/inner/headlines/reload?popular=false',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=unpopular_stock_news_refresh,
