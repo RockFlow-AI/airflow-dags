@@ -18,13 +18,13 @@ rock_star_accumulate_days = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='RockStarAccumulateDays',
-    method='GET',
+    task_id='rock_star_accumulate_days',
+    method='PATCH',
     http_conn_id='flow-social',
     endpoint='/social/inner/earningYield/rockerStar/daily',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
-    dag="rock_star_accumulate_days",
+    dag=rock_star_accumulate_days,
 )
 
 
