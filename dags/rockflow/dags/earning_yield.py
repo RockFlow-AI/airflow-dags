@@ -36,8 +36,7 @@ earning_yield_leaderboard_update_10m = DAG(
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
-        "retries": 5,
-        "retry_delay": timedelta(minutes=5),
+        "retries": 0
     }
 )
 
