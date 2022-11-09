@@ -7,6 +7,7 @@ from airflow import AirflowException
 from rockflow.common.apollo_nasdaq import ApolloNasdaq
 from rockflow.common.apollo_nyse import ApolloNYSE
 from rockflow.common.apollo_hkex import ApolloHKEX
+from rockflow.common.apollo_otc import ApolloOTC
 from rockflow.common.pandas_helper import merge_data_frame_by_column
 from rockflow.common.sse import SSE1
 from rockflow.common.szse import SZSE1
@@ -31,6 +32,15 @@ class NyseSymbolDownloadOperator(DownloadOperator):
     @property
     def downloader_cls(self):
         return ApolloNYSE
+
+
+class OtcSymbolDownloadOperator(DownloadOperator):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def downloader_cls(self):
+        return ApolloOTC
 
 
 class HkexSymbolDownloadOperator(DownloadOperator):
@@ -109,6 +119,15 @@ class NyseSymbolParser(SymbolParser):
     @property
     def exchange(self):
         return ApolloNYSE
+
+
+class OtcSymbolParser(SymbolParser):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    @property
+    def exchange(self):
+        return ApolloOTC
 
 
 class HkexSymbolParser(SymbolParser):
