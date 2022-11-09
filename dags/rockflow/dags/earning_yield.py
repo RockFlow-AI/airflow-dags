@@ -32,7 +32,7 @@ earning_yield_leaderboard_update_10m = DAG(
     "earning_yield_leaderboard_update_10m",
     catchup=False,
     start_date=pendulum.datetime(2022, 11, 4, tz='America/New_York'),
-    schedule_interval='32/10 20 * * 1-5',
+    schedule_interval='*/10 * * * *',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
