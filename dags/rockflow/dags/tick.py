@@ -389,3 +389,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=option_osus_sharding_symbols_housekeeping,
 )
+
+money_box_tick_update = DAG(
+    "money_box_tick_update",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 11, 25, tz='Asia/Shanghai'),
+    schedule_interval='0 10 * * *',
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='money-box',
+    method='PUT',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/money-box/tick/MB0001%7CRF',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=money_box_tick_update,
+)
