@@ -76,8 +76,8 @@ SimpleHttpOperator(
 option_exercise_report = DAG(
     "option_exercise_report",
     catchup=False,
-    start_date=datetime(2022, 10, 13, 0, 0),
-    schedule_interval='30 8 * * 1-7',
+    start_date=datetime(2022, 12, 5, 0, 0),
+    schedule_interval='30 9 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
