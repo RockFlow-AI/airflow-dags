@@ -7,8 +7,9 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 earning_yield_leaderboard_update_1d = DAG(
     "earning_yield_leaderboard_update_1d",
     catchup=False,
-    start_date=pendulum.datetime(2022, 11, 4, tz='America/New_York'),
-    schedule_interval='32 20 * * 1-5',
+    # utc时间1点 对应美东夏令时20点或美东冬令时21点
+    start_date=pendulum.datetime(2022, 11, 4),
+    schedule_interval='0 1 * * 1-5',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
