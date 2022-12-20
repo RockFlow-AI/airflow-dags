@@ -7,8 +7,8 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 DAILY_HALA_ALL_SENDING = DAG(
     "DAILY_HALA_ALL_SENDING",
     catchup=False,
-    start_date=pendulum.datetime(2022, 7, 14, tz='Asia/Shanghai'),
-    schedule_interval='0 22 * * *',
+    start_date=pendulum.datetime(2022, 12, 20, tz='Asia/Shanghai'),
+    schedule_interval='0 20 * * *',
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
