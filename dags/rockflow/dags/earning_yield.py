@@ -9,7 +9,7 @@ earning_yield_leaderboard_update_1d = DAG(
     catchup=False,
     # utc时间1点 对应美东夏令时20点或美东冬令时21点
     start_date=pendulum.datetime(2022, 11, 4),
-    schedule_interval='0 1 * * 1-5',
+    schedule_interval='0 1 * * *',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
