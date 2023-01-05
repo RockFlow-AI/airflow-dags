@@ -8,8 +8,8 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 rock_star_accumulate_days = DAG(
     "rock_star_accumulate_days",
     catchup=False,
-    start_date=pendulum.datetime(2022, 11, 4, tz='America/New_York'),
-    schedule_interval='35 20 * * 1-5',
+    start_date=pendulum.datetime(2022, 11, 4),
+    schedule_interval='1 1 * * *',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
