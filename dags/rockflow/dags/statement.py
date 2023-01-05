@@ -62,6 +62,19 @@ statement_sync_ftp_file = DAG(
     }
 )
 
+statement_sync_delay_file = DAG(
+    "statement_sync_ftp_file",
+    catchup=False,
+    start_date=datetime(2022, 10, 22, 0, 0),
+    schedule_interval='50 9 * * 1-7',
+    default_args={
+        "owner": "chenborui",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=30)
+    }
+)
+
 SimpleHttpOperator(
     task_id='statement_sync_ftp_file',
     method='PATCH',
