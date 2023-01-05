@@ -83,7 +83,7 @@ SimpleHttpOperator(
     endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
-    dag=statement_sync_ftp_file,
+    dag=statement_sync_delay_file,
 )
 
 SimpleHttpOperator(
