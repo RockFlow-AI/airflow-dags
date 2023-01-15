@@ -434,7 +434,7 @@ SimpleHttpOperator(
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/markets/HK/ticks/latest',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 120},
+    extra_options={"timeout": 1200},
     dag=daily_last_tick_hk_yahoo,
 )
 
@@ -458,6 +458,6 @@ SimpleHttpOperator(
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/markets/US/ticks/latest',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 120},
+    extra_options={"timeout": 1200},
     dag=daily_last_tick_us_yahoo,
 )
