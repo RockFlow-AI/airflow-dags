@@ -394,7 +394,7 @@ money_box_tick_update = DAG(
     "money_box_tick_update",
     catchup=False,
     start_date=pendulum.datetime(2022, 11, 25, tz='Asia/Shanghai'),
-    schedule_interval='0 10 * * *',
+    schedule_interval='0 9 * * *',
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
