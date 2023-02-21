@@ -117,3 +117,47 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=option_exercise_report,
 )
+
+sync_us_eod_file = DAG(
+    "sync_us_eod_file",
+    catchup=False,
+    start_date=datetime(2023, 2, 21, 0, 0),
+    schedule_interval='00 10 * * 1-7',
+    default_args={
+        "owner": "caoyunfei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='sync_us_eod_file',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/eod/us/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=sync_us_eod_file,
+)
+
+risk_debt_report = DAG(
+    "risk_debt_report",
+    catchup=False,
+    start_date=datetime(2023, 2, 21, 0, 0),
+    schedule_interval='00 10 * * 1-7',
+    default_args={
+        "owner": "caoyunfei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='risk_debt_report',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/risk/debt/send?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=risk_debt_report,
+)
