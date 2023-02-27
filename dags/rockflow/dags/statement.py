@@ -156,7 +156,7 @@ SimpleHttpOperator(
     task_id='risk_debt_report',
     method='PATCH',
     http_conn_id='flow-statement',
-    endpoint='/inner/risk/debt/send?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    endpoint='/inner/risk/debt/send?date={date}'.format(date=(datetime.now() - timedelta(days=-1)).strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=risk_debt_report,
