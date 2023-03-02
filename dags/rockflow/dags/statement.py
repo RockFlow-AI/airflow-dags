@@ -161,3 +161,47 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=risk_debt_report,
 )
+
+US_trade_match_report = DAG(
+    "US_trade_match_report",
+    catchup=False,
+    start_date=datetime(2023, 3, 2, 0, 0),
+    schedule_interval='00 10 * * 1-7',
+    default_args={
+        "owner": "caoyunfei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='US_trade_match_report',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statement/tradeMatch/daily?market=US&date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=US_trade_match_report,
+)
+
+HK_trade_match_report = DAG(
+    "HK_trade_match_report",
+    catchup=False,
+    start_date=datetime(2023, 3, 2, 0, 0),
+    schedule_interval='00 10 * * 1-7',
+    default_args={
+        "owner": "caoyunfei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='HK_trade_match_report',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statement/tradeMatch/daily?market=HK&date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=HK_trade_match_report,
+)
