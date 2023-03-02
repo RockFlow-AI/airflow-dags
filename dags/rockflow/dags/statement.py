@@ -144,7 +144,7 @@ risk_debt_report = DAG(
     "risk_debt_report",
     catchup=False,
     start_date=datetime(2023, 2, 21, 0, 0),
-    schedule_interval='00 10 * * 1-7',
+    schedule_interval='30 1 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
@@ -160,6 +160,28 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=risk_debt_report,
+)
+
+risk_margin_report = DAG(
+    "risk_margin_report",
+    catchup=False,
+    start_date=datetime(2023, 2, 21, 0, 0),
+    schedule_interval='00 10 * * 1-7',
+    default_args={
+        "owner": "caoyunfei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='risk_margin_report',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/risk/margin/send?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=risk_margin_report,
 )
 
 US_trade_match_report = DAG(
