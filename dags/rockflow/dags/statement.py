@@ -117,12 +117,12 @@ SimpleHttpOperator(
     dag=option_exercise_report,
 )
 
-# 同步文件20:30兜底
-statement_sync_file_2030 = DAG(
-    "statement_sync_file_2030",
+# 同步文件20:10兜底
+statement_sync_file_2010 = DAG(
+    "statement_sync_file_2010",
     catchup=False,
     start_date=datetime(2022, 10, 22, 0, 0),
-    schedule_interval='30 12 * * 1-7',
+    schedule_interval='10 12 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
@@ -132,13 +132,13 @@ statement_sync_file_2030 = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='statement_sync_file_2030',
+    task_id='statement_sync_file_2010',
     method='PATCH',
     http_conn_id='flow-statement',
     endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
-    dag=statement_sync_file_2030,
+    dag=statement_sync_file_2010,
 )
 
 # 行权11点兜底
