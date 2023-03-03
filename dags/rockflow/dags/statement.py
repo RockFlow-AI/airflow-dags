@@ -118,6 +118,76 @@ SimpleHttpOperator(
     dag=option_exercise_report,
 )
 
+# 同步文件20:30兜底
+statement_sync_file_2030 = DAG(
+    "statement_sync_file_2030",
+    catchup=False,
+    start_date=datetime(2022, 10, 22, 0, 0),
+    schedule_interval='30 12 * * 1-7',
+    default_args={
+        "owner": "caoyunfei",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=30)
+    }
+)
+
+SimpleHttpOperator(
+    task_id='statement_sync_file_2030',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=statement_sync_file_2030,
+)
+
+# 行权11点兜底
+statement_sync_file_23 = DAG(
+    "statement_sync_file_23",
+    catchup=False,
+    start_date=datetime(2022, 10, 22, 0, 0),
+    schedule_interval='50 15 * * 1-7',
+    default_args={
+        "owner": "caoyunfei",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=30)
+    }
+)
+
+SimpleHttpOperator(
+    task_id='statement_sync_file_23',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=statement_sync_file_23,
+)
+
+option_exercise_report_23 = DAG(
+    "option_exercise_report_23",
+    catchup=False,
+    start_date=datetime(2022, 12, 5, 0, 0),
+    schedule_interval='55 15 * * 1-7',
+    default_args={
+        "owner": "caoyunfei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='option_exercise_report_23',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/option/exercise/send?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=option_exercise_report_23,
+)
+
 sync_us_eod_file = DAG(
     "sync_us_eod_file",
     catchup=False,
@@ -138,6 +208,28 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=sync_us_eod_file,
+)
+# 保证金更新8:30兜底
+sync_us_eod_file_2030 = DAG(
+    "sync_us_eod_file_2030",
+    catchup=False,
+    start_date=datetime(2023, 2, 21, 0, 0),
+    schedule_interval='30 20 * * 1-7',
+    default_args={
+        "owner": "caoyunfei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='sync_us_eod_file_2030',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/eod/us/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=sync_us_eod_file_2030,
 )
 
 risk_debt_report = DAG(
@@ -182,6 +274,29 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=risk_margin_report,
+)
+
+# 保证金提醒20：30兜底
+risk_margin_report_2030 = DAG(
+    "risk_margin_report_2030",
+    catchup=False,
+    start_date=datetime(2023, 2, 21, 0, 0),
+    schedule_interval='30 12 * * 1-7',
+    default_args={
+        "owner": "caoyunfei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='risk_margin_report_2030',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/risk/margin/send?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=risk_margin_report_2030,
 )
 
 US_trade_match_report = DAG(
