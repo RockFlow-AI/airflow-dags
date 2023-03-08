@@ -165,11 +165,11 @@ SimpleHttpOperator(
     dag=statement_sync_file_23,
 )
 
-option_exercise_report_23 = DAG(
+option_exercise_report_2030 = DAG(
     "option_exercise_report_23",
     catchup=False,
     start_date=datetime(2022, 12, 5, 0, 0),
-    schedule_interval='55 15 * * 1-7',
+    schedule_interval='30 12 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
@@ -178,13 +178,13 @@ option_exercise_report_23 = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='option_exercise_report_23',
+    task_id='option_exercise_report_2030',
     method='PATCH',
     http_conn_id='flow-statement',
     endpoint='/inner/option/exercise/send?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
-    dag=option_exercise_report_23,
+    dag=option_exercise_report_2030,
 )
 
 sync_us_eod_file = DAG(
