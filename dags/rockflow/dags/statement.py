@@ -167,7 +167,7 @@ SimpleHttpOperator(
 )
 
 option_exercise_report_2030 = DAG(
-    "option_exercise_report_23",
+    "option_exercise_report_2030",
     catchup=False,
     start_date=datetime(2022, 12, 5, 0, 0),
     schedule_interval='30 12 * * 1-7',
