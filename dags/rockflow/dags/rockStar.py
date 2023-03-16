@@ -43,7 +43,7 @@ SimpleHttpOperator(
     task_id='rock_star_clear_accumulate_month_days',
     method='PATCH',
     http_conn_id='flow-social',
-    endpoint='/social/inner/earningYield/rockerStar/daily',
+    endpoint='/social/inner/earningYield/rockerStar/month/clear',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=rock_star_clear_accumulate_month_days,
