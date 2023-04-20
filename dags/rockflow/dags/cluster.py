@@ -195,7 +195,7 @@ option_follow_task = DAG(
     "option_follow_task",
     catchup=False,
     start_date=pendulum.datetime(2023, 4, 20, tz='America/New_York'),
-    schedule_interval='0 30/10 9-9 * *',
+    schedule_interval='30/10 9 * * 1-5',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
