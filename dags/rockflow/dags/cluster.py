@@ -190,3 +190,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 600},
     dag=monthly_statement,
 )
+
+option_follow_task = DAG(
+    "option_follow_task",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 4, 20, tz='America/New_York'),
+    schedule_interval='0 30/10 9-9 * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=1),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='option_follow_task',
+    method='POST',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/follow/task',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=option_follow_task,
+)
