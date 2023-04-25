@@ -96,8 +96,8 @@ SimpleHttpOperator(
 US_MARKET_OPEN_NOTIFICATION = DAG(
     "US_MARKET_OPEN_NOTIFICATION",
     catchup=False,
-    start_date=pendulum.datetime(2022, 7, 18, tz='America/New_York'),
-    schedule_interval='29 09 * * *',
+    start_date=pendulum.datetime(2023, 4, 25, tz='America/New_York'),
+    schedule_interval='31 09 * * *',
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
