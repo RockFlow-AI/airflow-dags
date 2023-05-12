@@ -1,4 +1,5 @@
 import json
+import math
 from multiprocessing.pool import ThreadPool as Pool
 from typing import Any, Hashable
 
@@ -46,9 +47,9 @@ class LogoImportOperator(OSSOperator):
         if self.object_exists_(self.avatar_bucket, symbol_file):
             return symbol_file
         result = symbol[0:1]
-        if line["name_en"]:
+        if line["name_en"] and not math.isnan(line["name_en"]):
             result = name_en[0:1]
-        elif line["name_cn"]:
+        elif line["name_cn"] and not math.isnan(line["name_cn"]):
             result = name_cn[0:1]
         return self.oss_src(
             f"_{pinyin(result, style=Style.FIRST_LETTER)[0][0][0:1].upper()}"
