@@ -68,7 +68,8 @@ class LogoImportOperator(OSSOperator):
         index = line[0]
         symbol = line[1]
         self.log.info(f"index: {index}, symbol: {symbol}")
-        self.copy_object_(self.avatar_bucket, self.src_file(symbol), self.dest_file(symbol))
+        if len(symbol) > 0:
+            self.copy_object_(self.avatar_bucket, self.src_file(symbol), self.dest_file(symbol))
 
     def execute(self, context: Any):
         self.log.info(f"symbol: {self.symbols}")
