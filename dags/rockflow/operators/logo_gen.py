@@ -46,9 +46,9 @@ class LogoImportOperator(OSSOperator):
         if self.object_exists_(self.avatar_bucket, symbol_file):
             return symbol_file
         result = symbol[0:1]
-        if name_en and name_en != 'NaN':
+        if line["name_en"]:
             result = name_en[0:1]
-        elif name_cn and name_cn != 'NaN':
+        elif line["name_cn"]:
             result = name_cn[0:1]
         return self.oss_src(
             f"_{pinyin(result, style=Style.FIRST_LETTER)[0][0][0:1].upper()}"
