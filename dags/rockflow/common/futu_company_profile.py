@@ -83,7 +83,7 @@ class FutuCompanyProfileEn(FutuCompanyProfile):
         new_table["short_name_a"] = table_dict.get("Short name-A")
         new_table["short_name_h"] = table_dict.get("Short name-H")
         new_table["name" + "_" + language] = table_dict.get("Company Name")
-        new_table["profile" + "_" + language] = table_dict.get("Profile")
+        new_table["profile" + "_" + language] = table_dict.get("Description")
         new_table["business" + "_" + language] = table_dict.get("Business")
         new_table["exchange"] = table_dict.get("Market") if table_dict.get("Market") else table_dict.get(
             "Listed exchange")
