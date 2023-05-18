@@ -74,8 +74,8 @@ class FutuCompanyProfileEn(FutuCompanyProfile):
     def format(self, table_dict):
         return self.format_(self.language(), table_dict)
 
-    @staticmethod
-    def format_(language, table_dict):
+    def format_(self, language, table_dict):
+        self.log.info(f"crawled content: {table_dict}")
         new_table = {}
         new_table["symbol"] = table_dict.get("symbol")
         new_table["language"] = language
@@ -87,6 +87,7 @@ class FutuCompanyProfileEn(FutuCompanyProfile):
         new_table["business" + "_" + language] = table_dict.get("Business")
         new_table["exchange"] = table_dict.get("Market") if table_dict.get("Market") else table_dict.get(
             "Listed exchange")
+        self.log.info(f"extract fields: {new_table}")
         return new_table
 
 
@@ -105,8 +106,8 @@ class FutuCompanyProfileCn(FutuCompanyProfile):
     def format(self, table_dict):
         return self.format_(self.language(), table_dict)
 
-    @staticmethod
-    def format_(language, table_dict):
+    def format_(self, language, table_dict):
+        self.log.info(f"crawled content: {table_dict}")
         new_table = {}
         new_table["symbol"] = table_dict.get("symbol")
         new_table["language"] = language
@@ -119,4 +120,5 @@ class FutuCompanyProfileCn(FutuCompanyProfile):
             "公司业务") else table_dict.get("公司主营")
         new_table["exchange"] = table_dict.get("所属市场") if table_dict.get(
             "所属市场") else table_dict.get("上市交易所")
+        self.log.info(f"extract fields: {new_table}")
         return new_table
