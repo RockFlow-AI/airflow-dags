@@ -186,9 +186,13 @@ class FutuFormatJson(OSSSaveOperator):
         raise NotImplementedError()
 
     @property
+    def instance(self):
+        raise NotImplementedError()
+
+    @property
     def content(self):
         result = [
-            self.cls.format_(self.cls, self.cls.language(), i)
+            self.instance.format(i)
             for i in json.load(
                 BytesIO(self.get_object(self.from_key).read())
             )
@@ -204,6 +208,10 @@ class FutuFormatJsonCn(FutuFormatJson):
     def cls(self):
         return FutuCompanyProfileCn
 
+    @property
+    def instance(self):
+        return FutuCompanyProfileCn()
+
 
 class FutuFormatJsonEn(FutuFormatJson):
     def __init__(self, **kwargs) -> None:
@@ -212,6 +220,10 @@ class FutuFormatJsonEn(FutuFormatJson):
     @property
     def cls(self):
         return FutuCompanyProfileEn
+
+    @property
+    def instance(self):
+        return FutuCompanyProfileEn()
 
 
 class JoinMap(OSSSaveOperator):
