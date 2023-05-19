@@ -188,7 +188,7 @@ class FutuFormatJson(OSSSaveOperator):
     @property
     def content(self):
         result = [
-            self.format_(self.cls.language(), i)
+            self.cls.format_(self.cls.language(), i)
             for i in json.load(
                 BytesIO(self.get_object(self.from_key).read())
             )
