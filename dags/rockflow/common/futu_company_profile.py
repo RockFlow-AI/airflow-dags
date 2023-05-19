@@ -7,7 +7,7 @@ from rockflow.common.downloader import Downloader
 
 
 class FutuCompanyProfile(Downloader):
-    def __init__(self, symbol: str, futu_ticker: str, prefix: str, *args, **kwargs):
+    def __init__(self, symbol: str = None, futu_ticker: str = None, prefix: str = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.symbol = symbol
         self.futu_ticker = futu_ticker
