@@ -177,6 +177,7 @@ class SummaryDetailImportOperator(OssToMysqlOperator):
                 "dayLow": "low",
                 "previousClose": "previous_close",
                 "marketCap": "market_cap",
+                "totalAssets": "market_cap",
                 "volume": "volume",
                 "trailingPE": "trailing_pe",
                 "dividendYield": "dividend_yield",

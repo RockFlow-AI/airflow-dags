@@ -1,5 +1,7 @@
+import math
 from typing import List, Optional, Dict
 
+import pandas
 import pandas as pd
 
 
@@ -32,5 +34,5 @@ def merge_data_frame_by_index(data_frame_list: Optional[List[pd.DataFrame]]) -> 
 def map_frame(df: Optional[pd.DataFrame], mapper: Dict[str, str]) -> Optional[pd.DataFrame]:
     result = pd.DataFrame(columns=[v for _, v in mapper.items()])
     for k, v in mapper.items():
-        result[v] = df[k]
+        result[v] = result.v.fillna(df[k])
     return result
