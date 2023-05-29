@@ -6,7 +6,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 default_follow_stat = DAG(
     "default_follow_stat",
     catchup=False,
-    start_date=pendulum.datetime(2023, 4, 20, tz='UTC'),
+    start_date=pendulum.datetime(2023, 5, 29, tz='UTC'),
     schedule_interval='0 7 * * 1',
     default_args={
         "owner": "chengwei",
