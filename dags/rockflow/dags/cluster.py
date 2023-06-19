@@ -23,7 +23,7 @@ SimpleHttpOperator(
     method='POST',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/currencies/refresh',
-    headers={'appId', 1},
+    headers={'appId': '1'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=currencies_refresh,
