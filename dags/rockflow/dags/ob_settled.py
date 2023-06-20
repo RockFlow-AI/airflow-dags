@@ -8,7 +8,7 @@ ob_settled_stat = DAG(
     "ob_settled_stat",
     catchup=False,
     start_date=pendulum.datetime(2023, 4, 20, tz='UTC'),
-    schedule_interval='30 4 * * 1-7',
+    schedule_interval='30 8 * * 1-7',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
