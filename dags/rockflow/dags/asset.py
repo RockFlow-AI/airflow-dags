@@ -5,7 +5,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 
 # 定时任务 - 每天北京时间六点调用一次
 nvl_asset = DAG(
-    "message_bot",
+    "nvl_asset",
     catchup=False,
     start_date=pendulum.datetime(2023, 6, 28, tz='Asia/Shanghai'),
     schedule_interval='0 25 18 * * ?',
