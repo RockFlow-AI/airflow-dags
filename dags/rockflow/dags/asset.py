@@ -24,5 +24,5 @@ SimpleHttpOperator(
     endpoint='/account/inner/calculate/asset',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
-    dag=message_bot,
+    dag=nvl_asset,
 )
