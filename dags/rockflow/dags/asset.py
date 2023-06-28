@@ -4,7 +4,7 @@ from datetime import timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
 # 定时任务 - 每天北京时间六点调用一次
-message_bot = DAG(
+nvl_asset = DAG(
     "message_bot",
     catchup=False,
     start_date=pendulum.datetime(2023, 6, 28, tz='Asia/Shanghai'),
@@ -18,7 +18,7 @@ message_bot = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='message_bot',
+    task_id='nvl_asset',
     method='POST',
     http_conn_id='flow-feed-portfolio',
     endpoint='/account/inner/calculate/asset',
