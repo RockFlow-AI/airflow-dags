@@ -8,12 +8,12 @@ nvl_asset = DAG(
     "nvl_asset",
     catchup=False,
     start_date=pendulum.datetime(2023, 6, 28, tz='Asia/Shanghai'),
-    schedule_interval='0 18 * * * *',
+    schedule_interval='0 18 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
         "retries": 3,
-        "retry_delay": timedelta(minutes=3),
+        "retry_delay": timedelta(minutes=5),
     }
 )
 
