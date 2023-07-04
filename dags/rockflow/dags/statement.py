@@ -66,7 +66,7 @@ statement_sync_delay_file = DAG(
     "statement_sync_delay_file",
     catchup=False,
     start_date=datetime(2022, 10, 22, 0, 0),
-    schedule_interval='55 9 * * 1-7',
+    schedule_interval='50 9 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
@@ -83,6 +83,30 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
     dag=statement_sync_delay_file,
+)
+
+# tradeDetail 兜底
+statement_sync_delay_file_1755 = DAG(
+    "statement_sync_delay_file_1755",
+    catchup=False,
+    start_date=datetime(2022, 10, 22, 0, 0),
+    schedule_interval='55 9 * * 1-7',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=30)
+    }
+)
+
+SimpleHttpOperator(
+    task_id='statement_sync_delay_file_1755',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=statement_sync_delay_file_1755,
 )
 
 SimpleHttpOperator(
