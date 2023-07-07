@@ -5,7 +5,7 @@ from airflow.models import DAG
 from datetime import timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
-hour_6h = "0 0,6,12,18 * * "
+hour_6h = "0 6,12,18 * * "
 hour_4h = "0 7,11,15,19,23 * * "
 hour_trading = "30 22,23 * * "
 hour_active = "0 12,18,22 * * "
@@ -96,7 +96,7 @@ for task, value in setting.items():
     
     SimpleHttpOperator(
         task_id=value['name'],
-        method='POST',
+        method='GET',
         http_conn_id='feishu-sensor-alert',
         endpoint=value["endpoint"],
         response_check=lambda response: response.json()['code'] == 200,
