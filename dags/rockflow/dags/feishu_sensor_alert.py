@@ -14,60 +14,65 @@ day_trading = "1-5"
 day_all = "*"
 
 setting = {
+    "0": {
+        "name": "sensor_alert_task_all",
+        "interval": "@once",
+        "endpoint": "/run_all_task",
+    },
     "1": {
         "name": "sensor_alert_task_1",
         "interval": hour_6h + day_all,
-        "task": "1",
+        "endpoint": "/run_task?task_id=1",
     },
     "2": {
         "name": "sensor_alert_task_2",
         "interval": hour_6h + day_all,
-        "task": "2",
+        "endpoint": "/run_task?task_id=2",
     },
     "3": {
         "name": "sensor_alert_task_3",
         "interval": hour_6h + day_all,
-        "task": "3",
+        "endpoint": "/run_task?task_id=3",
     },
     "4": {
         "name": "sensor_alert_task_4",
         "interval": hour_6h + day_all,
-        "task": "4",
+        "endpoint": "/run_task?task_id=4",
     },
     "5": {
         "name": "sensor_alert_task_5",
         "interval": hour_6h + day_all,
-        "task": "5",
+        "endpoint": "/run_task?task_id=5",
     },
     "6": {
         "name": "sensor_alert_task_6",
         "interval": hour_4h + day_trading,
-        "task": "6",
+        "endpoint": "/run_task?task_id=6",
     },
     "7": {
         "name": "sensor_alert_task_7",
         "interval": hour_4h + day_trading,
-        "task": "7",
+        "endpoint": "/run_task?task_id=7",
     },
     "8_1": {
         "name": "sensor_alert_task_8_1",
         "interval": hour_trading + day_trading,
-        "task": "8",
+        "endpoint": "/run_task?task_id=8",
     },
     "8_2": {
         "name": "sensor_alert_task_8_2",
         "interval": "0 1 * * 2-6",
-        "task": "8",
+        "endpoint": "/run_task?task_id=8",
     },
     "9": {
         "name": "sensor_alert_task_9",
         "interval": hour_6h + day_all,
-        "task": "9",
+        "endpoint": "/run_task?task_id=9",
     },
     "10": {
         "name": "sensor_alert_task_10",
         "interval": hour_active + day_all,
-        "task": "10",
+        "endpoint": "/run_task?task_id=10",
     }
 }
 
@@ -93,7 +98,7 @@ for task, value in setting.items():
         task_id=value['name'],
         method='POST',
         http_conn_id='feishu-sensor-alert',
-        endpoint='/run_task?task_id='+value["task"],
+        endpoint=value["endpoint"],
         response_check=lambda response: response.json()['code'] == 200,
         extra_options={"timeout": 60},
         dag=dag,
