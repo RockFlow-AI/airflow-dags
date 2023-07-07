@@ -76,8 +76,6 @@ setting = {
     }
 }
 
-dags = []
-
 for task, value in setting.items():
     dag = DAG(
         value['name'],
@@ -92,14 +90,14 @@ for task, value in setting.items():
         },
     )
     
-    dags.append(dag)
+    with dag:
+        SimpleHttpOperator(
+            task_id=value['name'],
+            method='GET',
+            http_conn_id='feishu-sensor-alert',
+            endpoint=value["endpoint"],
+            response_check=lambda response: response.json()['code'] == 200,
+            extra_options={"timeout": 60},
+        )
     
-    SimpleHttpOperator(
-        task_id=value['name'],
-        method='GET',
-        http_conn_id='feishu-sensor-alert',
-        endpoint=value["endpoint"],
-        response_check=lambda response: response.json()['code'] == 200,
-        extra_options={"timeout": 60},
-        dag=dag,
-    )
+    globals()[value['name']] = dag
