@@ -5,8 +5,8 @@ from airflow.models import DAG
 from datetime import timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
-hour_6h = "0 6,12,18 * * "
-hour_4h = "0 7,11,15,19,23 * * "
+hour_6h = "0 10,14,18 * * "
+hour_4h = "0 10,14,18,22 * * "
 hour_trading = "30 22,23 * * "
 hour_active = "0 12,18,22 * * "
 
@@ -85,8 +85,6 @@ for task, value in setting.items():
         default_args={
             "owner": "caohaoxuan",
             "depends_on_past": False,
-            "retries": 2,
-            "retry_delay": timedelta(minutes=3),
         },
     )
     
@@ -96,8 +94,7 @@ for task, value in setting.items():
             method='GET',
             http_conn_id='feishu-sensor-alert',
             endpoint=value["endpoint"],
-            response_check=lambda response: response.json()['code'] == 200,
-            extra_options={"timeout": 60},
+            extra_options={"timeout": 360},
         )
     
     globals()[value['name']] = dag
