@@ -7,6 +7,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 
 hour_6h = "0 10,14,18 * * "
 hour_4h = "0 10,14,18,22 * * "
+hour_2h = "0 10,12,14,16,18,20,22 * * "
 hour_trading = "30 22,23 * * "
 hour_active = "0 12,18,22 * * "
 
@@ -34,9 +35,14 @@ setting = {
         "interval": hour_6h + day_all,
         "endpoint": "/run_task?task_id=3",
     },
-    "4": {
-        "name": "sensor_alert_task_4",
-        "interval": hour_6h + day_all,
+    "4_1": {
+        "name": "sensor_alert_task_4_1",
+        "interval": "30 10,14,18 * * 1-5",
+        "endpoint": "/run_task?task_id=4",
+    },
+    "4_2": {
+        "name": "sensor_alert_task_4_2",
+        "interval": "30 18 * * 6-7",
         "endpoint": "/run_task?task_id=4",
     },
     "5": {
@@ -73,7 +79,12 @@ setting = {
         "name": "sensor_alert_task_10",
         "interval": hour_active + day_all,
         "endpoint": "/run_task?task_id=10",
-    }
+    },
+    "11": {
+        "name": "sensor_alert_task_11",
+        "interval": hour_2h + day_all,
+        "endpoint": "/run_task?task_id=11",
+    },
 }
 
 for task, value in setting.items():
