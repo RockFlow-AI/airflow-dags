@@ -11,7 +11,7 @@ asset = DAG(
     schedule_interval='25 21 * * *',
     default_args={
         "owner": "maoboxuan",
-        "depends_on_past": False
+        "depends_on_past": False,
     }
 )
 
