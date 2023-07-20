@@ -1,0 +1,26 @@
+import pendulum
+from airflow.models import DAG
+from datetime import timedelta
+from airflow.providers.http.operators.http import SimpleHttpOperator
+
+# 定时任务 - 每天盘前触发
+asset = DAG(
+    "tradingHours",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 7, 19, tz='Asia/Shanghai'),
+    schedule_interval='25 21 * * *',
+    default_args={
+        "owner": "maoboxuan",
+        "depends_on_past": False
+    }
+)
+
+SimpleHttpOperator(
+    task_id='tradingHours',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/lifeCycle/sync',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=asset,
+)
