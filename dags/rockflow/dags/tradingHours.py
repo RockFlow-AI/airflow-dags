@@ -5,7 +5,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 
 # 定时任务 - 每天盘前触发
 asset = DAG(
-    "tradingHours",
+    "trading_hours",
     catchup=False,
     start_date=pendulum.datetime(2023, 7, 19, tz='Asia/Shanghai'),
     schedule_interval='25 21 * * *',
@@ -16,11 +16,11 @@ asset = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='tradingHours',
+    task_id='trading_hours',
     method='POST',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/lifeCycle/sync',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
-    dag=asset,
+    dag=trading_hours,
 )
