@@ -1,19 +1,15 @@
 # 神策业务指标报警 - 定时任务
-
 import pendulum
 from airflow.models import DAG
 from datetime import timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
-
-hour_6h = "0 10,14,18 * * "
-hour_4h = "0 10,14,18,22 * * "
-hour_2h = "0 10,12,14,16,18,20,22 * * "
+hour_6h = "30 10,14,18 * * "
+hour_4h = "30 10,14,18,22 * * "
+hour_2h = "30 10,12,14,16,18,20,22 * * "
 hour_trading = "30 22,23 * * "
-hour_active = "0 12,18,22 * * "
-
+hour_active = "30 12,18,22 * * "
 day_trading = "1-5"
 day_all = "*"
-
 setting = {
     "0": {
         "name": "sensor_alert_task_all",
@@ -67,7 +63,7 @@ setting = {
     },
     "8_2": {
         "name": "sensor_alert_task_8_2",
-        "interval": "0 1 * * 2-6",
+        "interval": "30 1 * * 2-6",
         "endpoint": "/run_task?task_id=8",
     },
     "9": {
@@ -86,7 +82,6 @@ setting = {
         "endpoint": "/run_task?task_id=11",
     },
 }
-
 for task, value in setting.items():
     dag = DAG(
         value['name'],
@@ -98,7 +93,6 @@ for task, value in setting.items():
             "depends_on_past": False,
         },
     )
-    
     with dag:
         SimpleHttpOperator(
             task_id=value['name'],
@@ -107,5 +101,4 @@ for task, value in setting.items():
             endpoint=value["endpoint"],
             extra_options={"timeout": 360},
         )
-    
     globals()[value['name']] = dag
