@@ -4,7 +4,7 @@ from datetime import timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
 # 定时任务 - 每天盘前触发
-asset = DAG(
+trading_hours = DAG(
     "trading_hours",
     catchup=False,
     start_date=pendulum.datetime(2023, 7, 19, tz='Asia/Shanghai'),
