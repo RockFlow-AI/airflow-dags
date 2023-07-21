@@ -7,7 +7,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 clear_error_order_margin = DAG(
     "clear_error_order_margin",
     catchup=False,
-    start_date=pendulum.datetime(2023, 7, 25, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2023, 7, 19, tz='Asia/Shanghai'),
     schedule_interval='0 */12 * * *',
     default_args={
         "owner": "yuzhiqiang",
