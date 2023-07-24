@@ -76,9 +76,14 @@ setting = {
         "interval": hour_active + day_all,
         "endpoint": "/run_task?task_id=10",
     },
-    "11": {
-        "name": "sensor_alert_task_11",
-        "interval": hour_2h + day_all,
+    "11_1": {
+        "name": "sensor_alert_task_11_1",
+        "interval": hour_2h + day_trading,
+        "endpoint": "/run_task?task_id=11",
+    },
+    "11_2": {
+        "name": "sensor_alert_task_11_2",
+        "interval": "30 18 * * 6-7",
         "endpoint": "/run_task?task_id=11",
     },
 }
