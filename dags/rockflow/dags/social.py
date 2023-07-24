@@ -20,7 +20,7 @@ social_task_before_market_check = DAG(
 
 SimpleHttpOperator(
     task_id='social_task_before_market_check',
-    method='PATCH',
+    method='GET',
     http_conn_id='flow-social',
     endpoint='/social/inner/task/beforeMarketCheck',
     response_check=lambda response: response.json()['code'] == 200,
