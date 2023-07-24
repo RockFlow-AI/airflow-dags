@@ -13,8 +13,7 @@ social_task_before_market_check = DAG(
     default_args={
         "owner": "hujing",
         "depends_on_past": False,
-        "retries": 5,
-        "retry_delay": timedelta(minutes=1),
+        "retries": 0,
     }
 )
 
