@@ -8,7 +8,7 @@ trading_hours = DAG(
     "trading_hours",
     catchup=False,
     start_date=pendulum.datetime(2023, 7, 19, tz='Asia/Shanghai'),
-    schedule_interval='25 21 * * *',
+    schedule_interval='30 21 * * *',
     default_args={
         "owner": "maoboxuan",
         "depends_on_past": False,
