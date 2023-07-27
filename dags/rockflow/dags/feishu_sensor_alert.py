@@ -1,138 +1,113 @@
-# TradeGPT自动化airflow配置文件
-
+# 神策业务指标报警 - 定时任务
 import pendulum
 from airflow.models import DAG
 from datetime import timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
-
-tradeGPT_run_initial = DAG(
-    "tradeGPT_run_initial",
-    catchup=False,
-    start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
-    schedule_interval="0 10 * * 1-5",
-    default_args={
-        "owner": "huangdexi",
-        "depends_on_past": False,
-        "retries": 1,
-        "retry_delay": timedelta(minutes=3)
-    }
-)
-
-SimpleHttpOperator(
-    task_id='tradeGPT_run_initial',
-    method='GET',
-    http_conn_id='tradegpt',
-    endpoint="/initial",
-    response_check=lambda response: response.json()['code'] == 200,
-    dag=tradeGPT_run_initial,
-)
-
-tradeGPT_run_second = DAG(
-    "tradeGPT_run_second",
-    catchup=False,
-    start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
-    schedule_interval="20 18 * * 1-5",
-    default_args={
-        "owner": "huangdexi",
-        "depends_on_past": False,
-        "retries": 1,
-        "retry_delay": timedelta(minutes=3)
-    }
-)
-
-SimpleHttpOperator(
-    task_id='tradeGPT_run_second',
-    method='GET',
-    http_conn_id='tradegpt',
-    endpoint="/second",
-    response_check=lambda response: response.json()['code'] == 200,
-    dag=tradeGPT_run_second,
-)
-
-tradeGPT_send_notification = DAG(
-    "tradeGPT_send_notification",
-    catchup=False,
-    start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
-    schedule_interval="0 16,17,18 * * 1-5",
-    default_args={
-        "owner": "huangdexi",
-        "depends_on_past": False,
-        "retries": 1,
-        "retry_delay": timedelta(minutes=3)
-    }
-)
-
-SimpleHttpOperator(
-    task_id='tradeGPT_send_notification',
-    method='GET',
-    http_conn_id='tradegpt',
-    endpoint="/send_notification",
-    response_check=lambda response: response.json()['code'] == 200,
-    dag=tradeGPT_send_notification,
-)
-
-tradeGPT_option_update_1 = DAG(
-    "tradeGPT_option_update_1",
-    catchup=False,
-    start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
-    schedule_interval="2-56/10 21 * * 1-5",
-    default_args={
-        "owner": "huangdexi",
-        "depends_on_past": False,
-        "retries": 1,
-        "retry_delay": timedelta(minutes=3)
-    }
-)
-
-SimpleHttpOperator(
-    task_id='tradeGPT_option_update_1',
-    method='GET',
-    http_conn_id='tradegpt',
-    endpoint="/option_update/run_option_update",
-    response_check=lambda response: response.json()['code'] == 200,
-    dag=tradeGPT_option_update_1,
-)
-
-tradeGPT_option_update_2 = DAG(
-    "tradeGPT_option_update_2",
-    catchup=False,
-    start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
-    schedule_interval="2-56/30 22-23 * * 1-5",
-    default_args={
-        "owner": "huangdexi",
-        "depends_on_past": False,
-        "retries": 1,
-        "retry_delay": timedelta(minutes=3)
-    }
-)
-
-SimpleHttpOperator(
-    task_id='tradeGPT_option_update_2',
-    method='GET',
-    http_conn_id='tradegpt',
-    endpoint="/option_update/run_option_update",
-    response_check=lambda response: response.json()['code'] == 200,
-    dag=tradeGPT_option_update_2,
-)
-
-tradeGPT_option_update_3 = DAG(
-    "tradeGPT_option_update_3",
-    catchup=False,
-    start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
-    schedule_interval="2-56/30 0-4 * * 1-5",
-    default_args={
-        "owner": "huangdexi",
-        "depends_on_past": False,
-        "retries": 1,
-        "retry_delay": timedelta(minutes=3)
-    }
-)
-
-SimpleHttpOperator(
-    task_id='tradeGPT_option_update_3',
-    method='GET',
-    http_conn_id='tradegpt',
-    endpoint="/option_update/run_option_update",
-    response_check=lambda response: response.json()['code'] == 200,
-    dag=tradeGPT_option_update_3,
-)
+hour_6h = "30 10,14,18 * * "
+hour_4h = "30 10,14,18,22 * * "
+hour_2h = "30 10,12,14,16,18,20,22 * * "
+hour_trading = "30 22,23 * * "
+hour_active = "30 12,18,22 * * "
+day_trading = "1-5"
+day_all = "*"
+setting = {
+    "0_1": {
+        "name": "sensor_alert_task_all",
+        "interval": "@once",
+        "endpoint": "/run_all_task",
+    },
+    "0_2": {
+        "name": "sensor_alert_stop_silence_task",
+        "interval": "0 0 * * *",
+        "endpoint": "/stop_silence_task",
+    },
+    "1": {
+        "name": "sensor_alert_task_1",
+        "interval": hour_6h + day_all,
+        "endpoint": "/run_task?task_id=1",
+    },
+    "2": {
+        "name": "sensor_alert_task_2",
+        "interval": hour_6h + day_all,
+        "endpoint": "/run_task?task_id=2",
+    },
+    "3": {
+        "name": "sensor_alert_task_3",
+        "interval": hour_6h + day_all,
+        "endpoint": "/run_task?task_id=3",
+    },
+    "4_1": {
+        "name": "sensor_alert_task_4_1",
+        "interval": "30 10,14,18 * * 1-5",
+        "endpoint": "/run_task?task_id=4",
+    },
+    "4_2": {
+        "name": "sensor_alert_task_4_2",
+        "interval": "30 18 * * 6-7",
+        "endpoint": "/run_task?task_id=4",
+    },
+    "5": {
+        "name": "sensor_alert_task_5",
+        "interval": hour_6h + day_all,
+        "endpoint": "/run_task?task_id=5",
+    },
+    "6": {
+        "name": "sensor_alert_task_6",
+        "interval": hour_4h + day_trading,
+        "endpoint": "/run_task?task_id=6",
+    },
+    "7": {
+        "name": "sensor_alert_task_7",
+        "interval": hour_4h + day_trading,
+        "endpoint": "/run_task?task_id=7",
+    },
+    "8_1": {
+        "name": "sensor_alert_task_8_1",
+        "interval": hour_trading + day_trading,
+        "endpoint": "/run_task?task_id=8",
+    },
+    "8_2": {
+        "name": "sensor_alert_task_8_2",
+        "interval": "30 1 * * 2-6",
+        "endpoint": "/run_task?task_id=8",
+    },
+    "9": {
+        "name": "sensor_alert_task_9",
+        "interval": hour_6h + day_all,
+        "endpoint": "/run_task?task_id=9",
+    },
+    "10": {
+        "name": "sensor_alert_task_10",
+        "interval": hour_active + day_all,
+        "endpoint": "/run_task?task_id=10",
+    },
+    "11_1": {
+        "name": "sensor_alert_task_11_1",
+        "interval": hour_2h + day_trading,
+        "endpoint": "/run_task?task_id=11",
+    },
+    "11_2": {
+        "name": "sensor_alert_task_11_2",
+        "interval": "30 18 * * 6-7",
+        "endpoint": "/run_task?task_id=11",
+    },
+}
+for task, value in setting.items():
+    dag = DAG(
+        value['name'],
+        catchup=False,
+        start_date=pendulum.datetime(2023, 7, 6, tz='Asia/Shanghai'),
+        schedule_interval=value['interval'],
+        default_args={
+            "owner": "caohaoxuan",
+            "depends_on_past": False,
+        },
+    )
+    with dag:
+        SimpleHttpOperator(
+            task_id=value['name'],
+            method='GET',
+            http_conn_id='feishu-sensor-alert',
+            endpoint=value["endpoint"],
+        )
+    globals()[value['name']] = dag

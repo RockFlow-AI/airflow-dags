@@ -1,4 +1,4 @@
-# 神策业务指标报警 - 定时任务
+# TradeGPT自动化airflow配置文件
 
 import pendulum
 from airflow.models import DAG
@@ -12,9 +12,7 @@ tradeGPT_run_initial = DAG(
     schedule_interval="0 10 * * 1-5",
     default_args={
         "owner": "huangdexi",
-        "depends_on_past": False,
-        "retries": 1,
-        "retry_delay": timedelta(minutes=3)
+        "depends_on_past": False
     }
 )
 
@@ -31,12 +29,10 @@ tradeGPT_run_second = DAG(
     "tradeGPT_run_second",
     catchup=False,
     start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
-    schedule_interval="45 18 * * 1-5",
+    schedule_interval="20 18 * * 1-5",
     default_args={
         "owner": "huangdexi",
-        "depends_on_past": False,
-        "retries": 1,
-        "retry_delay": timedelta(minutes=3)
+        "depends_on_past": False
     }
 )
 
@@ -49,6 +45,26 @@ SimpleHttpOperator(
     dag=tradeGPT_run_second,
 )
 
+tradeGPT_send_notification = DAG(
+    "tradeGPT_send_notification",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
+    schedule_interval="0 16,17,18 * * 1-5",
+    default_args={
+        "owner": "huangdexi",
+        "depends_on_past": False
+    }
+)
+
+SimpleHttpOperator(
+    task_id='tradeGPT_send_notification',
+    method='GET',
+    http_conn_id='tradegpt',
+    endpoint="/send_notification",
+    response_check=lambda response: response.json()['code'] == 200,
+    dag=tradeGPT_send_notification,
+)
+
 tradeGPT_option_update_1 = DAG(
     "tradeGPT_option_update_1",
     catchup=False,
@@ -56,9 +72,7 @@ tradeGPT_option_update_1 = DAG(
     schedule_interval="2-56/10 21 * * 1-5",
     default_args={
         "owner": "huangdexi",
-        "depends_on_past": False,
-        "retries": 1,
-        "retry_delay": timedelta(minutes=3)
+        "depends_on_past": False
     }
 )
 
@@ -78,9 +92,7 @@ tradeGPT_option_update_2 = DAG(
     schedule_interval="2-56/30 22-23 * * 1-5",
     default_args={
         "owner": "huangdexi",
-        "depends_on_past": False,
-        "retries": 1,
-        "retry_delay": timedelta(minutes=3)
+        "depends_on_past": False
     }
 )
 
@@ -100,9 +112,7 @@ tradeGPT_option_update_3 = DAG(
     schedule_interval="2-56/30 0-4 * * 1-5",
     default_args={
         "owner": "huangdexi",
-        "depends_on_past": False,
-        "retries": 1,
-        "retry_delay": timedelta(minutes=3)
+        "depends_on_past": False
     }
 )
 
