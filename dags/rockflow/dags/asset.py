@@ -12,8 +12,7 @@ asset = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 3,
-        "retry_delay": timedelta(minutes=5),
+        "retries": 0,
     }
 )
 
@@ -23,6 +22,6 @@ SimpleHttpOperator(
     http_conn_id='flow-feed-portfolio',
     endpoint='/account/inner/calculate/asset',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
+    extra_options={"timeout": 600},
     dag=asset,
 )
