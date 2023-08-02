@@ -61,3 +61,59 @@ with DAG(
         },
     )
 
+with DAG(
+        "mysql_to_kafka",
+        catchup=False,
+        start_date=pendulum.datetime(2022, 3, 22, tz='America/New_York'),
+        schedule_interval='0 */1 * * *',
+        concurrency=1,
+        default_args={
+            "owner": "yinxiang",
+            "depends_on_past": False,
+            "retries": 0,
+        }
+) as dag_kafka:
+    def callback():
+        print("callback received")
+
+
+    k_kafka = PythonOperator(
+        task_id="mysql_to_kafka",
+        python_callable=callback,
+        executor_config={
+            "pod_override": k8s.V1Pod(
+                spec=k8s.V1PodSpec(
+                    volumes=[
+                        k8s.V1Volume(
+                            name='connector-pvc',
+                            persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(
+                                claim_name='sensordata-nfs'),
+                        ),
+                        k8s.V1Volume(
+                            name='connector-admin',
+                            config_map=k8s.V1ConfigMapEnvSource(name='flow-data-connector-admin'),
+                        ),
+                    ],
+                    containers=[
+                        k8s.V1Container(
+                            name="base",
+                        ),
+                        k8s.V1Container(
+                            name='flow-data-connector-admin',
+                            image=f"{CONTAINER_REPO}/flow-data-connector-admin:{MQ_CONNECTOR_VERSION}",
+                            volume_mounts=[
+                                k8s.V1VolumeMount(name='connector-pvc',
+                                                  mount_path='/data',
+                                                  sub_path=None,
+                                                  read_only=False),
+                                k8s.V1VolumeMount(name='connector-admin',
+                                                  mount_path="/config-admin.yml",
+                                                  sub_path='config-admin.yml',
+                                                  read_only=True),
+                            ],
+                        )
+                    ],
+                ),
+            ),
+        },
+    )
