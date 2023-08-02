@@ -106,7 +106,7 @@ with DAG(
                                                   mount_path='/data',
                                                   sub_path=None,
                                                   read_only=False),
-                                k8s.V1VolumeMount(name='connector-config',
+                                k8s.V1VolumeMount(name='connector-admin',
                                                   mount_path="/config-admin.yml",
                                                   sub_path='config-admin.yml',
                                                   read_only=True),
