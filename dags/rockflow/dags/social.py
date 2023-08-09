@@ -27,3 +27,25 @@ SimpleHttpOperator(
     dag=social_task_before_market_check,
 )
 
+# 每半小时处理过期任务
+social_task_expired = DAG(
+    "social_task_expired",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 11, 4, tz='America/New_York'),
+    schedule_interval='*/30 * * * *',
+    default_args={
+        "owner": "hujing",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='social_task_expired',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/task/expired',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=social_task_expired,
+)
