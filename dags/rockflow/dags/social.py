@@ -32,7 +32,7 @@ social_task_expired = DAG(
     "social_task_expired",
     catchup=False,
     start_date=pendulum.datetime(2022, 11, 4, tz='America/New_York'),
-    schedule_interval='0 0/30 * * *',
+    schedule_interval='*/30 * * * *',
     default_args={
         "owner": "hujing",
         "depends_on_past": False,
