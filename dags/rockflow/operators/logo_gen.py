@@ -24,7 +24,9 @@ class LogoImportOperator(OSSOperator):
 
     @property
     def symbols(self) -> list:
-        return list(self.get_object(self.from_key).read().split(' '))
+        decoded = self.get_object(self.from_key).read().decode('utf-8')
+        self.log.info(f"decoded symbol file {self.from_key}: {decoded}")
+        return list(decoded.split(' '))
 
     def src_file(self, line: pd.Series) -> str:
         from pypinyin import pinyin, Style
