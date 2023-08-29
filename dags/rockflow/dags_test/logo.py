@@ -37,22 +37,9 @@ with DAG(
     #     key=logo_download.dag_id
     # )
 
-    logo_import_hk = LogoImportOperator(
-        task_id="logo_import_hk",
-        from_key="symbol_download_hk_join_map/join_map.json",
+    logo_import = LogoImportOperator(
+        task_id="logo_import",
+        from_key="company/symbols/stocks.txt",
+        bucket_name=AVATAR_BUCKET_NAME,
         avatar_bucket_name=AVATAR_BUCKET_NAME,
     )
-
-    logo_import_nyse = LogoImportOperator(
-        task_id="logo_import_nyse",
-        from_key="symbol_download_nyse_join_map/join_map.json",
-        avatar_bucket_name=AVATAR_BUCKET_NAME,
-    )
-
-    logo_import_nasdaq = LogoImportOperator(
-        task_id="logo_import_nasdaq",
-        from_key="symbol_download_nasdaq_join_map/join_map.json",
-        avatar_bucket_name=AVATAR_BUCKET_NAME,
-    )
-
-logo_import_hk >> logo_import_nyse >> logo_import_nasdaq

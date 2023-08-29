@@ -1,10 +1,8 @@
-import json
 from multiprocessing.pool import ThreadPool as Pool
 from typing import Any, Hashable
 
 import oss2
 import pandas as pd
-
 from rockflow.operators.const import DEFAULT_POOL_SIZE
 from rockflow.operators.oss import OSSOperator
 
@@ -25,15 +23,8 @@ class LogoImportOperator(OSSOperator):
         return self.oss_hook.get_bucket(self.avatar_bucket_name)
 
     @property
-    def symbols(self) -> pd.DataFrame:
-        result = pd.DataFrame.from_dict(
-            json.loads(
-                self.get_object(self.from_key).read()
-            ),
-            orient='index'
-        )
-        result.index.rename("symbol", inplace=True)
-        return result
+    def symbols(self) -> list:
+        return self.get_object(self.from_key).readlines(),
 
     def src_file(self, line: pd.Series) -> str:
         from pypinyin import pinyin, Style
@@ -68,5 +59,5 @@ class LogoImportOperator(OSSOperator):
         self.log.info(f"symbol: {self.symbols}")
         with Pool(self.pool_size) as pool:
             pool.map(
-                lambda x: self.save_one(x), self.symbols.iterrows()
+                lambda x: self.save_one(x), enumerate(self.symbols)
             )
