@@ -39,8 +39,8 @@ class LogoImportOperator(OSSOperator):
             f"_{pinyin(result, style=Style.FIRST_LETTER)[0][0][0:1].upper()}"
         )
 
-    def dest_file(self, line: pd.Series) -> str:
-        return self.oss_dest(line["symbol"])
+    def dest_file(self, symbol: str) -> str:
+        return self.oss_dest(symbol)
 
     def oss_src(self, file):
         return f"company/source/{file}.jpg"
@@ -48,7 +48,7 @@ class LogoImportOperator(OSSOperator):
     def oss_dest(self, file):
         return f"company/public/{file}.jpg"
 
-    def save_one(self, line: tuple[Hashable, pd.Series]):
+    def save_one(self, line: tuple[Hashable, str]):
         index = line[0]
         symbol = line[1]
         self.log.info(f"index: {index}, symbol: {symbol}")
