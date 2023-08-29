@@ -28,10 +28,8 @@ class LogoImportOperator(OSSOperator):
         self.log.info(f"decoded symbol file {self.from_key}: {decoded}")
         return list(decoded.split(' '))
 
-    def src_file(self, line: pd.Series) -> str:
+    def src_file(self, symbol: str) -> str:
         from pypinyin import pinyin, Style
-
-        symbol = str(line["symbol"])
 
         symbol_file = self.oss_src(symbol)
         if self.object_exists_(self.avatar_bucket, symbol_file):
