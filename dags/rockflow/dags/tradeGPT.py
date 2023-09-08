@@ -29,9 +29,9 @@ tradeGPT_run_second = DAG(
     "tradeGPT_run_second",
     catchup=False,
     start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
-    schedule_interval="20 18 * * 1-5",
+    schedule_interval="0 18 * * 1-5",
     default_args={
-        "owner": "huangdexi",
+        "owner": "wangyuanshen",
         "depends_on_past": False
     }
 )
@@ -51,7 +51,7 @@ tradeGPT_send_notification = DAG(
     start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
     schedule_interval="0 16,17,18 * * 1-5",
     default_args={
-        "owner": "huangdexi",
+        "owner": "wangyuanshen",
         "depends_on_past": False
     }
 )
