@@ -11,7 +11,7 @@ tradeGPT_run_initial = DAG(
     start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
     schedule_interval="0 10 * * 1-5",
     default_args={
-        "owner": "huangdexi",
+        "owner": "wangyuanshen",
         "depends_on_past": False
     }
 )
@@ -71,7 +71,7 @@ tradeGPT_option_update_1 = DAG(
     start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
     schedule_interval="2-56/10 21 * * 1-5",
     default_args={
-        "owner": "huangdexi",
+        "owner": "wangyuanshen",
         "depends_on_past": False
     }
 )
@@ -91,7 +91,7 @@ tradeGPT_option_update_2 = DAG(
     start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
     schedule_interval="2-56/30 22-23 * * 1-5",
     default_args={
-        "owner": "huangdexi",
+        "owner": "wangyuanshen",
         "depends_on_past": False
     }
 )
@@ -111,7 +111,7 @@ tradeGPT_option_update_3 = DAG(
     start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
     schedule_interval="2-56/30 0-4 * * 1-5",
     default_args={
-        "owner": "huangdexi",
+        "owner": "wangyuanshen",
         "depends_on_past": False
     }
 )
@@ -123,4 +123,24 @@ SimpleHttpOperator(
     endpoint="/option_update/run_option_update",
     response_check=lambda response: response.json()['code'] == 200,
     dag=tradeGPT_option_update_3,
+)
+
+tradeGPT_option_update_saturday = DAG(
+    "tradeGPT_option_update_saturday",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 7, 17, tz='Asia/Shanghai'),
+    schedule_interval="2-56/30 0-4 * * 6",
+    default_args={
+        "owner": "wangyuanshen",
+        "depends_on_past": False
+    }
+)
+
+SimpleHttpOperator(
+    task_id='tradeGPT_option_update_saturday',
+    method='GET',
+    http_conn_id='tradegpt',
+    endpoint="/option_update/run_option_update",
+    response_check=lambda response: response.json()['code'] == 200,
+    dag=tradeGPT_option_update_saturday,
 )
