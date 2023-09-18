@@ -193,3 +193,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=earning_yield_all_first_deposit_1d,
 )
+
+# 发送交收数据补偿任务_1d
+earning_yield_nlv_data_compensate_1d = DAG(
+    "earning_yield_nlv_data_compensate_1d",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 11, 4, tz='America/New_York'),
+    schedule_interval='0 9 * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='earning_yield_nlv_data_compensate_1d',
+    method='POST',
+    http_conn_id='flow-ledger',
+    endpoint='/ledger/inner/ob/data/send/task',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=earning_yield_nlv_data_compensate_1d,
+)
