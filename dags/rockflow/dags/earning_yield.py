@@ -147,3 +147,49 @@ SimpleHttpOperator(
     dag=day_earning_yield_rate_update_10m,
 )
 
+# 获取首次入金_10min
+earning_yield_first_deposit_10m = DAG(
+    "earning_yield_first_deposit_10m",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 11, 4, tz='America/New_York'),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='earning_yield_first_deposit_10m',
+    method='POST',
+    http_conn_id='flow-master-account',
+    endpoint='/inner/masterAccounts/deposit/firstCompleted/task',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=earning_yield_first_deposit_10m,
+)
+
+
+# 获取所有用户首次入金_1d
+earning_yield_all_first_deposit_1d = DAG(
+    "earning_yield_all_first_deposit_1d",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 11, 4, tz='America/New_York'),
+    schedule_interval='0 6 * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='earning_yield_all_first_deposit_1d',
+    method='POST',
+    http_conn_id='flow-master-account',
+    endpoint='/inner/masterAccounts/deposit/firstCompleted/all',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=earning_yield_all_first_deposit_1d,
+)
