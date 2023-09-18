@@ -72,7 +72,7 @@ SimpleHttpOperator(
     http_conn_id='flow-social',
     endpoint='/social/inner/earningYield/leaderboards/update/rank/1d',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 200},
+    extra_options={"timeout": 500},
     dag=earning_yield_rate_update_1d,
 )
 
@@ -95,7 +95,7 @@ SimpleHttpOperator(
     http_conn_id='flow-social',
     endpoint='/social/inner/earningYield/leaderboards/update/rank/10m',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 200},
+    extra_options={"timeout": 500},
     dag=day_earning_yield_rate_update_10m,
 )
 
@@ -143,7 +143,7 @@ SimpleHttpOperator(
     http_conn_id='flow-master-account',
     endpoint='/inner/masterAccounts/deposit/firstCompleted/all',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
+    extra_options={"timeout": 200},
     dag=earning_yield_all_first_deposit_1d,
 )
 
