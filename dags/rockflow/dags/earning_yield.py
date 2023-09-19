@@ -72,7 +72,7 @@ SimpleHttpOperator(
     http_conn_id='flow-social',
     endpoint='/social/inner/earningYield/leaderboards/update/rank/1d',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 500},
+    extra_options={"timeout": 200},
     dag=earning_yield_rate_update_1d,
 )
 
@@ -85,7 +85,8 @@ day_earning_yield_rate_update_10m = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 0
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
     }
 )
 
@@ -95,7 +96,7 @@ SimpleHttpOperator(
     http_conn_id='flow-social',
     endpoint='/social/inner/earningYield/leaderboards/update/rank/10m',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 500},
+    extra_options={"timeout": 200},
     dag=day_earning_yield_rate_update_10m,
 )
 
