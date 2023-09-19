@@ -417,7 +417,7 @@ SimpleHttpOperator(
 CorpActionClearingCash = DAG(
     "CorpActionClearingCash",
     catchup=False,
-    start_date=datetime(2023, 9, 21, 0, 0),
+    start_date=datetime(2023, 9, 18, 0, 0),
     schedule_interval='00 23 * * 1-7',
     default_args={
         "owner": "maoboxuan",
@@ -439,7 +439,7 @@ SimpleHttpOperator(
 CorpActionClearingPosition = DAG(
     "CorpActionClearingPosition",
     catchup=False,
-    start_date=datetime(2023, 9, 21, 0, 0),
+    start_date=datetime(2023, 9, 18, 0, 0),
     schedule_interval='00 23 * * 1-7',
     default_args={
         "owner": "maoboxuan",
