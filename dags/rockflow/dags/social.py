@@ -49,3 +49,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=social_task_expired,
 )
+
+social_can_read_moments_refresh = DAG(
+    "social_can_read_moments_refresh",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 9, 20, tz='America/New_York'),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "maoboxuan",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='social_can_read_moments_refresh',
+    method='POST',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/moments/read/refresh',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=social_can_read_moments_refresh,
+)
