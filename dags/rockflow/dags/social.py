@@ -86,7 +86,7 @@ earning_yield_filter_refresh = DAG(
 
 SimpleHttpOperator(
     task_id='earning_yield_filter_refresh',
-    method='POST',
+    method='PUT',
     http_conn_id='flow-social',
     endpoint='/social/inner/earningYield/filters/cache',
     response_check=lambda response: response.json()['code'] == 200,
