@@ -413,6 +413,29 @@ SimpleHttpOperator(
     dag=money_box_tick_update,
 )
 
+money_box_tick_update_002 = DAG(
+    "money_box_tick_update_002",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 11, 25, tz='Asia/Shanghai'),
+    schedule_interval='0 9 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='money-box-002',
+    method='PUT',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/money-box/tick/MB0002%7CRF',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=money_box_tick_update_002,
+)
+
 
 # EOD数据修正 - yahoo爬取 HK
 daily_last_tick_hk_yahoo = DAG(
