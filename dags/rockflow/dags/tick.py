@@ -413,11 +413,11 @@ SimpleHttpOperator(
     dag=money_box_tick_update,
 )
 
-money_box_tick_update_002 = DAG(
-    "money_box_tick_update_002",
+scrape_money_box_price = DAG(
+    "scrape_money_box_price",
     catchup=False,
-    start_date=pendulum.datetime(2022, 11, 25, tz='Asia/Shanghai'),
-    schedule_interval='0 9 * * *',
+    start_date=pendulum.datetime(2023, 10, 10, tz='Asia/Shanghai'),
+    schedule_interval='0 18 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
@@ -427,13 +427,13 @@ money_box_tick_update_002 = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='money-box-002',
-    method='PUT',
+    task_id='scrape_price',
+    method='POST',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/money-box/tick/MB0002%7CRF',
+    endpoint='/ticker/inner/daily-ticks/auto/insert/dailyTick/MB0001%7CRF',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
-    dag=money_box_tick_update_002,
+    dag=scrape_money_box_price,
 )
 
 
