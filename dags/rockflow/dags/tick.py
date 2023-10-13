@@ -461,3 +461,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 1200},
     dag=daily_last_tick_us_yahoo,
 )
+
+scrape_money_box_price = DAG(
+    "scrape_money_box_price",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 10, 10, tz='Asia/Shanghai'),
+    schedule_interval='0 18 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='scrape_price',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/daily-ticks/auto/insert/dailyTick/MB0001%7CRF',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=scrape_money_box_price,
+)
