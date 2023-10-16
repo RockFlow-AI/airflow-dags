@@ -412,3 +412,47 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=HK_trade_match_report,
 )
+
+CorpActionClearingCash = DAG(
+    "CorpActionClearingCash",
+    catchup=False,
+    start_date=datetime(2023, 9, 18, 0, 0),
+    schedule_interval='00 16 * * 1-7',
+    default_args={
+        "owner": "maoboxuan",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='CorpActionClearingCash',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/clearing/handle?file=Cash_InOut&date={date}'.format(date=(datetime.now() + timedelta(days=-1)).strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=CorpActionClearingCash,
+)
+
+CorpActionClearingPosition = DAG(
+    "CorpActionClearingPosition",
+    catchup=False,
+    start_date=datetime(2023, 9, 18, 0, 0),
+    schedule_interval='00 16 * * 1-7',
+    default_args={
+        "owner": "maoboxuan",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='CorpActionClearingPosition',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/clearing/handle?file=Position_InOut&date={date}'.format(date=(datetime.now() + timedelta(days=-1)).strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=CorpActionClearingPosition,
+)
