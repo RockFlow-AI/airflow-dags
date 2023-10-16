@@ -12,7 +12,7 @@ BADGE_US_MINUTE = DAG(
         "owner": "chenborui",
         "depends_on_past": False,
         "retries": 0,
-    }
+    }a
 )
 
 SimpleHttpOperator(
