@@ -23,7 +23,7 @@ SimpleHttpOperator(
     http_conn_id='flow-ledger',
     endpoint='/ledger/inner/ob/stat/task',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
+    extra_options={"timeout": 60 * 10},
     dag=ob_settled_stat,
 )
 
