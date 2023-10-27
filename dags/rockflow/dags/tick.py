@@ -490,7 +490,7 @@ daily_last_tick_polygon = DAG(
     "daily_last_tick_polygon",
     catchup=False,
     start_date=pendulum.datetime(2023, 10, 27, tz='America/New_York'),
-    schedule_interval='*/10 * * * *',
+    schedule_interval='*/60 * * * *',
     default_args={
         "owner": "chenborui",
         "depends_on_past": False,
