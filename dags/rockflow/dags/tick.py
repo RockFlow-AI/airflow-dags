@@ -484,3 +484,27 @@ SimpleHttpOperator(
     extra_options={"timeout": 120},
     dag=daily_last_tick_us_yahoo,
 )
+
+#复权
+daily_last_tick_polygon = DAG(
+    "daily_last_tick_polygon",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 10, 27, tz='America/New_York'),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "chenborui",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ticks',
+    method='GET',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks/restoration/issue',
+    data={"period": "MINUTE"},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=daily_last_tick_polygon,
+)
