@@ -5,6 +5,44 @@ import pendulum
 from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
+# 实时行情聚合为1分钟
+ticks = DAG(
+    "ticks_by_minute",
+    catchup=False,
+    start_date=datetime(2022, 1, 5, 0, 0),
+    schedule_interval='*/1 * * * *',
+    default_args={
+        "owner": "jingjiadong",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+ticks_on_time = SimpleHttpOperator(
+    task_id='ticks',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?time={{ macros.ds_format(ts, "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%d %H:%M:%S") }}',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=ticks,
+)
+
+ticks_delay_1m = SimpleHttpOperator(
+    task_id='ticks_delay_1m',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?time={{ (macros.datetime.fromisoformat(ts) - macros.timedelta(minutes=1)).strftime("%Y-%m-%d %H:%M:%S") }}',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=ticks,
+)
+
+ticks_on_time.pre_execute = lambda **x: time.sleep(10)
+ticks_on_time.post_execute = lambda **x: time.sleep(10)
+
+ticks_on_time >> ticks_delay_1m
+
 # 1分钟行情聚合为5分钟
 ticks_5m = DAG(
     "ticks_by_5_minutes",
