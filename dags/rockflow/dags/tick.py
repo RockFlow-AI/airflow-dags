@@ -485,8 +485,6 @@ SimpleHttpOperator(
     dag=scrape_money_box_price,
 )
 
-daily_last_tick_polygon = DAG(
-    "daily_last_tick_polygon",
 daily_corporate_actions = DAG(
     "daily_corporate_actions",
     catchup=False,
