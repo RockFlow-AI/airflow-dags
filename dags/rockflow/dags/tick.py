@@ -484,16 +484,18 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=scrape_money_box_price,
 )
-#复权
+
 daily_last_tick_polygon = DAG(
     "daily_last_tick_polygon",
+daily_corporate_actions = DAG(
+    "daily_corporate_actions",
     catchup=False,
     start_date=pendulum.datetime(2023, 10, 27, tz='America/New_York'),
-    schedule_interval='*/60 * * * *',
+    schedule_interval='0 3 * * *',
     default_args={
-        "owner": "chenborui",
+        "owner": "yinxiang",
         "depends_on_past": False,
-        "retries": 0,
+        "retries": 5,
     }
 )
 
@@ -501,9 +503,8 @@ SimpleHttpOperator(
     task_id='ticks',
     method='GET',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/ticks/restoration/issue',
-    data={"period": "MINUTE"},
+    endpoint='/ticker/inner/corporateActions',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 3600},
-    dag=daily_last_tick_polygon,
+    extra_options={"timeout": 60},
+    dag=daily_corporate_actions,
 )
