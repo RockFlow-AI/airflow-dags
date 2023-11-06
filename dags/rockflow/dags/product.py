@@ -9,7 +9,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 GENERATE_PRODUCT_TASK = DAG(
     "GENERATE_PRODUCT_TASK",
     catchup=False,
-    start_date=pendulum.datetime(2023, 1, 14, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2023, 12, 2, tz='Asia/Shanghai'),
     schedule_interval='0 12 * * 0',
     default_args={
         "owner": "chengwei",
