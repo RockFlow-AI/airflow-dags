@@ -30,7 +30,7 @@ DAILY_HALA_2_ALL_SENDING = DAG(
     "DAILY_HALA_2_ALL_SENDING",
     catchup=False,
     start_date=pendulum.datetime(2023, 3, 14, tz='Asia/Shanghai'),
-    schedule_interval='30 16 * * *',
+    schedule_interval='00 15 * * *',
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
