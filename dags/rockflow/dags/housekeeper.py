@@ -194,7 +194,7 @@ def cleanup_function(**context):
         },
         'XCom': {
             "airflow_db_model": XCom,
-            "age_check_column": XCom.execution_date,
+            "age_check_column": XCom.timestamp,
             "keep_last": False,
             "keep_last_filters": None,
             "keep_last_group_by": None
@@ -248,7 +248,7 @@ def cleanup_function(**context):
         from airflow.models import RenderedTaskInstanceFields
         DATABASE_OBJECTS_DICTS['RenderedTaskInstanceFields'] = {
             "airflow_db_model": RenderedTaskInstanceFields,
-            "age_check_column": RenderedTaskInstanceFields.execution_date,
+            "age_check_column": RenderedTaskInstanceFields.run_id,
             "keep_last": False,
             "keep_last_filters": None,
             "keep_last_group_by": None
