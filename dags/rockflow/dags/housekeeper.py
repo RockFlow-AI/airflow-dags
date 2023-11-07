@@ -40,7 +40,13 @@ import pendulum
 import airflow
 from airflow import settings
 from airflow.configuration import conf
-from airflow.jobs.base_job import BaseJob
+try:
+    from airflow.jobs.job import Job as BaseJob
+except ModuleNotFoundError as e:
+    try:
+        from airflow.jobs.base_job import BaseJob
+    except ModuleNotFoundError as e:
+        from airflow.jobs import BaseJob
 from airflow.models import DAG, DagModel, DagRun, Log, SlaMiss, \
     TaskInstance, Variable, XCom
 from airflow.operators.python import PythonOperator
