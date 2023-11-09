@@ -90,7 +90,7 @@ statement_sync_delay_file_1755 = DAG(
     "statement_sync_delay_file_1755",
     catchup=False,
     start_date=datetime(2022, 10, 22, 0, 0),
-    schedule_interval='55 9 * * 1-7',
+    schedule_interval='10 10 * * 1-7',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
@@ -373,7 +373,7 @@ US_trade_match_report = DAG(
     "US_trade_match_report",
     catchup=False,
     start_date=datetime(2023, 3, 2, 0, 0),
-    schedule_interval='00 10 * * 1-7',
+    schedule_interval='20 10 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
@@ -395,7 +395,7 @@ HK_trade_match_report = DAG(
     "HK_trade_match_report",
     catchup=False,
     start_date=datetime(2023, 3, 2, 0, 0),
-    schedule_interval='00 10 * * 1-7',
+    schedule_interval='20 10 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
