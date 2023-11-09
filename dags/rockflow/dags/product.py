@@ -30,7 +30,7 @@ SimpleHttpOperator(
 )
 
 GENERATE_PRODUCT_TASK = DAG(
-    "DAILY_DUSK_ALL_SENDING",
+    "GENERATE_PRODUCT_TASK",
     catchup=False,
     start_date=pendulum.datetime(2023, 1, 14, tz='Asia/Shanghai'),
     schedule_interval='00 12 * * 7',
