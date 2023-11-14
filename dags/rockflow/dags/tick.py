@@ -512,7 +512,7 @@ update_better_buys_year_yield = DAG(
     "update_better_buys_year_yield",
     catchup=False,
     start_date=pendulum.datetime(2023, 11, 4, tz='America/New_York'),
-    schedule_interval='*/10 * * * *',
+    schedule_interval='*/5 * * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
