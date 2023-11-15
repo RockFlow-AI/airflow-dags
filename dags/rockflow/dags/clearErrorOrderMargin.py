@@ -3,12 +3,12 @@ from airflow.models import DAG
 from datetime import timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
-# 定时任务 - 12小时调用一次
+# 定时任务 - 6小时调用一次
 clear_error_order_margin = DAG(
     "clear_error_order_margin",
     catchup=False,
     start_date=pendulum.datetime(2023, 7, 19, tz='Asia/Shanghai'),
-    schedule_interval='0 */12 * * *',
+    schedule_interval='0 */6 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
