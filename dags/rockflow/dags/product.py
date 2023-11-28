@@ -20,7 +20,7 @@ GENERATE_PRODUCT_TASK = DAG(
 )
 
 create_product = SimpleHttpOperator(
-    task_id='ticks',
+    task_id='create_product',
     method='POST',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/products/task',
@@ -57,7 +57,7 @@ VIRTUAL_ORDER_TASK = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='ticks',
+    task_id='create_virtual_order',
     method='POST',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/products/virtualOrder',
@@ -80,7 +80,7 @@ PATROL_ORDER_TASK = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='ticks',
+    task_id='patrol_order',
     method='PATCH',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/products/patrol',
