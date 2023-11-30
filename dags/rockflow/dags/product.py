@@ -10,7 +10,7 @@ GENERATE_PRODUCT_TASK = DAG(
     "GENERATE_PRODUCT_TASK",
     catchup=False,
     start_date=pendulum.datetime(2023, 1, 14, tz='Asia/Shanghai'),
-    schedule_interval='30 11 * * 7',
+    schedule_interval='0 12 * * 0',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
