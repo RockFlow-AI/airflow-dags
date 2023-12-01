@@ -4,6 +4,7 @@ from datetime import timedelta
 import pendulum
 from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
+from airflow.operators.sensors import ExternalTaskSensor
 
 # 理财产品
 GENERATE_PRODUCT_TASK = DAG(
@@ -29,6 +30,27 @@ create_product = SimpleHttpOperator(
     dag=GENERATE_PRODUCT_TASK,
 )
 
+place_orders_task = DAG(
+    "place_orders_fund",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 10, 30, tz='Asia/Shanghai'),
+    schedule_interval='0 12 * * 0',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 5,
+    }
+)
+
+wait_for_product = ExternalTaskSensor(
+    task_id='wait_for_product',
+    external_dag_id='GENERATE_PRODUCT_TASK',
+    external_task_id='create_product',
+    start_date=pendulum.datetime(2023, 12, 2, tz='Asia/Shanghai'),
+    execution_delta=timedelta(seconds=30),
+    timeout=60,
+)
+
 place_order = SimpleHttpOperator(
     task_id='place_orders',
     method='POST',
@@ -37,11 +59,10 @@ place_order = SimpleHttpOperator(
     headers={'appId': '1'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
-    dag=GENERATE_PRODUCT_TASK,
+    dag=place_orders_task,
 )
 
-create_product.post_execute = lambda **x: time.sleep(30)
-create_product >> place_order
+wait_for_product >> place_order
 
 VIRTUAL_ORDER_TASK = DAG(
     "VIRTUAL_ORDER_TASK",
