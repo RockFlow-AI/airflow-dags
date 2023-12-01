@@ -237,3 +237,27 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=check_iqiyi_award_status,
 )
+
+# 定时灌水，六小时一次
+auto_add_landing_page_count = DAG(
+    "auto_add_landing_page_count",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 11, 20, tz='Asia/Shanghai'),
+    schedule_interval='0 */6 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 1,
+        "retry_delay": timedelta(minutes=10),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='auto_add_landing_page_count',
+    method='PUT',
+    http_conn_id='flow-promotion',
+    endpoint='/promotion/inner/fund/qualification/auto/add',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=auto_add_landing_page_count,
+)
