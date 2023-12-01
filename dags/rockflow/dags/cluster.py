@@ -256,7 +256,7 @@ SimpleHttpOperator(
     task_id='auto_add_landing_page_count',
     method='PUT',
     http_conn_id='flow-promotion',
-    endpoint='/promotion/api/fund/qualification/auto/add',
+    endpoint='/promotion/inner/fund/qualification/auto/add',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=auto_add_landing_page_count,
