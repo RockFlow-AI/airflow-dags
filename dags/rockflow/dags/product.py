@@ -4,7 +4,7 @@ from datetime import timedelta
 import pendulum
 from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
-from airflow.operators.sensors import ExternalTaskSensor
+from airflow.sensors.external_task import ExternalTaskSensor
 
 # 理财产品
 GENERATE_PRODUCT_TASK = DAG(
