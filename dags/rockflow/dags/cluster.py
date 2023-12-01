@@ -238,12 +238,12 @@ SimpleHttpOperator(
     dag=check_iqiyi_award_status,
 )
 
-# 定时灌水，三小时一次
+# 定时灌水，六小时一次
 auto_add_landing_page_count = DAG(
     "auto_add_landing_page_count",
     catchup=False,
     start_date=pendulum.datetime(2023, 11, 20, tz='Asia/Shanghai'),
-    schedule_interval='0 */3 * * *',
+    schedule_interval='0 */6 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
