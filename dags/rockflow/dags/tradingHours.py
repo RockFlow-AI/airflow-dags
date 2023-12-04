@@ -7,7 +7,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 trading_hours = DAG(
     "trading_hours",
     catchup=False,
-    start_date=pendulum.datetime(2023, 7, 19, tz='America/New_York),
+    start_date=pendulum.datetime(2023, 7, 19, tz='America/New_York'),
     schedule_interval='30 9 * * *',
     default_args={
         "owner": "maoboxuan",
