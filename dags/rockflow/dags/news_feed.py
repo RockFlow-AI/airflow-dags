@@ -17,7 +17,7 @@ user_feed_clear = DAG(
 )
 
 SimpleHttpOperator(
-    task_id=' ',
+    task_id='user_feed_clear',
     method='DELETE',
     http_conn_id='flow-news',
     endpoint='/news/inner/users/feeds',
