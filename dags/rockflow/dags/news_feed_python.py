@@ -34,7 +34,7 @@ task_weekdays = SimpleHttpOperator(
     task_id='feed_news_scraping_weekdays',
     method='POST',
     http_conn_id='rockbot',
-    endpoint='/bot/api/ideas/feed/news',
+    endpoint='/bot/api/ideas/feed/news/scrap',
     response_check=lambda response: response.json()['code'] == 200,
     dag=feed_news_scraping_weekdays
 )
@@ -44,7 +44,7 @@ task_weekends = SimpleHttpOperator(
     task_id='feed_news_scraping_weekends',
     method='POST',
     http_conn_id='rockbot',
-    endpoint='/bot/api/ideas/feed/news',
+    endpoint='/bot/api/ideas/feed/news/scrap',
     response_check=lambda response: response.json()['code'] == 200,
     dag=feed_news_scraping_weekends
 )
