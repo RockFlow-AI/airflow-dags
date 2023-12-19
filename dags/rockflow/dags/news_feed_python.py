@@ -64,7 +64,7 @@ feed_news_inspiration_message_test = DAG(
     }
 )
 
-feed_news_inspiration_message_test = SimpleHttpOperator(
+task_feed_news_inspiration_message_test = SimpleHttpOperator(
     task_id='feed_news_inspiration_message_test',
     method='POST',
     http_conn_id='rockbot',
