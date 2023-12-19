@@ -48,3 +48,27 @@ task_weekends = SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     dag=feed_news_scraping_weekends
 )
+
+
+# DAG for Monday to Friday
+
+feed_news_inspiration_message_test = DAG(
+    "feed_news_inspiration_message_test",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 9, 1),
+    schedule_interval='* * * * *',  # Cron expression for specific times on Monday to Friday
+    default_args={
+        "owner": "caohaoxuan",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+feed_news_inspiration_message_test = SimpleHttpOperator(
+    task_id='feed_news_inspiration_message_test',
+    method='POST',
+    http_conn_id='rockbot',
+    endpoint='/bot/api/ideas/feed/news/test_send',
+    response_check=lambda response: response.json()['code'] == 200,
+    dag=feed_news_inspiration_message_test
+)
