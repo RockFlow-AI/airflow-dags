@@ -56,7 +56,7 @@ feed_news_inspiration_message_test = DAG(
     "feed_news_inspiration_message_test",
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1),
-    schedule_interval='* * * * *',  # Cron expression for specific times on Monday to Friday
+    schedule_interval='*/10 * * * *',  # Cron expression for specific times on Monday to Friday
     default_args={
         "owner": "caohaoxuan",
         "depends_on_past": False,
