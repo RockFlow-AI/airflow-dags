@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 from airflow import DAG
 import pendulum
 from airflow.providers.http.operators.http import SimpleHttpOperator
-
-# DAG for Monday to Friday
-feed_news_scraping_weekdays = DAG(
+from airflow.models.baseoperator import chain
+# scrap DAG for Monday to Friday
+with DAG(
     "feed_news_scraping_weekdays",
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1),
@@ -14,10 +14,18 @@ feed_news_scraping_weekdays = DAG(
         "depends_on_past": False,
         "retries": 0,
     }
-)
-
-# DAG for Saturday and Sunday
-feed_news_scraping_weekends = DAG(
+) as feed_news_scraping_weekdays:
+    # scrap task for weekdays
+    scraping_task_weekdays = SimpleHttpOperator(
+        task_id='feed_news_scraping_weekdays',
+        method='POST',
+        http_conn_id='rockbot',
+        endpoint='/bot/api/ideas/feed/news/scrap',
+        response_check=lambda response: response.json()['code'] == 200,
+        dag=feed_news_scraping_weekdays
+    )
+# scrap DAG for Saturday and Sunday
+with DAG(
     "feed_news_scraping_weekends",
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1),
@@ -27,32 +35,18 @@ feed_news_scraping_weekends = DAG(
         "depends_on_past": False,
         "retries": 0,
     }
-)
-
-# Task for weekdays
-task_weekdays = SimpleHttpOperator(
-    task_id='feed_news_scraping_weekdays',
-    method='POST',
-    http_conn_id='rockbot',
-    endpoint='/bot/api/ideas/feed/news/scrap',
-    response_check=lambda response: response.json()['code'] == 200,
-    dag=feed_news_scraping_weekdays
-)
-
-# Task for weekends
-task_weekends = SimpleHttpOperator(
-    task_id='feed_news_scraping_weekends',
-    method='POST',
-    http_conn_id='rockbot',
-    endpoint='/bot/api/ideas/feed/news/scrap',
-    response_check=lambda response: response.json()['code'] == 200,
-    dag=feed_news_scraping_weekends
-)
-
-
-# DAG for Monday to Friday
-
-feed_news_inspiration_message_test = DAG(
+) as feed_news_scraping_weekends:
+    # Task for weekends
+    scraping_task_weekends = SimpleHttpOperator(
+        task_id='feed_news_scraping_weekends',
+        method='POST',
+        http_conn_id='rockbot',
+        endpoint='/bot/api/ideas/feed/news/scrap',
+        response_check=lambda response: response.json()['code'] == 200,
+        dag=feed_news_scraping_weekends
+    )
+# test send DAG for Monday to Friday
+with DAG(
     "feed_news_inspiration_message_test",
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1),
@@ -62,13 +56,45 @@ feed_news_inspiration_message_test = DAG(
         "depends_on_past": False,
         "retries": 0,
     }
-)
+) as feed_news_inspiration_message_test:
+    task_feed_news_inspiration_message_test = SimpleHttpOperator(
+        task_id='feed_news_inspiration_message_test',
+        method='POST',
+        http_conn_id='rockbot',
+        endpoint='/bot/api/ideas/feed/news/test_send',
+        response_check=lambda response: response.json()['code'] == 200,
+        dag=feed_news_inspiration_message_test
+    )
+#  DAG for every day
+with DAG(
+    "feed_news_everyday",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 9, 1),
+    schedule_interval='*/10 * * * *',  # Cron expression for specific times on Monday to Friday
+    default_args={
+        "owner": "caohaoxuan",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+) as feed_news_everyday:
+    # Task for analyze
+    analyze_task = SimpleHttpOperator(
+        task_id='feed_news_analyze',
+        method='POST',
+        http_conn_id='rockbot',
+        endpoint='/bot/api/ideas/feed/news/analyze',
+        response_check=lambda response: response.json()['code'] == 200,
+        dag=feed_news_everyday
+    )
+    # Task for generate
+    generate_task = SimpleHttpOperator(
+        task_id='feed_news_generate',
+        method='POST',
+        http_conn_id='rockbot',
+        endpoint='/bot/api/ideas/feed/news/generate',
+        response_check=lambda response: response.json()['code'] == 200,
+        dag=feed_news_everyday
+    )
+    analyze_task >> generate_task
 
-task_feed_news_inspiration_message_test = SimpleHttpOperator(
-    task_id='feed_news_inspiration_message_test',
-    method='POST',
-    http_conn_id='rockbot',
-    endpoint='/bot/api/ideas/feed/news/test_send',
-    response_check=lambda response: response.json()['code'] == 200,
-    dag=feed_news_inspiration_message_test
-)
+
