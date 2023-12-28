@@ -63,11 +63,10 @@ with DAG(
         http_conn_id='rockbot',
         endpoint='/bot/api/ideas/feed/news/test_send',
         response_check=lambda response: response.json()['code'] == 200,
-        dag=feed_news_inspiration_message_test
     )
 #  DAG for every day
 with DAG(
-    "feed_news_everyday",
+    "feed_news_analyze_and_generate",
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1),
     schedule_interval='*/10 * * * *',  # Cron expression for specific times on Monday to Friday
@@ -76,7 +75,7 @@ with DAG(
         "depends_on_past": False,
         "retries": 0,
     }
-) as feed_news_everyday:
+) as feed_news_analyze_and_generate:
     # Task for analyze
     analyze_task = SimpleHttpOperator(
         task_id='feed_news_analyze',
@@ -84,7 +83,6 @@ with DAG(
         http_conn_id='rockbot',
         endpoint='/bot/api/ideas/feed/news/analyze',
         response_check=lambda response: response.json()['code'] == 200,
-        dag=feed_news_everyday
     )
     # Task for generate
     generate_task = SimpleHttpOperator(
@@ -93,7 +91,6 @@ with DAG(
         http_conn_id='rockbot',
         endpoint='/bot/api/ideas/feed/news/generate',
         response_check=lambda response: response.json()['code'] == 200,
-        dag=feed_news_everyday
     )
     analyze_task >> generate_task
 
