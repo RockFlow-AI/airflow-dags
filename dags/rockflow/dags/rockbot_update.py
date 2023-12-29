@@ -15,7 +15,7 @@ with DAG(
     }
 ) as rockbot_refresh_config:
     # refresh config
-    rockbot_refresh_config = SimpleHttpOperator(
+    rockbot_refresh_config_task = SimpleHttpOperator(
         task_id='rockbot_refresh_config',
         method='POST',
         http_conn_id='rockbot',
