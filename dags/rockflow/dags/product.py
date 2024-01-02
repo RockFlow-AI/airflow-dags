@@ -34,7 +34,7 @@ place_orders_task = DAG(
     "place_orders_fund",
     catchup=False,
     start_date=pendulum.datetime(2023, 10, 30, tz='Asia/Shanghai'),
-    schedule_interval='None',
+    schedule_interval=None,
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
