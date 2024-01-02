@@ -34,7 +34,7 @@ place_orders_task = DAG(
     "place_orders_fund",
     catchup=False,
     start_date=pendulum.datetime(2023, 10, 30, tz='Asia/Shanghai'),
-    schedule_interval='1 12 * * 0',
+    schedule_interval='None',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
@@ -42,16 +42,7 @@ place_orders_task = DAG(
     }
 )
 
-wait_for_product = ExternalTaskSensor(
-    task_id='wait_for_product',
-    external_dag_id='GENERATE_PRODUCT_TASK',
-    external_task_id='create_product',
-    start_date=pendulum.datetime(2023, 12, 2, tz='Asia/Shanghai'),
-    execution_delta=timedelta(seconds=30),
-    timeout=60,
-)
-
-place_order = SimpleHttpOperator(
+place_order_manual = SimpleHttpOperator(
     task_id='place_orders',
     method='POST',
     http_conn_id='flow-portfolio-service',
@@ -62,7 +53,19 @@ place_order = SimpleHttpOperator(
     dag=place_orders_task,
 )
 
-wait_for_product >> place_order
+place_order = SimpleHttpOperator(
+    task_id='place_orders',
+    method='POST',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/products/orders',
+    headers={'appId': '1'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=GENERATE_PRODUCT_TASK,
+)
+
+create_product.post_execute = lambda **x: time.sleep(30)
+create_product >> place_order
 
 VIRTUAL_ORDER_TASK = DAG(
     "VIRTUAL_ORDER_TASK",
