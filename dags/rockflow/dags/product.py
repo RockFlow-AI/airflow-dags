@@ -43,7 +43,7 @@ place_orders_task = DAG(
 )
 
 place_order_manual = SimpleHttpOperator(
-    task_id='place_orders',
+    task_id='place_orders_manual',
     method='POST',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/products/orders',
