@@ -7,7 +7,7 @@ with DAG(
     "rockbot_refresh_config",
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1),
-    schedule_interval='0 4 * * *',
+    schedule_interval='*/10 * * * *',
     default_args={
         "owner": "caohaoxuan",
         "depends_on_past": False,
