@@ -93,3 +93,23 @@ with DAG(
         response_check=lambda response: response.json()['code'] == 200,
     )
     analyze_task >> generate_task
+# upload news DAG for Monday to Friday
+with DAG(
+    "feed_news_upload_to_old_tradegpt",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 1, 1, tz='Asia/Shanghai'),
+    schedule_interval='0 18 * * 1-5',  # Cron expression for specific times on Monday to Friday
+    default_args={
+        "owner": "caohaoxuan",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+) as feed_news_upload_to_old_tradegpt_dag:
+    # scrap task for weekdays
+    uploading_task = SimpleHttpOperator(
+        task_id='feed_news_upload_to_old_tradegpt',
+        method='POST',
+        http_conn_id='rockbot',
+        endpoint='/bot/api/ideas/feed/news/upload_today_news',
+        response_check=lambda response: response.json()['code'] == 200,
+    )
