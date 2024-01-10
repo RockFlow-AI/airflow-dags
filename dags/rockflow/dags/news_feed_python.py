@@ -95,7 +95,7 @@ with DAG(
     analyze_task >> generate_task
 # upload news DAG for Monday to Friday
 with DAG(
-    "feed_news_upload_to_old_tradegpt",
+    "feed_news_uploading",
     catchup=False,
     start_date=pendulum.datetime(2024, 1, 1, tz='Asia/Shanghai'),
     schedule_interval='0 18 * * 1-5',  # Cron expression for specific times on Monday to Friday
@@ -104,12 +104,22 @@ with DAG(
         "depends_on_past": False,
         "retries": 0,
     }
-) as feed_news_upload_to_old_tradegpt_dag:
+) as feed_news_uploading_weekdays:
     # scrap task for weekdays
     uploading_task = SimpleHttpOperator(
-        task_id='feed_news_upload_to_old_tradegpt',
+        task_id='feed_news_uploading',
         method='POST',
         http_conn_id='rockbot',
         endpoint='/bot/api/ideas/feed/news/upload_today_news',
         response_check=lambda response: response.json()['code'] == 200,
+        dag=feed_news_uploading_weekdays
     )
+    send_feishu_notification_task = SimpleHttpOperator(
+        task_id='feed_news_send_feishu_notification',
+        method='POST',
+        http_conn_id='rockbot',
+        endpoint='/bot/api/ideas/feed/news/send_feishu_notification',
+        response_check=lambda response: response.json()['code'] == 200,
+        dag=feed_news_uploading_weekdays
+    )
+    uploading_task >> send_feishu_notification_task
