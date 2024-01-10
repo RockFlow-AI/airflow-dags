@@ -71,3 +71,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=earning_yield_filter_refresh,
 )
+
+# 定时任务 - 开盘后 40 分钟检查日榜第一发送 push
+push_high_day_yield = DAG(
+    "push_high_day_yield",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 1, 7, tz='America/New_York'),
+    schedule_interval='10 10 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='push_high_day_yield',
+    method='PUT',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/earningYield/push/high/day/yield',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=push_high_day_yield,
+)
