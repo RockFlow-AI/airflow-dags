@@ -114,12 +114,4 @@ with DAG(
         response_check=lambda response: response.json()['code'] == 200,
         dag=feed_news_uploading_weekdays
     )
-    send_feishu_notification_task = SimpleHttpOperator(
-        task_id='feed_news_send_feishu_notification',
-        method='POST',
-        http_conn_id='rockbot',
-        endpoint='/bot/api/ideas/feed/news/send_feishu_notification',
-        response_check=lambda response: response.json()['code'] == 200,
-        dag=feed_news_uploading_weekdays
-    )
-    uploading_task >> send_feishu_notification_task
+    uploading_task
