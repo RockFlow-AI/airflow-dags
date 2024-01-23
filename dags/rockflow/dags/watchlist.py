@@ -1,4 +1,5 @@
 import pendulum
+from datetime import datetime, timedelta
 
 from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
@@ -50,3 +51,50 @@ SimpleHttpOperator(
     dag=WATCHLIST_US_MINUTE,
 )
 
+# 定时更新精选股单
+UPSERT_ES_WATCHLIST = DAG(
+    "UPSERT_ES_WATCHLIST",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 1, 12, tz='Asia/Shanghai'),
+    schedule_interval='0 12 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='UPSERT_ES_WATCHLIST',
+    method='PUT',
+    http_conn_id='flow-watchlist',
+    endpoint='/watchlist/sync/es/watchlist',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=UPSERT_ES_WATCHLIST,
+)
+
+# 重载热门股单
+RELOAD_HOT_WATCHLIST = DAG(
+    "RELOAD_HOT_WATCHLIST",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 1, 12, tz='Asia/Shanghai'),
+    schedule_interval='0 10 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='RELOAD_HOT_WATCHLIST',
+    method='PUT',
+    http_conn_id='flow-watchlist',
+    endpoint='/watchlist/reload/hot/watchlist',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=RELOAD_HOT_WATCHLIST,
+)
