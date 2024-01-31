@@ -8,7 +8,7 @@ with DAG(
     "feed_news_scraping_weekdays",
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1, tz='Asia/Shanghai'),
-    schedule_interval='0 10,13,16,18,21 * * 1-5',  # Cron expression for specific times on Monday to Friday
+    schedule_interval='0 9,13,15,17,20,22,23,24 * * 1-5',  # Cron expression for specific times on Monday to Friday
     default_args={
         "owner": "caohaoxuan",
         "depends_on_past": False,
