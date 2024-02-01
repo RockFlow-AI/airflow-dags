@@ -104,7 +104,7 @@ SimpleHttpOperator(
 
 # 定时任务 - 每小时更新财报看涨看跌比例
 refresh_active_symbol_proportion = DAG(
-    "load_active_symbol_fmp_data",
+    "refresh_active_symbol_proportion",
     catchup=False,
     start_date=pendulum.datetime(2024, 1, 24, tz='Asia/Shanghai'),
     schedule_interval='* */1 * * *',
@@ -117,11 +117,11 @@ refresh_active_symbol_proportion = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='load_active_symbol_fmp_data',
+    task_id='refresh_active_symbol_proportion',
     method='POST',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/financial/report/inner/refreshSymbolProportion',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 200},
-    dag=load_active_symbol_fmp_data,
+    dag=refresh_active_symbol_proportion,
 )
