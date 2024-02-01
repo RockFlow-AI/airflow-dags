@@ -107,7 +107,7 @@ refresh_active_symbol_proportion = DAG(
     "refresh_active_symbol_proportion",
     catchup=False,
     start_date=pendulum.datetime(2024, 1, 24, tz='Asia/Shanghai'),
-    schedule_interval='* */1 * * *',
+    schedule_interval='0 */1 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
