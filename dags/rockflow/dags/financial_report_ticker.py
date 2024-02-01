@@ -59,7 +59,7 @@ load_fmp_financial_report_data = DAG(
     "load_fmp_financial_report_data",
     catchup=False,
     start_date=pendulum.datetime(2024, 1, 24, tz='Asia/Shanghai'),
-    schedule_interval='*/2 * * * *',
+    schedule_interval='*/1 * * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
