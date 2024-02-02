@@ -2,6 +2,7 @@ import pendulum
 
 from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
+from datetime import timedelta
 
 
 DAILY_HALA_ALL_SENDING = DAG(
@@ -113,4 +114,28 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
     dag=US_MARKET_OPEN_NOTIFICATION,
+)
+
+# 定时任务 - 每十分钟对 24 小时内未注册用户发送 push
+push_to_unregister = DAG(
+    "push_to_unregister",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 1, 30, tz='Asia/Shanghai'),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 1,
+        "retry_delay": timedelta(minutes=2),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='push_to_unregister',
+    method='POST',
+    http_conn_id='flow-notification',
+    endpoint='/notification/inner/task/push/unregister',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=push_to_unregister,
 )
