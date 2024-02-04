@@ -67,7 +67,7 @@ promotion_reward_claim = DAG(
 
 SimpleHttpOperator(
     task_id='promotion_reward_claim',
-    method='POST',
+    method='PATCH',
     http_conn_id='flow-promotion',
     endpoint='/promotion/inner/rewards',
     response_check=lambda response: response.json()['code'] == 200,
