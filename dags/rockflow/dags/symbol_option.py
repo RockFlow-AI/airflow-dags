@@ -81,31 +81,6 @@ chain(
     [sink_es],
 )
 
-
-daily_last_tick_us_option = DAG(
-    "daily_last_tick_us_option",
-    catchup=False,
-    start_date=pendulum.datetime(2022, 2, 28, tz='America/New_York'),
-    schedule_interval='30 20 * * 1-5',
-    default_args={
-        "owner": "yinxiang",
-        "depends_on_past": False,
-        "retries": 5,
-        "retry_delay": timedelta(minutes=5),
-    }
-)
-
-ticks_on_time = SimpleHttpOperator(
-    task_id='ticks',
-    method='POST',
-    http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/markets/OSUS/ticks/latest',
-    response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
-    dag=daily_last_tick_us_option,
-)
-
-
 option_chain_us = DAG(
     "option_chain_us",
     catchup=False,
