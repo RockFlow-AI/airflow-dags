@@ -28,7 +28,7 @@ setting = {
     },
     "2": {
         "name": "sensor_alert_task_2",
-        "interval": hour_6h + day_all,
+        "interval": hour_2h + day_all,
         "endpoint": "/run_task?task_id=2",
     },
     "3": {
