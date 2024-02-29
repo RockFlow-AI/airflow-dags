@@ -114,3 +114,23 @@ with DAG(
         response_check=lambda response: response.json()['code'] == 200,
         dag=feed_news_uploading_weekdays
     )
+
+with DAG(
+    "feed_news_check_tradegpt_status",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 2, 29, tz="Asia/Shanghai"),
+    schedule_interval="0 11,14,17,19,22 * * *",  # Cron expression for specific times on Monday to Friday
+    default_args={
+        "owner": "caohaoxuan",
+        "depends_on_past": False,
+        "retries": 0,
+    },
+) as feed_news_check_tradegpt_status:
+    check_tradegpt_status = SimpleHttpOperator(
+        task_id="feed_news_check_tradegpt_status",
+        method="POST",
+        http_conn_id="rockbot",
+        endpoint="/bot/api/ideas/feed/news/acheck_tradegpt_status",
+        response_check=lambda response: response.json()["code"] == 200,
+        dag=feed_news_check_tradegpt_status,
+    )
