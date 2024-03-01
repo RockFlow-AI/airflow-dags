@@ -125,3 +125,27 @@ SimpleHttpOperator(
     extra_options={"timeout": 200},
     dag=refresh_active_symbol_proportion,
 )
+
+# 定时任务 - 每三小时调用一次拉取富途财报详情页数据
+load_futu_financial_report_page_info = DAG(
+    "load_futu_financial_report_page_info",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 2, 24, tz='Asia/Shanghai'),
+    schedule_interval='0 */3 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='load_futu_financial_report_page_info',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/financial/report/inner/loadFUTUReportInfos',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=load_futu_financial_report_page_info,
+)
