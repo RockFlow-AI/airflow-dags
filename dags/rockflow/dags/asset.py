@@ -7,7 +7,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 asset = DAG(
     "asset",
     catchup=False,
-    start_date=pendulum.datetime(2023, 6, 28, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2023, 6, 29, tz='Asia/Shanghai'),
     schedule_interval='0 18 * * *',
     default_args={
         "owner": "yuzhiqiang",
