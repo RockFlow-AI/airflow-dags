@@ -13,7 +13,7 @@ us_ledger_local_statement = DAG(
         "owner": "chengwei",
         "depends_on_past": False,
         "retries": 16,
-        "retry_delay": timedelta(minutes=30)
+        "retry_delay": timedelta(minutes=10)
     }
 )
 
@@ -37,7 +37,7 @@ hk_ledger_local_statement = DAG(
         "owner": "chengwei",
         "depends_on_past": False,
         "retries": 16,
-        "retry_delay": timedelta(minutes=30)
+        "retry_delay": timedelta(minutes=10)
     }
 )
 
