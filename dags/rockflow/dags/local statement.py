@@ -45,7 +45,7 @@ SimpleHttpOperator(
     task_id='hk_ledger_local_statement',
     method='PUT',
     http_conn_id='flow-ledger',
-    endpoint='/ledger/inner/statement/markets/HK/{date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    endpoint='/ledger/inner/statement/markets/HK/{date}'.format(date=datetime.now().strftime("%Y-%m-%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
     dag=hk_ledger_local_statement,
