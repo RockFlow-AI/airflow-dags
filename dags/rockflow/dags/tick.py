@@ -479,7 +479,7 @@ SimpleHttpOperator(
     task_id='update_better_buys_year_yield',
     method='PUT',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/api/v2/update/better/yield',
+    endpoint='/ticker/inner/options/update/better/yield',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 200},
     dag=update_better_buys_year_yield,
