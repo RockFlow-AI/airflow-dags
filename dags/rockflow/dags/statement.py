@@ -521,7 +521,7 @@ SimpleHttpOperator(
     task_id='CorpActionSplit',
     method='PUT',
     http_conn_id='flow-ledger',
-    endpoint='/ledger/inner/corporateActions/markets/US/{date}/SPLIT'.format(date=(datetime.now() + timedelta(days=-1)).strftime("%Y-%m-%d")),
+    endpoint='/ledger/inner/corporateActions/markets/US/{date}/SPLIT'.format(date=datetime.now().strftime("%Y-%m-%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=CorpActionSplit,
