@@ -32,7 +32,7 @@ SimpleHttpOperator(
 auto_add_landing_page_count = DAG(
     "auto_add_landing_page_count",
     catchup=False,
-    start_date=, tz='Asia/Shanghai'datetime(2023, 11, 20, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2023, 11, 20, tz='Asia/Shanghai'),
     schedule_interval='0 */6 * * *',
     default_args={
         "owner": "yuzhiqiang",
