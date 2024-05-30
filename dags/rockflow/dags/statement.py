@@ -535,7 +535,7 @@ send_us_daily_statement_email = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 3,
+        "retries": 1,
         "retry_delay": timedelta(minutes=5)
     }
 )
@@ -558,7 +558,7 @@ send_hk_daily_statement_email = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 3,
+        "retries": 1,
         "retry_delay": timedelta(minutes=5)
     }
 )
@@ -581,7 +581,7 @@ send_us_monthly_statement_email = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 3,
+        "retries": 1,
         "retry_delay": timedelta(minutes=5)
     }
 )
@@ -604,7 +604,7 @@ send_hk_monthly_statement_email = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 3,
+        "retries": 1,
         "retry_delay": timedelta(minutes=5)
     }
 )
