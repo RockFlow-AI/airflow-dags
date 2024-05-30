@@ -1,3 +1,4 @@
+import pendulum
 from airflow.models import DAG
 from datetime import datetime, timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
@@ -529,7 +530,7 @@ SimpleHttpOperator(
 send_us_daily_statement_email = DAG(
     "send_us_daily_statement_email",
     catchup=False,
-    start_date=datetime(2024, 5, 25, 0, 0),
+    start_date=pendulum.datetime(2024, 5, 25, 0, 0, tz='Asia/Shanghai'),
     schedule_interval='00 20 * * 1-7',
     default_args={
         "owner": "yuzhiqiang",
@@ -552,7 +553,7 @@ SimpleHttpOperator(
 send_hk_daily_statement_email = DAG(
     "send_hk_daily_statement_email",
     catchup=False,
-    start_date=datetime(2024, 5, 25, 0, 0),
+    start_date=pendulum.datetime(2024, 5, 25, 0, 0, tz='Asia/Shanghai'),
     schedule_interval='30 20 * * 1-7',
     default_args={
         "owner": "yuzhiqiang",
@@ -575,7 +576,7 @@ SimpleHttpOperator(
 send_us_monthly_statement_email = DAG(
     "send_us_monthly_statement_email",
     catchup=False,
-    start_date=datetime(2024, 5, 25, 0, 0),
+    start_date=pendulum.datetime(2024, 5, 25, 0, 0, tz='Asia/Shanghai'),
     schedule_interval='00 20 * * 1-7',
     default_args={
         "owner": "yuzhiqiang",
@@ -598,7 +599,7 @@ SimpleHttpOperator(
 send_hk_monthly_statement_email = DAG(
     "send_hk_monthly_statement_email",
     catchup=False,
-    start_date=datetime(2024, 5, 25, 0, 0),
+    start_date=pendulum.datetime(2024, 5, 25, 0, 0, tz='Asia/Shanghai'),
     schedule_interval='30 20 * * 1-7',
     default_args={
         "owner": "yuzhiqiang",
