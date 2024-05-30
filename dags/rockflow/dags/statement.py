@@ -1,3 +1,4 @@
+import pendulum
 from airflow.models import DAG
 from datetime import datetime, timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
@@ -499,4 +500,96 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=CorpActionClearingPosition,
+)
+
+send_us_daily_statement_email = DAG(
+    "send_us_daily_statement_email",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 5, 25, 0, 0, tz='Asia/Shanghai'),
+    schedule_interval='00 20 * * 1-7',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 1,
+        "retry_delay": timedelta(minutes=5)
+    }
+)
+
+SimpleHttpOperator(
+    task_id='send_us_daily_statement_email',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statements/auto/send/email?market=US&type=1',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 300},
+    dag=send_us_daily_statement_email,
+)
+
+send_hk_daily_statement_email = DAG(
+    "send_hk_daily_statement_email",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 5, 25, 0, 0, tz='Asia/Shanghai'),
+    schedule_interval='30 20 * * 1-7',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 1,
+        "retry_delay": timedelta(minutes=5)
+    }
+)
+
+SimpleHttpOperator(
+    task_id='send_hk_daily_statement_email',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statements/auto/send/email?market=HK&type=1',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 300},
+    dag=send_hk_daily_statement_email,
+)
+
+send_us_monthly_statement_email = DAG(
+    "send_us_monthly_statement_email",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 5, 25, 0, 0, tz='Asia/Shanghai'),
+    schedule_interval='00 20 * * 1-7',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 1,
+        "retry_delay": timedelta(minutes=5)
+    }
+)
+
+SimpleHttpOperator(
+    task_id='send_us_monthly_statement_email',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statements/auto/send/email?market=US&type=2',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 300},
+    dag=send_us_monthly_statement_email,
+)
+
+send_hk_monthly_statement_email = DAG(
+    "send_hk_monthly_statement_email",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 5, 25, 0, 0, tz='Asia/Shanghai'),
+    schedule_interval='30 20 * * 1-7',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 1,
+        "retry_delay": timedelta(minutes=5)
+    }
+)
+
+SimpleHttpOperator(
+    task_id='send_hk_monthly_statement_email',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statements/auto/send/email?market=HK&type=2',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 300},
+    dag=send_hk_monthly_statement_email,
 )
