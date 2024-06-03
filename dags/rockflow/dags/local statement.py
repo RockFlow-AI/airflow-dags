@@ -50,3 +50,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 3600},
     dag=hk_ledger_local_statement,
 )
+
+hk_ledger_local_statement_send = DAG(
+    "hk_ledger_local_statement_send",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 6, 2, tz='Asia/Shanghai'),
+    schedule_interval='9 0 * * 1-7',
+    default_args={
+      "owner": "chengwei",
+      "depends_on_past": False,
+      "retries": 16,
+      "retry_delay": timedelta(minutes=10)
+    }
+)
+
+SimpleHttpOperator(
+    task_id='hk_ledger_local_statement_send',
+    method='PUT',
+    http_conn_id='flow-ledger',
+    endpoint='/ledger/inner/statement/markets/HK/{date}/send'.format(date=(datetime.now() + timedelta(days=-1)).strftime("%Y-%m-%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=hk_ledger_local_statement_send,
+)
