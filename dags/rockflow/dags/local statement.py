@@ -55,7 +55,7 @@ hk_ledger_local_statement_send = DAG(
     "hk_ledger_local_statement_send",
     catchup=False,
     start_date=pendulum.datetime(2024, 6, 2, tz='Asia/Shanghai'),
-    schedule_interval='9 0 * * 1-7',
+    schedule_interval='0 9 * * 1-7',
     default_args={
       "owner": "chengwei",
       "depends_on_past": False,
