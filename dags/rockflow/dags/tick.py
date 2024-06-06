@@ -466,7 +466,7 @@ corporate_actions_future = SimpleHttpOperator(
     task_id='daily_corporate_actions_future',
     method='GET',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/corporateActions?daysInFuture=5',
+    endpoint='/ticker/inner/corporateActions?daysInFuture=10',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=daily_corporate_actions,
