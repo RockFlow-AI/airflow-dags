@@ -453,7 +453,7 @@ daily_corporate_actions = DAG(
 )
 
 corporate_actions_today = SimpleHttpOperator(
-    task_id='ticks',
+    task_id='daily_corporate_actions_today',
     method='GET',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/corporateActions',
@@ -463,7 +463,7 @@ corporate_actions_today = SimpleHttpOperator(
 )
 
 corporate_actions_future = SimpleHttpOperator(
-    task_id='ticks',
+    task_id='daily_corporate_actions_future',
     method='GET',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/corporateActions?future=5',
