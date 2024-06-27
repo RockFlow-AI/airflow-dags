@@ -466,7 +466,7 @@ CorpActionClearingCash = DAG(
     default_args={
         "owner": "maoboxuan",
         "depends_on_past": False,
-        "retries": 0
+        "retries": 5
     }
 )
 
@@ -488,7 +488,7 @@ CorpActionClearingPosition = DAG(
     default_args={
         "owner": "maoboxuan",
         "depends_on_past": False,
-        "retries": 0
+        "retries": 5
     }
 )
 
