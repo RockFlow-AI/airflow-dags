@@ -63,6 +63,16 @@ statement_sync_ftp_file = DAG(
     }
 )
 
+SimpleHttpOperator(
+    task_id='statement_sync_ftp_file',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=statement_sync_ftp_file,
+)
+
 statement_sync_delay_file = DAG(
     "statement_sync_delay_file",
     catchup=False,
@@ -91,7 +101,7 @@ statement_sync_delay_file_1755 = DAG(
     "statement_sync_delay_file_1755",
     catchup=False,
     start_date=datetime(2022, 10, 22, 0, 0),
-    schedule_interval='10 10,11 * * 1-7',
+    schedule_interval='10,30,50 10,11 * * 1-7',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
@@ -110,15 +120,6 @@ SimpleHttpOperator(
     dag=statement_sync_delay_file_1755,
 )
 
-SimpleHttpOperator(
-    task_id='statement_sync_ftp_file',
-    method='PATCH',
-    http_conn_id='flow-statement',
-    endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
-    response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 600},
-    dag=statement_sync_ftp_file,
-)
 
 option_exercise_report = DAG(
     "option_exercise_report",
@@ -374,7 +375,7 @@ US_trade_match_report = DAG(
     "US_trade_match_report",
     catchup=False,
     start_date=datetime(2023, 3, 2, 0, 0),
-    schedule_interval='20 10,11 * * 1-7',
+    schedule_interval='20,40,60 10,11 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
@@ -396,7 +397,7 @@ HK_trade_match_report = DAG(
     "HK_trade_match_report",
     catchup=False,
     start_date=datetime(2023, 3, 2, 0, 0),
-    schedule_interval='20 10,11 * * 1-7',
+    schedule_interval='20,40,60 10,11 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
@@ -404,11 +405,21 @@ HK_trade_match_report = DAG(
     }
 )
 
+SimpleHttpOperator(
+    task_id='HK_trade_match_report',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statements/tradeMatch/daily?market=HK&date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=HK_trade_match_report,
+)
+
 US_position_match_report = DAG(
     "US_position_match_report",
     catchup=False,
     start_date=datetime(2023, 3, 2, 0, 0),
-    schedule_interval='20 10 * * 1-7',
+    schedule_interval='20,40,60 10,11 * * 1-7',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
@@ -430,7 +441,7 @@ HK_position_match_report = DAG(
     "HK_position_match_report",
     catchup=False,
     start_date=datetime(2023, 3, 2, 0, 0),
-    schedule_interval='20 10 * * 1-7',
+    schedule_interval='20,40,60 10,11 * * 1-7',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
@@ -446,16 +457,6 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=HK_position_match_report,
-)
-
-SimpleHttpOperator(
-    task_id='HK_trade_match_report',
-    method='PATCH',
-    http_conn_id='flow-statement',
-    endpoint='/inner/statements/tradeMatch/daily?market=HK&date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
-    response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
-    dag=HK_trade_match_report,
 )
 
 CorpActionClearingCash = DAG(
@@ -500,6 +501,29 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=CorpActionClearingPosition,
+)
+
+
+CorpActionSplit = DAG(
+    "CorpActionSplit",
+    catchup=False,
+    start_date=datetime(2024, 5, 10, 0, 0),
+    schedule_interval='00 16 * * 1-7',
+    default_args={
+      "owner": "chengwei",
+      "depends_on_past": False,
+      "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='CorpActionSplit',
+    method='PUT',
+    http_conn_id='flow-ledger',
+    endpoint='/ledger/inner/corporateActions/markets/US/{date}/SPLIT'.format(date=datetime.now().strftime("%Y-%m-%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=CorpActionSplit,
 )
 
 send_us_daily_statement_email = DAG(
