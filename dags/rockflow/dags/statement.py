@@ -375,7 +375,7 @@ US_trade_match_report = DAG(
     "US_trade_match_report",
     catchup=False,
     start_date=datetime(2023, 3, 2, 0, 0),
-    schedule_interval='20,40,60 10,11 * * 1-7',
+    schedule_interval='20,40,59 10,11 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
@@ -397,7 +397,7 @@ HK_trade_match_report = DAG(
     "HK_trade_match_report",
     catchup=False,
     start_date=datetime(2023, 3, 2, 0, 0),
-    schedule_interval='20,40,60 10,11 * * 1-7',
+    schedule_interval='20,40,59 10,11 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
@@ -419,7 +419,7 @@ US_position_match_report = DAG(
     "US_position_match_report",
     catchup=False,
     start_date=datetime(2023, 3, 2, 0, 0),
-    schedule_interval='20,40,60 10,11 * * 1-7',
+    schedule_interval='20,40,59 10,11 * * 1-7',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
@@ -441,7 +441,7 @@ HK_position_match_report = DAG(
     "HK_position_match_report",
     catchup=False,
     start_date=datetime(2023, 3, 2, 0, 0),
-    schedule_interval='20,40,60 10,11 * * 1-7',
+    schedule_interval='20,40,59 10,11 * * 1-7',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
