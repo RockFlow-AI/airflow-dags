@@ -503,29 +503,6 @@ SimpleHttpOperator(
     dag=CorpActionClearingPosition,
 )
 
-
-CorpActionSplit = DAG(
-    "CorpActionSplit",
-    catchup=False,
-    start_date=datetime(2024, 5, 10, 0, 0),
-    schedule_interval='00 16 * * 1-7',
-    default_args={
-      "owner": "chengwei",
-      "depends_on_past": False,
-      "retries": 0
-    }
-)
-
-SimpleHttpOperator(
-    task_id='CorpActionSplit',
-    method='PUT',
-    http_conn_id='flow-ledger',
-    endpoint='/ledger/inner/corporateActions/markets/US/{date}/SPLIT'.format(date=datetime.now().strftime("%Y-%m-%d")),
-    response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
-    dag=CorpActionSplit,
-)
-
 send_us_daily_statement_email = DAG(
     "send_us_daily_statement_email",
     catchup=False,
