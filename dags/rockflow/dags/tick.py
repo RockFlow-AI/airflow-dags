@@ -452,8 +452,8 @@ daily_corporate_actions = DAG(
     }
 )
 
-SimpleHttpOperator(
-    task_id='ticks',
+corporate_actions_today = SimpleHttpOperator(
+    task_id='daily_corporate_actions_today',
     method='GET',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/corporateActions',
@@ -462,6 +462,17 @@ SimpleHttpOperator(
     dag=daily_corporate_actions,
 )
 
+corporate_actions_future = SimpleHttpOperator(
+    task_id='daily_corporate_actions_future',
+    method='GET',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/corporateActions?daysInFuture=5',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=daily_corporate_actions,
+)
+
+corporate_actions_today >> corporate_actions_future
 
 update_better_buys_year_yield = DAG(
     "update_better_buys_year_yield",
