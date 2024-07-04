@@ -12,7 +12,7 @@ class LogoImportOperator(OSSOperator):
                  from_key: str,
                  avatar_bucket_name: str,
                  source_folder: str,
-                 target_folder: str
+                 target_folder: str,
                  pool_size: int = DEFAULT_POOL_SIZE,
                  **kwargs) -> None:
         super().__init__(**kwargs)
