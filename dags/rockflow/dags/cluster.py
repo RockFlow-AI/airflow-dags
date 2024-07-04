@@ -29,6 +29,30 @@ SimpleHttpOperator(
     dag=currencies_refresh,
 )
 
+# 节假日更新
+holiday_refresh = DAG(
+    "holiday_refresh_yearly",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 12, 29, tz='America/New_York'),
+    schedule_interval='0 0 29 12 *',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='holiday_refresh',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/holidays/refresh',
+    headers={'appId': '1'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=holiday_refresh,
+)
+
 # 碎股及港股更新
 contracts_refresh = DAG(
     "contracts_refresh_daily",
