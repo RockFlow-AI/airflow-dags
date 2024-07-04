@@ -45,3 +45,13 @@ with DAG(
         source_folder="company/source/",
         target_folder="company/public/",
     )
+
+    black_logo_import = LogoImportOperator(
+        task_id="black_logo_import",
+        from_key="company/symbols/stocks.txt",
+        bucket_name=AVATAR_BUCKET_NAME,
+        avatar_bucket_name=AVATAR_BUCKET_NAME,
+        source_folder="company/black/source/",
+        target_folder="company/black/public/",
+    )
+
