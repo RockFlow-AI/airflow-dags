@@ -42,4 +42,6 @@ with DAG(
         from_key="company/symbols/stocks.txt",
         bucket_name=AVATAR_BUCKET_NAME,
         avatar_bucket_name=AVATAR_BUCKET_NAME,
+        source_folder="company/source/",
+        target_folder="company/public/",
     )

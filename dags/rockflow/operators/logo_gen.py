@@ -11,6 +11,8 @@ class LogoImportOperator(OSSOperator):
     def __init__(self,
                  from_key: str,
                  avatar_bucket_name: str,
+                 source_folder: str,
+                 target_folder: str
                  pool_size: int = DEFAULT_POOL_SIZE,
                  **kwargs) -> None:
         super().__init__(**kwargs)
@@ -43,10 +45,10 @@ class LogoImportOperator(OSSOperator):
         return self.oss_dest(symbol)
 
     def oss_src(self, file):
-        return f"company/source/{file}.jpg"
+        return f"{self.source_folder}{file}.jpg"
 
     def oss_dest(self, file):
-        return f"company/public/{file}.jpg"
+        return f"{self.target_folder}{file}.jpg"
 
     def save_one(self, line: tuple[Hashable, str]):
         index = line[0]
