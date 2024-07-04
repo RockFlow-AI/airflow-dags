@@ -19,6 +19,8 @@ class LogoImportOperator(OSSOperator):
         self.from_key = from_key
         self.avatar_bucket_name = avatar_bucket_name
         self.pool_size = pool_size
+        self.source_folder = source_folder
+        self.target_folder = target_folder
 
     @property
     def avatar_bucket(self) -> oss2.api.Bucket:
