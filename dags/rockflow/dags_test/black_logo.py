@@ -12,10 +12,10 @@ with DAG(
         start_date=datetime.now(),
         schedule_interval="@once",
         default_args=DEFAULT_DEBUG_ARGS
-) as logo_download:
+) as black_logo_download:
 
-    logo_import = LogoImportOperator(
-        task_id="black_logo_download",
+    black_logo_import = LogoImportOperator(
+        task_id="black_logo_import",
         from_key="company/black/symbols/stocks.txt",
         bucket_name=AVATAR_BUCKET_NAME,
         avatar_bucket_name=AVATAR_BUCKET_NAME,
