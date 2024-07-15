@@ -444,7 +444,7 @@ daily_corporate_actions = DAG(
     "daily_corporate_actions",
     catchup=False,
     start_date=pendulum.datetime(2023, 10, 27, tz='America/New_York'),
-    schedule_interval='0 3 * * *',
+    schedule_interval='0 2 * * *',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
