@@ -2,7 +2,7 @@ import pendulum
 
 from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
-
+from datetime import timedelta
 
 WATCHLIST_US_DAY = DAG(
     "WATCHLIST_US_DAY",
