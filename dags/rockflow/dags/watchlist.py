@@ -59,7 +59,7 @@ FLUSH_HOT_WATCHLIST = DAG(
     default_args={
         "owner": "sunfulin",
         "depends_on_past": False,
-        "retries": 3,
+        "retries": 0,
     }
 )
 
