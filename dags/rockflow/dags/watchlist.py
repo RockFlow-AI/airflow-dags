@@ -67,7 +67,7 @@ SimpleHttpOperator(
     task_id='FLUSH_HOT_WATCHLIST',
     method='PUT',
     http_conn_id='flow-watchlist',
-    endpoint='/inner/watchlist/popular/cache',
+    endpoint='inner/watchlist/popular/cache',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=FLUSH_HOT_WATCHLIST,
