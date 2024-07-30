@@ -42,7 +42,7 @@ WATCHLIST_US_MINUTE = DAG(
 SimpleHttpOperator(
     task_id='WATCHLIST_US_MINUTE',
     method='PUT',
-    http_conn_id='flow-watchlist',
+    http_conn_id='flow-mr-option',
     endpoint='/watchlist/inner/tasks',
     data={"period": "MINUTE"},
     response_check=lambda response: response.json()['code'] == 200,
@@ -66,7 +66,7 @@ FLUSH_HOT_WATCHLIST = DAG(
 SimpleHttpOperator(
     task_id='FLUSH_HOT_WATCHLIST',
     method='GET',
-    http_conn_id='flow-mr-option',
+    http_conn_id='flow-watchlist',
     endpoint='/inner/watchlist/popular/cache',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
