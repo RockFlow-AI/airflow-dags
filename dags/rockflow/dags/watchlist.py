@@ -65,10 +65,10 @@ FLUSH_HOT_WATCHLIST = DAG(
 
 SimpleHttpOperator(
     task_id='FLUSH_HOT_WATCHLIST',
-    method='PUT',
+    method='GET',
     http_conn_id='flow-mr-option',
     endpoint='/inner/watchlist/popular/cache',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
+    extra_options={"timeout": 3600},
     dag=FLUSH_HOT_WATCHLIST,
 )
