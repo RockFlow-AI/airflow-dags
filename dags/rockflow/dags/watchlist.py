@@ -42,7 +42,7 @@ WATCHLIST_US_MINUTE = DAG(
 SimpleHttpOperator(
     task_id='WATCHLIST_US_MINUTE',
     method='PUT',
-    http_conn_id='flow-mr-option',
+    http_conn_id='flow-watchlist',
     endpoint='/watchlist/inner/tasks',
     data={"period": "MINUTE"},
     response_check=lambda response: response.json()['code'] == 200,
