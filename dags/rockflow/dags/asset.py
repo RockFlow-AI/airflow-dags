@@ -54,7 +54,7 @@ asset_stat = DAG(
     "asset_stat",
     catchup=False,
     start_date=pendulum.datetime(2023, 7, 12, tz='America/New_York'),
-    schedule_interval='30 8 * * *',
+    schedule_interval='30 20 * * *',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
@@ -66,7 +66,7 @@ SimpleHttpOperator(
     task_id='asset_stat',
     method='PUT',
     http_conn_id='flow-ledger',
-    endpoint='ledger/inner/accountAsset/stat/markets/US/{date}'.format(date=datetime.now().strftime("%Y-%m-%d")),
+    endpoint='ledger/inner/accountAsset/stat/markets/US/{date}'.format(date=(datetime.now() + timedelta(days=-1)).strftime("%Y-%m-%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
     dag=asset_stat,
