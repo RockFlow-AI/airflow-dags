@@ -5,7 +5,7 @@ import pendulum
 from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
-promotion_reward_claim = DAG(
+refresh_etf_symbol = DAG(
     "refresh_etf_symbol",
     catchup=False,
     start_date=pendulum.datetime(2024, 8, 8, tz='Asia/Shanghai'),
