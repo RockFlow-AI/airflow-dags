@@ -55,7 +55,7 @@ FLUSH_HOT_WATCHLIST = DAG(
     "FLUSH_HOT_WATCHLIST",
     catchup=False,
     start_date=pendulum.datetime(2024, 7, 23, tz='Asia/Shanghai'),
-    schedule_interval='0 0 18 * *',
+    schedule_interval='00 18 * * *',
     default_args={
         "owner": "sunfulin",
         "depends_on_past": False,
