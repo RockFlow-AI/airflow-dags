@@ -122,7 +122,7 @@ copy_watchlist_task = DAG(
     "copy_watchlist_task",
     catchup=False,
     start_date=pendulum.datetime(2024, 8, 8, tz='America/New_York'),
-    schedule_interval='35 09 * * *',
+    schedule_interval='0 35 9 * *',
     default_args={
         "owner": "sunfulin",
         "depends_on_past": False,
