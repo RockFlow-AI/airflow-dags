@@ -131,7 +131,7 @@ copy_watchlist_task = DAG(
 
 SimpleHttpOperator(
     task_id='copy_watchlist_task',
-    method='GET',
+    method='PATCH',
     http_conn_id='flow-social',
     endpoint='/social/inner/task/opening',
     response_check=lambda response: response.json()['code'] == 200,
