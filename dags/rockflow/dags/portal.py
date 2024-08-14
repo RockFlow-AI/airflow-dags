@@ -27,3 +27,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=refresh_etf_symbol,
 )
+
+clear_hk_symbol_cache = DAG(
+    "clear_hk_symbol_cache",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 8, 14, tz='Asia/Shanghai'),
+    schedule_interval='30 9 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 1,
+        "retry_delay": timedelta(minutes=10),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='clear_hk_symbol_cache',
+    method='PATCH',
+    http_conn_id='flow-portal',
+    endpoint='/inner/portal/symbol/clear/hk/symbol/cache',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=clear_hk_symbol_cache,
+)
