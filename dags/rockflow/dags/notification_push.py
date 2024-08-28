@@ -139,3 +139,29 @@ SimpleHttpOperator(
     extra_options={"timeout": 200},
     dag=push_to_unregister,
 )
+
+
+# 定时任务 每分钟检测
+PUSH_TO_LIMIT_ORDER_UNSETTLED = DAG(
+    "push_to_limit_order_unsettled",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
+    schedule_interval='* * * * *',
+    default_args={
+        "owner": "sunfulin",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='push_to_limit_order_unsettled',
+    method='PATCH',
+    http_conn_id='flow-notification',
+    endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&source=HK',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=push_to_unregister,
+)
+
+
