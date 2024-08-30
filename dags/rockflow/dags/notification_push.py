@@ -164,4 +164,54 @@ SimpleHttpOperator(
     dag=push_to_unregister,
 )
 
+SimpleHttpOperator(
+    task_id='push_to_limit_order_unsettled',
+    method='PATCH',
+    http_conn_id='flow-notification',
+    endpoint='/portfolio/inner/pendingOrders?interval=60&session=0&source=HK',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=push_to_unregister,
+)
+
+SimpleHttpOperator(
+    task_id='push_to_limit_order_unsettled',
+    method='PATCH',
+    http_conn_id='flow-notification',
+    endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&source=US',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=push_to_unregister,
+)
+
+SimpleHttpOperator(
+    task_id='push_to_limit_order_unsettled',
+    method='PATCH',
+    http_conn_id='flow-notification',
+    endpoint='/portfolio/inner/pendingOrders?interval=15&session=1&source=US',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=push_to_unregister,
+)
+
+SimpleHttpOperator(
+    task_id='push_to_limit_order_unsettled',
+    method='PATCH',
+    http_conn_id='flow-notification',
+    endpoint='/portfolio/inner/pendingOrders?interval=60&session=0&source=US',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=push_to_unregister,
+)
+
+SimpleHttpOperator(
+    task_id='push_to_limit_order_unsettled',
+    method='PATCH',
+    http_conn_id='flow-notification',
+    endpoint='/portfolio/inner/pendingOrders?interval=60&session=1&source=US',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=push_to_unregister,
+)
+
 
