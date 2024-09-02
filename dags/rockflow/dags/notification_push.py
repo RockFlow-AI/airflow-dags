@@ -143,7 +143,7 @@ SimpleHttpOperator(
 
 # 定时任务 每分钟检测
 PUSH_TO_LIMIT_ORDER_UNSETTLED = DAG(
-    "push_to_limit_order_unsettled",
+    "PUSH_TO_LIMIT_ORDER_UNSETTLED",
     catchup=False,
     start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
     schedule_interval='* * * * *',
@@ -155,7 +155,7 @@ PUSH_TO_LIMIT_ORDER_UNSETTLED = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='push_to_limit_order_unsettled',
+    task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED',
     method='PATCH',
     http_conn_id='flow-notification',
     endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&source=HK',
