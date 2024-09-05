@@ -160,7 +160,7 @@ SimpleHttpOperator(
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&sources=HK,OSHK',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 200},
+    extra_options={"timeout": 3600},
     dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_1,
 )
 
@@ -182,7 +182,7 @@ SimpleHttpOperator(
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&sources=HK,OSHK',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 200},
+    extra_options={"timeout": 3600},
     dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_2,
 )
 
