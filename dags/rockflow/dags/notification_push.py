@@ -158,7 +158,7 @@ SimpleHttpOperator(
     task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_1',
     method='PATCH',
     http_conn_id='flow-portfolio-service',
-    endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&sources=HK,OSHK',
+    endpoint='/portfolio/inner/pendingOrders?interval=2&session=0&sources=HK,OSHK',
     headers={'Content-Type': 'application/json'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
@@ -207,7 +207,7 @@ SimpleHttpOperator(
     task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_3',
     method='PATCH',
     http_conn_id='flow-portfolio-service',
-    endpoint='/portfolio/inner/pendingOrders?interval=60&session=0&sources=HK,OSHK',
+    endpoint='/portfolio/inner/pendingOrders?interval=4&session=0&sources=HK,OSHK',
     headers={'Content-Type': 'application/json'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
@@ -242,7 +242,7 @@ SimpleHttpOperator(
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_1 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_1",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
+    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
     schedule_interval='45-59 9 * * 1-5',
     default_args={
         "owner": "sunfulin",
@@ -255,7 +255,7 @@ SimpleHttpOperator(
     task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_US_1',
     method='PATCH',
     http_conn_id='flow-portfolio-service',
-    endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&sources=US,OSUS',
+    endpoint='/portfolio/inner/pendingOrders?interval=2&session=0&sources=US,OSUS',
     headers={'Content-Type': 'application/json'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
@@ -340,7 +340,7 @@ SimpleHttpOperator(
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_5 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_5",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
+    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
     schedule_interval='0-15 4 * * 1-5',
     default_args={
         "owner": "sunfulin",
@@ -353,7 +353,7 @@ SimpleHttpOperator(
     task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_5',
     method='PATCH',
     http_conn_id='flow-portfolio-service',
-    endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&sources=US,OSUS',
+    endpoint='/portfolio/inner/pendingOrders?interval=2&session=0&sources=US,OSUS',
     headers={'Content-Type': 'application/json'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
@@ -364,7 +364,7 @@ SimpleHttpOperator(
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_6 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_6",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
+    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
     schedule_interval='*/1 5-20 * * 1-5',
     default_args={
         "owner": "sunfulin",
@@ -377,7 +377,7 @@ SimpleHttpOperator(
     task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_6',
     method='PATCH',
     http_conn_id='flow-portfolio-service',
-    endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&sources=US,OSUS',
+    endpoint='/portfolio/inner/pendingOrders?interval=2&session=0&sources=US,OSUS',
     headers={'Content-Type': 'application/json'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
@@ -389,7 +389,7 @@ SimpleHttpOperator(
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_7 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_7",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
+    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
     schedule_interval='*/1 5-20 * * 1-5',
     default_args={
         "owner": "sunfulin",
@@ -402,7 +402,7 @@ SimpleHttpOperator(
     task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_7',
     method='PATCH',
     http_conn_id='flow-portfolio-service',
-    endpoint='/portfolio/inner/pendingOrders?interval=60&session=0&sources=US,OSUS',
+    endpoint='/portfolio/inner/pendingOrders?interval=4&session=0&sources=US,OSUS',
     headers={'Content-Type': 'application/json'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
