@@ -159,6 +159,7 @@ SimpleHttpOperator(
     method='PATCH',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&sources=HK,OSHK',
+    headers={'Content-Type': 'application/json'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
     dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_1,
@@ -187,6 +188,28 @@ SimpleHttpOperator(
     dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_2,
 )
 
+
+SimpleHttpOperator(
+    task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_3',
+    method='PATCH',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/pendingOrders?interval=60&session=0&sources=HK,OSHK',
+    headers={'Content-Type': 'application/json'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_1,
+)
+
+SimpleHttpOperator(
+    task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_4',
+    method='PATCH',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/pendingOrders?interval=60&session=0&sources=HK,OSHK',
+    headers={'Content-Type': 'application/json'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_2,
+)
 
 
 
