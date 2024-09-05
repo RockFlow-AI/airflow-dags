@@ -157,7 +157,7 @@ PUSH_TO_LIMIT_ORDER_UNSETTLED_1 = DAG(
 SimpleHttpOperator(
     task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_1',
     method='PATCH',
-    http_conn_id='flow-notification',
+    http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&source=HK,OSHK',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 200},
@@ -179,7 +179,7 @@ PUSH_TO_LIMIT_ORDER_UNSETTLED_2 = DAG(
 SimpleHttpOperator(
     task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_2',
     method='PATCH',
-    http_conn_id='flow-notification',
+    http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/pendingOrders?interval=15&session=0&source=HK,OSHK',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 200},
