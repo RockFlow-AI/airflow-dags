@@ -266,7 +266,7 @@ SimpleHttpOperator(
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_2 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_2",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
+    start_date=pendulum.datetime(2024, 8, 30, tz='America/New_York'),
     schedule_interval='*/1 10-16 * * 1-5',
     default_args={
         "owner": "sunfulin",
