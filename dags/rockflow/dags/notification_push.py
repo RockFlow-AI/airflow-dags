@@ -170,7 +170,7 @@ PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_2 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_2",
     catchup=False,
     start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
-    schedule_interval='*/1 10-20 * * 1-5',
+    schedule_interval='*/1 10-16 * * 1-5',
     default_args={
         "owner": "sunfulin",
         "depends_on_past": False,
@@ -218,7 +218,7 @@ PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_4 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_4",
     catchup=False,
     start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
-    schedule_interval='*/1 11-20 * * 1-5',
+    schedule_interval='*/1 11-16 * * 1-5',
     default_args={
         "owner": "sunfulin",
         "depends_on_past": False,
@@ -242,7 +242,7 @@ SimpleHttpOperator(
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_1 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_1",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
     schedule_interval='45-59 9 * * 1-5',
     default_args={
         "owner": "sunfulin",
@@ -262,12 +262,12 @@ SimpleHttpOperator(
     dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_US_1,
 )
 
-# 这里的时间 记得改
+
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_2 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_2",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
-    schedule_interval='*/1 10-20 * * 1-5',
+    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
+    schedule_interval='*/1 10-16 * * 1-5',
     default_args={
         "owner": "sunfulin",
         "depends_on_past": False,
@@ -290,7 +290,7 @@ SimpleHttpOperator(
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_3 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_3",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
     schedule_interval='30-59 10 * * 1-5',
     default_args={
         "owner": "sunfulin",
@@ -310,12 +310,12 @@ SimpleHttpOperator(
     dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_US_3,
 )
 
-# 这里的时间 记得改
+
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_4 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_4",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
-    schedule_interval='*/1 10-20 * * 1-5',
+    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
+    schedule_interval='*/1 10-16 * * 1-5',
     default_args={
         "owner": "sunfulin",
         "depends_on_past": False,
@@ -340,8 +340,8 @@ SimpleHttpOperator(
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_5 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_5",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
-    schedule_interval='0-15 4 * * 1-5',
+    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
+    schedule_interval='15-59 4 * * 1-5',
     default_args={
         "owner": "sunfulin",
         "depends_on_past": False,
@@ -364,7 +364,7 @@ SimpleHttpOperator(
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_6 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_6",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
     schedule_interval='*/1 5-20 * * 1-5',
     default_args={
         "owner": "sunfulin",
@@ -389,7 +389,7 @@ SimpleHttpOperator(
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_7 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_7",
     catchup=False,
-    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
     schedule_interval='*/1 5-20 * * 1-5',
     default_args={
         "owner": "sunfulin",
