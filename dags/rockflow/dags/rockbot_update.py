@@ -26,7 +26,7 @@ with DAG(
 with DAG(
     "rockbot_clean_expired_graphs",
     catchup=False,
-    start_date=pendulum.datetime(2024, 9, 11),
+    start_date=pendulum.datetime(2024, 9, 10),
     schedule_interval="*/60 * * * *",
     default_args={
         "owner": "caohaoxuan",
