@@ -290,7 +290,7 @@ SimpleHttpOperator(
 
 
 PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_7 = DAG(
-    "PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_4",
+    "PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_7",
     catchup=False,
     start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
     schedule_interval='*/1 10-16 * * 1-5',
@@ -303,14 +303,14 @@ PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_7 = DAG(
 
 
 SimpleHttpOperator(
-    task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_4',
+    task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_7',
     method='PATCH',
     http_conn_id='flow-portfolio-service',
     endpoint='/portfolio/inner/pendingOrders?interval=4&session=1&sources=HK,OSHK',
     headers={'Content-Type': 'application/json'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
-    dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_4,
+    dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_7,
 )
 
 
