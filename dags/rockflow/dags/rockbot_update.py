@@ -35,7 +35,7 @@ with DAG(
     },
 ) as rockbot_clean_expired_graphs:
     # rockbot_clean_expired_graphs
-    rockbot_clean_expired_graphs = SimpleHttpOperator(
+    rockbot_clean_expired_graphs_task = SimpleHttpOperator(
         task_id="rockbot_clean_expired_graphs",
         method="POST",
         http_conn_id="rockbot",
