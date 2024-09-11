@@ -93,3 +93,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=push_high_day_yield,
 )
+
+#每天美东9:35 股单市价单批量下单
+copy_watchlist_task = DAG(
+    "copy_watchlist_task",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 8, 8, tz='America/New_York'),
+    schedule_interval='35 09 * * *',
+    default_args={
+        "owner": "sunfulin",
+        "depends_on_past": False,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='copy_watchlist_task',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/task/opening',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=copy_watchlist_task,
+)
