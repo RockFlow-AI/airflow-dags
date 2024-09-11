@@ -238,6 +238,82 @@ SimpleHttpOperator(
     dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_4,
 )
 
+
+PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_5 = DAG(
+    "PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_5",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
+    schedule_interval='15-59 9 * * 1-5',
+    default_args={
+        "owner": "sunfulin",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_5',
+    method='PATCH',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/pendingOrders?interval=2&session=1&sources=HK,OSHK',
+    headers={'Content-Type': 'application/json'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_5,
+)
+
+
+PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_6 = DAG(
+    "PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_6",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
+    schedule_interval='*/1 10-16 * * 1-5',
+    default_args={
+        "owner": "sunfulin",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_6',
+    method='PATCH',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/pendingOrders?interval=2&session=1&sources=HK,OSHK',
+    headers={'Content-Type': 'application/json'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_6,
+)
+
+
+
+
+PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_7 = DAG(
+    "PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_4",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 8, 28, tz='Asia/Shanghai'),
+    schedule_interval='*/1 10-16 * * 1-5',
+    default_args={
+        "owner": "sunfulin",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+
+SimpleHttpOperator(
+    task_id='PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_4',
+    method='PATCH',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/pendingOrders?interval=4&session=1&sources=HK,OSHK',
+    headers={'Content-Type': 'application/json'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=PUSH_TO_LIMIT_ORDER_UNSETTLED_HK_4,
+)
+
+
 #  schedule_interval='45-59 9 * * 1-5',
 PUSH_TO_LIMIT_ORDER_UNSETTLED_US_1 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_1",
