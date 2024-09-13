@@ -106,7 +106,7 @@ day_earning_yield_rate_update_1h = DAG(
     "day_earning_yield_rate_update_1h",
     catchup=False,
     start_date=pendulum.datetime(2022, 11, 4, tz='America/New_York'),
-    schedule_interval='*/10 * * * *',
+    schedule_interval='0 */1 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
