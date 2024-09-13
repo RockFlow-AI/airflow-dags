@@ -101,6 +101,29 @@ SimpleHttpOperator(
 )
 
 
+# 收益率缓存排行榜_1h
+day_earning_yield_rate_update_1h = DAG(
+    "day_earning_yield_rate_update_1h",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 11, 4, tz='America/New_York'),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='day_earning_yield_rate_update_1h',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/earningYield/leaderboards/update/rank/1h',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=day_earning_yield_rate_update_1h,
+)
+
 # 获取首次入金_10min
 earning_yield_first_deposit_10m = DAG(
     "earning_yield_first_deposit_10m",
