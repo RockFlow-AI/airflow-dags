@@ -339,7 +339,7 @@ SimpleHttpOperator(
     task_id='ticks',
     method='DELETE',
     http_conn_id='flow-mr-aggregation',
-    endpoint='/aggregation/inner/expiration/OSUS/symbols',
+    endpoint='/aggregation/inner/housekeeping/expiration/OSUS/symbols',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=option_osus_sharding_symbols_housekeeping,
