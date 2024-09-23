@@ -319,7 +319,7 @@ PUSH_TO_LIMIT_ORDER_UNSETTLED_US_1 = DAG(
     "PUSH_TO_LIMIT_ORDER_UNSETTLED_US_1",
     catchup=False,
     start_date=pendulum.datetime(2024, 8, 28, tz='America/New_York'),
-    schedule_interval='45-59 9 * * 1-5,
+    schedule_interval='45-59 9 * * 1-5',
     default_args={
         "owner": "sunfulin",
         "depends_on_past": False,
