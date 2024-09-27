@@ -42,7 +42,7 @@ SimpleHttpOperator(
     task_id='send_telegram_msg_1m',
     method='PUT',
     http_conn_id='flow-notification-strategy',
-    endpoint='/notification/telegram/inner/send/scheduled/messages',
+    endpoint='/channel/telegram/inner/send/scheduled/messages',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=send_telegram_msg_1m,
