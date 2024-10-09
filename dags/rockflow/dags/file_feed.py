@@ -8,7 +8,7 @@ option_exercise_file = DAG(
     "option_exercise_file",
     catchup=False,
     start_date=pendulum.datetime(2024, 10, 9, tz='Asia/Shanghai'),
-    schedule_interval='0 18 * * 1-7',
+    schedule_interval='0 10 * * 1-7',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
