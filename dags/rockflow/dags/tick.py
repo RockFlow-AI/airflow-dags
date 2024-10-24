@@ -66,7 +66,7 @@ SimpleHttpOperator(
     dag=ticks_5m,
 )
 
-# 5分钟行情聚合为10分钟
+# 1分钟行情聚合为10分钟
 ticks_10m = DAG(
     "ticks_by_10_minutes",
     catchup=False,
@@ -79,7 +79,7 @@ ticks_10m = DAG(
     }
 )
 
-SimpleHttpOperator(
+ticks_on_time_10m = SimpleHttpOperator(
     task_id='ticks_10m',
     method='PATCH',
     http_conn_id='flow-ticker-service',
@@ -88,6 +88,21 @@ SimpleHttpOperator(
     extra_options={"timeout": 500},
     dag=ticks_10m,
 )
+
+ticks_delay_10m = SimpleHttpOperator(
+    task_id='ticks_delay_10m',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ticks?timeframe=10m&time={{ (macros.datetime.fromisoformat(ts) - macros.timedelta(minutes=10)).strftime("%Y-%m-%d %H:%M:%S") }}',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=ticks_10m,
+)
+
+ticks_on_time_10m.pre_execute = lambda **x: time.sleep(10)
+ticks_on_time_10m.post_execute = lambda **x: time.sleep(10)
+
+ticks_on_time_10m >> ticks_delay_10m
 
 # 1分钟行情聚合为15分钟
 ticks_15m = DAG(
