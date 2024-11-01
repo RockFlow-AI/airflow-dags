@@ -70,7 +70,7 @@ SimpleHttpOperator(
     method='PUT',
     http_conn_id='flow-watchlist',
     endpoint='/watchlist/inner/sync/es/watchlist',
-    response_check=lambda response: response.json()['code'] == 200,
+    response_checdk=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=UPSERT_ES_WATCHLIST,
 )
