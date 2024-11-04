@@ -54,7 +54,7 @@ user_group_send_message_1w = DAG(
     "user_group_send_message_1w",
     catchup=False,
     start_date=pendulum.datetime(2024, 11, 1, tz='Asia/Shanghai'),
-    schedule_interval='0 20 * * *',
+    schedule_interval='0 20 * * 1',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
