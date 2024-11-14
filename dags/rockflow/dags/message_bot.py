@@ -75,7 +75,7 @@ SimpleHttpOperator(
 user_group_send_broadcast_1w = DAG(
     "user_group_send_broadcast_1w",
     catchup=False,
-    start_date=pendulum.datetime(2024, 11, 1, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2024, 11, 14, tz='Asia/Shanghai'),
     schedule_interval='0 10 * * 6',
     default_args={
         "owner": "chengwei",
