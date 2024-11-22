@@ -66,7 +66,7 @@ RELOAD_HOT_WATCHLIST_POOL_RELATIONS = DAG(
 
 SimpleHttpOperator(
     task_id='RELOAD_HOT_WATCHLIST_POOL_RELATIONS',
-    method='GET',
+    method='PUT',
     http_conn_id='flow-portal',
     endpoint='/inner/portal/watchlist/pool/relations',
     response_check=lambda response: response.json()['code'] == 200,
