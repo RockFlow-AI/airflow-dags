@@ -140,7 +140,7 @@ SimpleHttpOperator(
     task_id='RELOAD_HOT_WATCHLIST_POOL_RELATIONS',
     method='GET',
     http_conn_id='flow-watchlist',
-    endpoint='/inner/watchlist/popular/cache',
+    endpoint='/inner/portal/watchlist/pool/relations',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
     dag=RELOAD_HOT_WATCHLIST_POOL_RELATIONS,
