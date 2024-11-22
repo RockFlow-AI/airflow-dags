@@ -74,24 +74,25 @@ SimpleHttpOperator(
 )
 
 
-FLUSH_HOT_WATCHLIST1 = DAG(
-    "FLUSH_HOT_WATCHLIST1",
+RELOAD_HOT_WATCHLIST_POOL_RELATIONS = DAG(
+    "RELOAD_HOT_WATCHLIST_POOL_RELATIONS",
     catchup=False,
-    start_date=pendulum.datetime(2024, 7, 23, tz='Asia/Shanghai'),
-    schedule_interval='00 18 * * *',
+    start_date=pendulum.datetime(2024, 11, 20, tz='Asia/Shanghai'),
+    schedule_interval='00 19 * * *',
     default_args={
-        "owner": "sunfulin",
+        "owner": "yuzhiqaing",
         "depends_on_past": False,
-        "retries": 0,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
     }
 )
 
 SimpleHttpOperator(
-    task_id='FLUSH_HOT_WATCHLIST1',
+    task_id='RELOAD_HOT_WATCHLIST_POOL_RELATIONS',
     method='GET',
     http_conn_id='flow-watchlist',
     endpoint='/inner/watchlist/popular/cache',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 3600},
-    dag=FLUSH_HOT_WATCHLIST1,
+    dag=RELOAD_HOT_WATCHLIST_POOL_RELATIONS,
 )
