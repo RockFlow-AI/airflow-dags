@@ -170,6 +170,6 @@ SimpleHttpOperator(
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/financial/report/inner/openInterest',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 3600},
+    extra_options={"timeout": 360000},
     dag=reload_yahoo_openInterest,
 )
