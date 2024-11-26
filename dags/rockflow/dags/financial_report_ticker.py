@@ -159,7 +159,7 @@ reload_yahoo_openInterest = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 2,
+        "retries": 1,
         "retry_delay": timedelta(minutes=2),
     }
 )
@@ -170,6 +170,6 @@ SimpleHttpOperator(
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/financial/report/inner/openInterest',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 360000},
+    extra_options={"timeout": 3600},
     dag=reload_yahoo_openInterest,
 )
