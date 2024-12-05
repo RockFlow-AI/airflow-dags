@@ -17,7 +17,7 @@ with DAG(
 ) as daily_trading_report:
     daily_trading_report_task = SimpleHttpOperator(
         task_id="daily_trading_report",
-        method="GET",
+        method="POST",
         http_conn_id="rockbot",
         endpoint="/bot/api/data/get/daily_trading_report",
         response_check=lambda response: response.json()["code"] == 200,
