@@ -46,30 +46,30 @@ with DAG(
         dag=feed_news_scraping_weekends
     )
 # test send DAG for Monday to Friday
-with DAG(
-    "feed_news_inspiration_message_test",
-    catchup=False,
-    start_date=pendulum.datetime(2023, 9, 1),
-    schedule_interval='*/10 * * * *',  # Cron expression for specific times on Monday to Friday
-    default_args={
-        "owner": "caohaoxuan",
-        "depends_on_past": False,
-        "retries": 0,
-    }
-) as feed_news_inspiration_message_test:
-    task_feed_news_inspiration_message_test = SimpleHttpOperator(
-        task_id='feed_news_inspiration_message_test',
-        method='POST',
-        http_conn_id='rockbot',
-        endpoint='/bot/api/ideas/feed/news/test_send',
-        response_check=lambda response: response.json()['code'] == 200,
-    )
+# with DAG(
+#     "feed_news_inspiration_message_test",
+#     catchup=False,
+#     start_date=pendulum.datetime(2023, 9, 1),
+#     schedule_interval='*/10 * * * *',  # Cron expression for specific times on Monday to Friday
+#     default_args={
+#         "owner": "caohaoxuan",
+#         "depends_on_past": False,
+#         "retries": 0,
+#     }
+# ) as feed_news_inspiration_message_test:
+#     task_feed_news_inspiration_message_test = SimpleHttpOperator(
+#         task_id='feed_news_inspiration_message_test',
+#         method='POST',
+#         http_conn_id='rockbot',
+#         endpoint='/bot/api/ideas/feed/news/test_send',
+#         response_check=lambda response: response.json()['code'] == 200,
+#     )
 #  DAG for every day
 with DAG(
     "feed_news_analyze_and_generate",
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1),
-    schedule_interval='*/10 * * * *',  # Cron expression for specific times on Monday to Friday
+    schedule_interval='0,30 * * * *',  # Cron expression for specific times on Monday to Friday
     default_args={
         "owner": "caohaoxuan",
         "depends_on_past": False,
@@ -115,22 +115,22 @@ with DAG(
         dag=feed_news_uploading_weekdays
     )
 
-with DAG(
-    "feed_news_check_tradegpt_status",
-    catchup=False,
-    start_date=pendulum.datetime(2024, 2, 29, tz="Asia/Shanghai"),
-    schedule_interval="0 11,14,17,19,22 * * *",  # Cron expression for specific times on Monday to Friday
-    default_args={
-        "owner": "caohaoxuan",
-        "depends_on_past": False,
-        "retries": 0,
-    },
-) as feed_news_check_tradegpt_status:
-    check_tradegpt_status = SimpleHttpOperator(
-        task_id="feed_news_check_tradegpt_status",
-        method="POST",
-        http_conn_id="rockbot",
-        endpoint="/bot/api/ideas/feed/news/acheck_tradegpt_status",
-        response_check=lambda response: response.json()["code"] == 200,
-        dag=feed_news_check_tradegpt_status,
-    )
+# with DAG(
+#     "feed_news_check_tradegpt_status",
+#     catchup=False,
+#     start_date=pendulum.datetime(2024, 2, 29, tz="Asia/Shanghai"),
+#     schedule_interval="0 11,14,17,19,22 * * *",  # Cron expression for specific times on Monday to Friday
+#     default_args={
+#         "owner": "caohaoxuan",
+#         "depends_on_past": False,
+#         "retries": 0,
+#     },
+# ) as feed_news_check_tradegpt_status:
+#     check_tradegpt_status = SimpleHttpOperator(
+#         task_id="feed_news_check_tradegpt_status",
+#         method="POST",
+#         http_conn_id="rockbot",
+#         endpoint="/bot/api/ideas/feed/news/acheck_tradegpt_status",
+#         response_check=lambda response: response.json()["code"] == 200,
+#         dag=feed_news_check_tradegpt_status,
+#     )

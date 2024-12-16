@@ -149,3 +149,27 @@ SimpleHttpOperator(
     extra_options={"timeout": 3600},
     dag=load_futu_financial_report_page_info,
 )
+
+# 定时任务 - 每天 23:00 刷新 yahoo 未平仓量
+reload_yahoo_openInterest = DAG(
+    "reload_yahoo_openInterest",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 11, 19, tz='Asia/Shanghai'),
+    schedule_interval='0 23 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='reload_yahoo_openInterest',
+    method='PUT',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/financial/report/inner/openInterest',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 360000},
+    dag=reload_yahoo_openInterest,
+)
