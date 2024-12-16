@@ -21,7 +21,7 @@ SimpleHttpOperator(
     task_id='option_exercise_file',
     method='PUT',
     http_conn_id='flow-file-feed',
-    endpoint='/file/inner/optionExercise/task?tradeDay={date}&market=US'.format(date=datetime.now().strftime("%Y-%m-%d")),
+    endpoint='/file/inner/optionExercise/task?tradeDay={date}&market=US'.format(date=(datetime.now() + timedelta(days=-1)).strftime("%Y-%m-%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60 * 5},
     dag=option_exercise_file,
