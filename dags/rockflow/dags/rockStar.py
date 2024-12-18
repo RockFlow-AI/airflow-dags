@@ -49,8 +49,8 @@ SimpleHttpOperator(
     dag=rock_star_clear_accumulate_month_days,
 )
 
-rock_star_accumulate_week_days = DAG(
-    "rock_star_accumulate_week_days",
+rock_star_accumulate_rank_days = DAG(
+    "rock_star_accumulate_rank_days",
     catchup=False,
     start_date=pendulum.datetime(2024, 1, 24, tz='Asia/Shanghai'),
     schedule_interval='20 9/12 * * *',
@@ -62,11 +62,11 @@ rock_star_accumulate_week_days = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='rock_star_accumulate_week_days',
+    task_id='rock_star_accumulate_rank_days',
     method='PATCH',
     http_conn_id='flow-social',
-    endpoint='/social/inner/earningYield/rockerStar/week/days',
+    endpoint='/social/inner/earningYield/rockerStar/rank/days',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
-    dag=rock_star_accumulate_week_days,
+    dag=rock_star_accumulate_rank_days,
 )
