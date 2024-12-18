@@ -54,7 +54,7 @@ statement_sync_ftp_file = DAG(
     "statement_sync_ftp_file",
     catchup=False,
     start_date=datetime(2022, 10, 22, 0, 0),
-    schedule_interval='50 7,1 * * 1-7',
+    schedule_interval='50 7,2,1 * * 1-7',
     default_args={
         "owner": "chenborui",
         "depends_on_past": False,
