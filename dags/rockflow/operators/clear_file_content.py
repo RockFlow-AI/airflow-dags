@@ -26,5 +26,5 @@ class ClearFileContentOperator(OSSOperator):
         self.clear_object(self.from_key)
 
     def execute(self, context: Any):
-        print(dir(OSSOperator))
+        self.log.info(f"decoded symbol file {dir(OSSOperator)}")
         self.clear_from_key_file()
