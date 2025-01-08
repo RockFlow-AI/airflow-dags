@@ -27,7 +27,7 @@ class ClearFileContentOperator(OSSOperator):
         self.clear_from_key_file()
 
     @staticmethod
-    def clear_object_(bucket: oss2.api.Bucket, key: str, content):
+    def clear_object_(bucket: oss2.api.Bucket, key: str):
         try:
             print(f"Clearing file content for key: {key}")
             result = bucket.put_object(key, "")
