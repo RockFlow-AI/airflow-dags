@@ -81,6 +81,17 @@ class OSSOperator(BaseOperator):
         return self.delete_object_(self.bucket, key)
 
     @staticmethod
+    def clear_file_(bucket: oss2.api.Bucket, key: str):
+        try:
+            print(f"Clearing file content for key: {key}")
+            bucket.put_object(key, "")  # 上传空字符串覆盖文件
+        except Exception as e:
+            raise Exception(f"Failed to clear file content: {e}")
+
+    def clear_file(self, key: str):
+            return self.clear_file_(self.bucket, key)
+
+    @staticmethod
     def copy_object_(bucket: oss2.api.Bucket, src_key: str, dest_key: str):
         try:
             print(f"copy_object: {src_key} to {dest_key}")

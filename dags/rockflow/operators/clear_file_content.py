@@ -18,13 +18,8 @@ class ClearFileContentOperator(OSSOperator):
     def avatar_bucket(self) -> oss2.api.Bucket:
         return self.oss_hook.get_bucket(self.avatar_bucket_name)
 
-    def clear_object(self, key):
-        with open(key, 'w') as f:
-            f.write('')
-
     def clear_from_key_file(self):
-        self.clear_object(self.from_key)
+        self.clear_file(self.from_key)
 
     def execute(self, context: Any):
-        self.log.info(f"decoded symbol file {dir(OSSOperator)}")
         self.clear_from_key_file()
