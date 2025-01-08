@@ -20,6 +20,7 @@ class ClearFileContentOperator(OSSOperator):
 
     def clear_from_key_file(self):
         self.clear_file(self.from_key)
+        self.put_object(self.from_key, "")
 
     def execute(self, context: Any):
         self.clear_from_key_file()
