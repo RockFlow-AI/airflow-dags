@@ -1,7 +1,9 @@
+from multiprocessing.pool import ThreadPool as Pool
 from typing import Any, Hashable
+
 import oss2
+import pandas as pd
 from rockflow.operators.oss import OSSOperator
-from airflow.exceptions import AirflowException
 
 
 class ClearFileContentOperator(OSSOperator):
