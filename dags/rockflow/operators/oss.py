@@ -81,15 +81,15 @@ class OSSOperator(BaseOperator):
         return self.delete_object_(self.bucket, key)
 
     @staticmethod
-    def clear_file_(bucket: oss2.api.Bucket, key: str):
+    def clear_object_(bucket: oss2.api.Bucket, key: str):
         try:
             print(f"Clearing file content for key: {key}")
-            return bucket.put_object(key, "")  # 上传空字符串覆盖文件
+            return bucket.put_object(key, "")
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
 
-    def clear_file(self, key: str):
-            return self.clear_file_(self.bucket, key)
+    def clear_object(self, key: str):
+        return self.clear_object_(self.bucket, key)
 
     @staticmethod
     def copy_object_(bucket: oss2.api.Bucket, src_key: str, dest_key: str):

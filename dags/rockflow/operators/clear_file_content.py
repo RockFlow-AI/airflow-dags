@@ -21,7 +21,7 @@ class ClearFileContentOperator(OSSOperator):
 
     def clear_from_key_file(self):
         print(f"Clearing file content for key: {self.from_key} in bucket: {self.avatar_bucket_name}")
-        self.put_object(self.from_key, "")
+        self.clear_object(self.from_key, "")
 
     def execute(self, context):
         self.clear_from_key_file()
