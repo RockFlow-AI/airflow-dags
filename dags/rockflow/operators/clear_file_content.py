@@ -24,14 +24,14 @@ class ClearFileContentOperator(OSSOperator):
     def execute(self, context):
         self.clear_from_key_file()
 
-    @staticmethod
-    def put_object_(bucket: oss2.api.Bucket, key: str, content):
-        try:
-            print(f"put_object: {key}")
-            result = bucket.put_object(key, content)  # 上传文件内容
-            print(f"Put object result: {result}")
-        except Exception as e:
-            raise AirflowException(f"Errors: {e}")
-
-    def put_object(self, key: str, content):
-        self.put_object_(self.avatar_bucket, key, content)
+#     @staticmethod
+#     def put_object_(bucket: oss2.api.Bucket, key: str, content):
+#         try:
+#             print(f"put_object: {key}")
+#             result = bucket.put_object(key, content)  # 上传文件内容
+#             print(f"Put object result: {result}")
+#         except Exception as e:
+#             raise AirflowException(f"Errors: {e}")
+#
+#     def put_object(self, key: str, content):
+#         self.put_object_(self.avatar_bucket, key, content)
