@@ -27,7 +27,7 @@ with DAG(
     "this_month_data_report",
     catchup=False,
     start_date=pendulum.datetime(2024, 12, 31, tz="Asia/Shanghai"),
-    schedule_interval="0 9 * * 2-6",
+    schedule_interval="0 9 * * 1",
     default_args={
         "owner": "caohaoxuan",
         "depends_on_past": False,
