@@ -26,21 +26,8 @@ class ClearFileContentOperator(OSSOperator):
     def execute(self, context):
         self.clear_from_key_file()
 
-#     @staticmethod
-#     def put_object_(bucket: oss2.api.Bucket, key: str, content):
-#         try:
-#             print(f"put_object: {key}")
-#             result = bucket.put_object(key, content)  # 上传文件内容
-#             print(f"Put object result: {result}")
-#         except Exception as e:
-#             raise AirflowException(f"Errors: {e}")
-#
-#     def put_object(self, key: str, content):
-#         self.put_object_(self.avatar_bucket, key, content)
-
-
     @staticmethod
-    def clear_object_(bucket: oss2.api.Bucket, key: str):
+    def clear_object_(bucket: oss2.api.Bucket, key: str, content):
         try:
             print(f"Clearing file content for key: {key}")
             result = bucket.put_object(key, "")
@@ -49,4 +36,4 @@ class ClearFileContentOperator(OSSOperator):
             raise AirflowException(f"Errors: {e}")
 
     def clear_object(self, key: str):
-        return self.clear_object_(self.bucket, key)
+        self.clear_object_(self.avatar_bucket, key)
