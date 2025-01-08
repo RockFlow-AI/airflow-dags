@@ -84,7 +84,7 @@ class OSSOperator(BaseOperator):
     def clear_object_(bucket: oss2.api.Bucket, key: str):
         try:
             print(f"Clearing file content for key: {key}")
-            return bucket.put_object(key, "")
+            result = bucket.put_object(key, "")
         except Exception as e:
             raise AirflowException(f"Errors: {e}")
 

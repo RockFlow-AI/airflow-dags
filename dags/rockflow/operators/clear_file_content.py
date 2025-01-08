@@ -20,20 +20,19 @@ class ClearFileContentOperator(OSSOperator):
         return self.oss_hook.get_bucket(self.avatar_bucket_name)
 
     def clear_from_key_file(self):
-        print(f"Clearing file content for key: {self.from_key} in bucket: {self.avatar_bucket_name}")
-        self.clear_object(self.from_key)
+        self.clear_object_(self.avatar_bucket, self.from_key)
 
     def execute(self, context):
         self.clear_from_key_file()
 
-    @staticmethod
-    def clear_object_(bucket: oss2.api.Bucket, key: str):
-        try:
-            print(f"Clearing file content for key: {key}")
-            result = bucket.put_object(key, "")
-            print(f"Put object result: {result}")
-        except Exception as e:
-            raise AirflowException(f"Errors: {e}")
-
-    def clear_object(self, key: str):
-        self.clear_object_(self.avatar_bucket, key)
+#     @staticmethod
+#     def clear_object_(bucket: oss2.api.Bucket, key: str):
+#         try:
+#             print(f"Clearing file content for key: {key}")
+#             result = bucket.put_object(key, "")
+#             print(f"Put object result: {result}")
+#         except Exception as e:
+#             raise AirflowException(f"Errors: {e}")
+#
+#     def clear_object(self, key: str):
+#         self.clear_object_(self.avatar_bucket, key)
