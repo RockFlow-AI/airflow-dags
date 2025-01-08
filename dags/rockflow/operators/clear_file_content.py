@@ -19,8 +19,9 @@ class ClearFileContentOperator(OSSOperator):
         return self.oss_hook.get_bucket(self.avatar_bucket_name)
 
     def clear_from_key_file(self):
-        self.clear_file(self.from_key)
-        self.put_object(self.avatar_bucket, self.from_key, "")
+        print(f"Clearing file content for key: {self.from_key}")
+        # 修复调用 put_object 的代码
+        self.put_object(self.from_key, "")
 
-    def execute(self, context: Any):
+    def execute(self, context):
         self.clear_from_key_file()
