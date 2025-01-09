@@ -5,6 +5,7 @@ from airflow.models import DAG
 from rockflow.dags.const import *
 from rockflow.operators.const import AVATAR_BUCKET_NAME
 from rockflow.operators.logo_gen import LogoImportOperator
+from rockflow.operators.clear_file_content import ClearFileContentOperator
 
 with DAG(
         "logo_download",
@@ -54,4 +55,13 @@ with DAG(
         source_folder="company/black/source/",
         target_folder="company/black/public/",
     )
+
+    clear_logo_file_content = ClearFileContentOperator(
+        task_id='clear_logo_file_content',
+        from_key="company/symbols/stocks.txt",
+        avatar_bucket_name=AVATAR_BUCKET_NAME,
+    )
+
+    logo_import >> clear_logo_file_content
+    black_logo_import >> clear_logo_file_content
 
