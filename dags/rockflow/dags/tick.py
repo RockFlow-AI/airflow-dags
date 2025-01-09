@@ -496,4 +496,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 200},
     dag=update_better_buys_year_yield,
 )
-# test push
+
+check_holiday_then_notice = DAG(
+    "check_holiday_then_notice",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 1, 9, tz='Asia/Shanghai'),
+    schedule_interval='30 9 * * *',
+    default_args={
+        "owner": "mao",
+        "depends_on_past": False,
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='check_holiday_then_notice',
+    method='GET',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/holidays',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=check_holiday_then_notice,
+)
