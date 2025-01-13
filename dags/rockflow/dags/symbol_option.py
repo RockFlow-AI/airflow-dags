@@ -103,3 +103,27 @@ option_chain_us_task = SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=option_chain_us,
 )
+
+
+option_chain_us_fiu = DAG(
+    "option_chain_us_fiu",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 1, 13, tz='America/New_York'),
+    schedule_interval='0 15 * * 0',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+option_chain_us_fiu_task = SimpleHttpOperator(
+    task_id='option_chain',
+    method='PATCH',
+    http_conn_id='flow-feed-tick-fiu',
+    endpoint='/tick/inner/options/chains',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=option_chain_us_fiu,
+)
