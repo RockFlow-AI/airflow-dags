@@ -11,7 +11,7 @@ from rockflow.operators.clear_file_content import ClearFileContentOperator
 with DAG(
         "logo_download",
         catchup=False,
-        start_date=datetime.now(),
+        start_date=datetime(2025, 1, 10),
         schedule_interval=timedelta(minutes=1),
         default_args=DEFAULT_DEBUG_ARGS
 ) as logo_download:
