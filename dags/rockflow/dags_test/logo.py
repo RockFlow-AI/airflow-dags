@@ -11,7 +11,7 @@ with DAG(
         "logo_download",
         catchup=False,
         start_date=datetime.now(),
-        schedule_interval="@once",
+        schedule_interval=timedelta(minutes=1),
         default_args=DEFAULT_DEBUG_ARGS
 ) as logo_download:
     # public_logo_download = PublicLogoBatchOperator(
