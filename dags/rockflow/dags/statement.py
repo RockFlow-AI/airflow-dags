@@ -125,7 +125,7 @@ option_exercise_report = DAG(
     "option_exercise_report",
     catchup=False,
     start_date=datetime(2022, 12, 5, 0, 0),
-    schedule_interval='0 10 * * 1-7',
+    schedule_interval='0,20,40 10 * * 1-7',
     default_args={
         "owner": "caoyunfei",
         "depends_on_past": False,
