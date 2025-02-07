@@ -503,7 +503,7 @@ check_holiday_then_notice = DAG(
     start_date=pendulum.datetime(2025, 1, 9, tz='Asia/Shanghai'),
     schedule_interval='30 9 * * *',
     default_args={
-        "owner": "mao",
+        "owner": "maoshanghui",
         "depends_on_past": False,
         "retries": 2,
         "retry_delay": timedelta(minutes=2),
