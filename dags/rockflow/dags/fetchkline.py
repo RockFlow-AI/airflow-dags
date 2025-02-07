@@ -309,7 +309,7 @@ SimpleHttpOperator(
     endpoint='/ticker/inner/markets/HK/candles/ONE_MINUTE/latest',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 200},
-    dag=fetch_kline_us_1m_last,
+    dag=fetch_kline_hk_1m_last,
 )
 # 美股 最后一分钟补点
 fetch_kline_us_1m_last = DAG(
@@ -325,7 +325,7 @@ fetch_kline_us_1m_last = DAG(
     }
 )
 SimpleHttpOperator(
-    task_id='fetch_kline_osus_1m_last',
+    task_id='fetch_kline_us_1m_last',
     method='PATCH',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/markets/US/candles/ONE_MINUTE/latest',
