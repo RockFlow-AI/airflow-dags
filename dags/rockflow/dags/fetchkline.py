@@ -79,7 +79,7 @@ fetch_kline_hk_week = DAG(
     "fetch_kline_hk_week",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='Asia/Shanghai'),
-    schedule_interval='0 0 9 * * 1',
+    schedule_interval='0 9 * * 1',
     default_args={
         "owner": "maoshanghui",
         "depends_on_past": False,
@@ -102,7 +102,7 @@ fetch_kline_us_week = DAG(
     "fetch_kline_us_week",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='America/New_York'),
-    schedule_interval='0 0 9 * * 1',
+    schedule_interval='0 9 * * 1',
     default_args={
         "owner": "maoshanghui",
         "depends_on_past": False,
@@ -125,7 +125,7 @@ fetch_kline_osus_week = DAG(
     "fetch_kline_osus_week",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='America/New_York'),
-    schedule_interval='0 0 9 * * 1',
+    schedule_interval='0 9 * * 1',
     default_args={
         "owner": "maoshanghui",
         "depends_on_past": False,
@@ -149,7 +149,7 @@ fetch_kline_hk_1m_9_30_9_59 = DAG(
     "fetch_kline_hk_1m_9_30_9_59",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='Asia/Shanghai'),
-    schedule_interval='0 30-59 9 * 1-5',
+    schedule_interval='30-59 9 * * 1-5',
     default_args={
         "owner": "maoshanghui",
         "depends_on_past": False,
@@ -172,7 +172,7 @@ fetch_kline_hk_1m_10_00_16_00 = DAG(
     "fetch_kline_hk_1m_10_00_16_00",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='Asia/Shanghai'),
-    schedule_interval='0 * 10-16 * 1-5',
+    schedule_interval='0 10-16 * * 1-5',
     default_args={
         "owner": "maoshanghui",
         "depends_on_past": False,
@@ -197,7 +197,7 @@ fetch_kline_us_1m_9_30_9_59 = DAG(
     "fetch_kline_us_1m_9_30_9_59",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='America/New_York'),
-    schedule_interval='0 30-59 9 * 1-5',
+    schedule_interval='30-59 9 * * 1-5',
     default_args={
         "owner": "maoshanghui",
         "depends_on_past": False,
@@ -220,7 +220,7 @@ fetch_kline_us_1m_10_00_16_00 = DAG(
     "fetch_kline_us_1m_10_00_16_00",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='America/New_York'),
-    schedule_interval='0 * 10-16 * 1-5',
+    schedule_interval='0 10-16 * * 1-5',
     default_args={
         "owner": "maoshanghui",
         "depends_on_past": False,
@@ -245,7 +245,7 @@ fetch_kline_osus_1m_9_30_9_59 = DAG(
     "fetch_kline_osus_1m_9_30_9_59",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='America/New_York'),
-    schedule_interval='0 30-59 9 * 1-5',
+    schedule_interval='30-59 9 * * 1-5',
     default_args={
         "owner": "maoshanghui",
         "depends_on_past": False,
@@ -269,7 +269,7 @@ fetch_kline_osus_1m_10_00_16_00 = DAG(
     "fetch_kline_osus_1m_10_00_16_00",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='America/New_York'),
-    schedule_interval='0 * 10-16 * 1-5',
+    schedule_interval='0 10-16 * * 1-5',
     default_args={
         "owner": "maoshanghui",
         "depends_on_past": False,
