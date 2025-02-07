@@ -168,8 +168,8 @@ SimpleHttpOperator(
     dag=fetch_kline_hk_1m_9_30_9_59,
 )
 # --
-fetch_kline_hk_1m_10_00_16_00 = DAG(
-    "fetch_kline_hk_1m_10_00_16_00",
+fetch_kline_hk_1m_10_00_15_59 = DAG(
+    "fetch_kline_hk_1m_10_00_15_59",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='Asia/Shanghai'),
     schedule_interval='* 10-15 * * 1-5',
@@ -182,13 +182,13 @@ fetch_kline_hk_1m_10_00_16_00 = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='fetch_kline_hk_1m_10_00_16_00',
+    task_id='fetch_kline_hk_1m_10_00_15_59',
     method='PATCH',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/markets/HK/candles/ONE_MINUTE/latest',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 200},
-    dag=fetch_kline_hk_1m_10_00_16_00,
+    dag=fetch_kline_hk_1m_10_00_15_59,
 )
 #  港股 9点半～16点 END
 
@@ -216,8 +216,8 @@ SimpleHttpOperator(
     dag=fetch_kline_us_1m_9_30_9_59,
 )
 
-fetch_kline_us_1m_10_00_16_00 = DAG(
-    "fetch_kline_us_1m_10_00_16_00",
+fetch_kline_us_1m_10_00_15_59 = DAG(
+    "fetch_kline_us_1m_10_00_15_59",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='America/New_York'),
     schedule_interval='* 10-15 * * 1-5',
@@ -230,13 +230,13 @@ fetch_kline_us_1m_10_00_16_00 = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='fetch_kline_us_1m_10_00_16_00',
+    task_id='fetch_kline_us_1m_10_00_15_59',
     method='PATCH',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/markets/US/candles/ONE_MINUTE/latest',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 200},
-    dag=fetch_kline_us_1m_10_00_16_00,
+    dag=fetch_kline_us_1m_10_00_15_59,
 )
 #  美股 9点半～16点 END
 
@@ -265,8 +265,8 @@ SimpleHttpOperator(
 )
 
 
-fetch_kline_osus_1m_10_00_16_00 = DAG(
-    "fetch_kline_osus_1m_10_00_16_00",
+fetch_kline_osus_1m_10_00_15_59 = DAG(
+    "fetch_kline_osus_1m_10_00_15_59",
     catchup=False,
     start_date=pendulum.datetime(2025, 2, 7, tz='America/New_York'),
     schedule_interval='* 10-15 * * 1-5',
@@ -279,12 +279,79 @@ fetch_kline_osus_1m_10_00_16_00 = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='fetch_kline_osus_1m_10_00_16_00',
+    task_id='fetch_kline_osus_1m_10_00_15_59',
     method='PATCH',
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/markets/OSUS/candles/ONE_MINUTE/latest',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 200},
-    dag=fetch_kline_osus_1m_10_00_16_00,
+    dag=fetch_kline_osus_1m_10_00_15_59,
 )
 # 美股期权 9点半～16点 END
+
+# 港股 最后一分钟补点
+fetch_kline_hk_1m_last = DAG(
+    "fetch_kline_hk_1m_last",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 2, 7, tz='Asia/Shanghai'),
+    schedule_interval='1 16 * * 1-5',
+    default_args={
+        "owner": "maoshanghui",
+        "depends_on_past": False,
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+    }
+)
+SimpleHttpOperator(
+    task_id='fetch_kline_hk_1m_last',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/markets/HK/candles/ONE_MINUTE/latest',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=fetch_kline_us_1m_last,
+)
+# 美股 最后一分钟补点
+fetch_kline_us_1m_last = DAG(
+    "fetch_kline_us_1m_last",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 2, 7, tz='America/New_York'),
+    schedule_interval='1 16 * * 1-5',
+    default_args={
+        "owner": "maoshanghui",
+        "depends_on_past": False,
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+    }
+)
+SimpleHttpOperator(
+    task_id='fetch_kline_osus_1m_last',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/markets/US/candles/ONE_MINUTE/latest',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=fetch_kline_us_1m_last,
+)
+# 美股期权补点
+fetch_kline_osus_1m_last = DAG(
+    "fetch_kline_osus_1m_last",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 2, 7, tz='America/New_York'),
+    schedule_interval='1 16 * * 1-5',
+    default_args={
+        "owner": "maoshanghui",
+        "depends_on_past": False,
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+    }
+)
+SimpleHttpOperator(
+    task_id='fetch_kline_osus_1m_last',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/markets/OSUS/candles/ONE_MINUTE/latest',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=fetch_kline_osus_1m_last,
+)
