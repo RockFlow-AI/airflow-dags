@@ -355,3 +355,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 200},
     dag=fetch_kline_osus_1m_last,
 )
+
+# 测试专用
+fetch_kline_osus_1m_test = DAG(
+    "fetch_kline_osus_1m_test",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 2, 7, tz='America/New_York'),
+    schedule_interval='*/1 * * * *',
+    default_args={
+        "owner": "maoshanghui",
+        "depends_on_past": False,
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+    }
+)
+SimpleHttpOperator(
+    task_id='fetch_kline_osus_1m_test',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/markets/OSUS/candles/ONE_MINUTE/latest',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=fetch_kline_osus_1m_test,
+)
