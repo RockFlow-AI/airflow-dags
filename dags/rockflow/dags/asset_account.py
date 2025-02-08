@@ -19,7 +19,7 @@ SimpleHttpOperator(
     task_id='account_asset_sync_us',
     method='PUT',
     http_conn_id='flow-ledger',
-    endpoint='/ledger/inner/accounts/sync/accountAssets/activeUsers?startTime={date}'.format(date=(datetime.now() + timedelta(days=-10)).strftime("%Y-%m-%d")),
+    endpoint='/ledger/inner/accounts/sync/accountAssets/activeUsers?startTime={date}'.format(date=(datetime.now() + timedelta(days=-5)).strftime("%Y-%m-%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=account_asset_sync_us,
