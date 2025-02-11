@@ -238,3 +238,49 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=option_follow_task,
 )
+
+top_movers_1 = DAG(
+    "top_movers_1",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 1, 26, tz='America/New_York'),
+    schedule_interval='31-51/10 9 * * 1-5',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=1),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='top_movers_1',
+    method='PATCH',
+    http_conn_id='flow-feed-portfolio',
+    endpoint='/alert/inner/topMovers',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=top_movers_1,
+)
+
+top_movers_2 = DAG(
+    "top_movers_2",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 1, 26, tz='America/New_York'),
+    schedule_interval='*/10 10-15 * * 1-5',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=1),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='top_movers_2',
+    method='PATCH',
+    http_conn_id='flow-feed-portfolio',
+    endpoint='/alert/inner/topMovers',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=top_movers_2,
+)

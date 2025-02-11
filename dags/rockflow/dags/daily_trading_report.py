@@ -19,6 +19,6 @@ with DAG(
         task_id="daily_trading_report",
         method="POST",
         http_conn_id="rockbot",
-        endpoint="/bot/api/data/get/daily_trading_report",
+        endpoint="/bot/api/data/daily-trading-report",
         response_check=lambda response: response.json()["code"] == 200,
     )
