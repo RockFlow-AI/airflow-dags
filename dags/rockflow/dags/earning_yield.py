@@ -96,7 +96,7 @@ SimpleHttpOperator(
     http_conn_id='flow-social',
     endpoint='/social/inner/earningYield/leaderboards/update/rank/10m',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 500},
+    extra_options={"timeout": 1000},
     dag=day_earning_yield_rate_update_10m,
 )
 
