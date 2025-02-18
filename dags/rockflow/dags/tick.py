@@ -32,7 +32,7 @@ ticks_delay_1m = SimpleHttpOperator(
     task_id='ticks_delay_1m',
     method='PATCH',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/ticks?time={{ (macros.datetime.fromisoformat(ts) - macros.timedelta(minutes=1)).strftime("%Y-%m-%d %H:%M:%S") }}',
+    endpoint='/ticker/inner/ticks?time={{ (macros.datetime.fromisoformat(ts) - macros.timedelta(minutes=2)).strftime("%Y-%m-%d %H:%M:%S") }}',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=ticks,
