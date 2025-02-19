@@ -124,6 +124,6 @@ option_chain_us_fiu_task = SimpleHttpOperator(
     http_conn_id='flow-feed-tick-fiu',
     endpoint='/tick/inner/options/chains',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
+    extra_options={"timeout": 180},
     dag=option_chain_us_fiu,
 )
