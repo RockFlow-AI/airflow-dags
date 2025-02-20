@@ -520,3 +520,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 200},
     dag=check_holiday_then_notice,
 )
+send_option_subscription_to_fiu = DAG(
+    "send_option_subscription_to_fiu",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 2, 20, tz='America/New_York'),
+    schedule_interval='50 8 * * *',
+    default_args={
+        "owner": "mao",
+        "depends_on_past": False,
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='send_option_subscription_to_fiu',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/subscription/option',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=send_option_subscription_to_fiu,
+)
