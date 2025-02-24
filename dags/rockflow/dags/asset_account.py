@@ -3,6 +3,28 @@ from airflow.models import DAG
 from datetime import timedelta, datetime
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
+account_asset_sync = DAG(
+    "account_asset_sync",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 11, 4, tz='Asia/Shanghai'),
+    schedule_interval='30 18 * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='account_asset_sync',
+    method='PUT',
+    http_conn_id='flow-ledger',
+    endpoint='/ledger/inner/accounts/sync/accountAssets',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=account_asset_sync,
+)
+
 account_asset_sync_us = DAG(
     "account_asset_sync_us",
     catchup=False,
