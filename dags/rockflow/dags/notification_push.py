@@ -116,6 +116,28 @@ SimpleHttpOperator(
     dag=US_MARKET_OPEN_NOTIFICATION,
 )
 
+HK_MARKET_OPEN_NOTIFICATION = DAG(
+    "HK_MARKET_OPEN_NOTIFICATION",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 2, 27, tz='Asia/Hong_Kong'),
+    schedule_interval='29 09 * * *',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='HK_MARKET_OPEN_NOTIFICATION',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/tradingHours/open/notification/task?market=HK',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=HK_MARKET_OPEN_NOTIFICATION,
+)
+
 # 定时任务 - 每十分钟对 24 小时内未注册用户发送 push
 push_to_unregister = DAG(
     "push_to_unregister",
