@@ -119,7 +119,7 @@ SimpleHttpOperator(
 HK_MARKET_OPEN_NOTIFICATION = DAG(
     "HK_MARKET_OPEN_NOTIFICATION",
     catchup=False,
-    start_date=pendulum.datetime(2025, 2, 27, tz='Asia/Hong_Kong'),
+    start_date=pendulum.datetime(2025, 3, 3, tz='Asia/Hong_Kong'),
     schedule_interval='29 09 * * *',
     default_args={
         "owner": "yinxiang",
