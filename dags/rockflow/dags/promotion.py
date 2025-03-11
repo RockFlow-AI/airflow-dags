@@ -96,3 +96,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=coupon_expires,
 )
+
+coupon_expiring_soon_push = DAG(
+    "coupon_expiring_soon_push",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 2, 20, tz='America/New_York'),
+    schedule_interval='0 8 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='coupon_expiring_soon_push',
+    method='PATCH',
+    http_conn_id='flow-promotion',
+    endpoint='/promotion/inner/coupon/expiring/soon/push',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=coupon_expiring_soon_push,
+)
