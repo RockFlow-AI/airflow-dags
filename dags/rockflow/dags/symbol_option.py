@@ -109,7 +109,7 @@ option_chain_us_fiu = DAG(
     "option_chain_us_fiu",
     catchup=False,
     start_date=pendulum.datetime(2025, 1, 13, tz='America/New_York'),
-    schedule_interval='0 15 * * 0',
+    schedule_interval='0 20 * * *',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
