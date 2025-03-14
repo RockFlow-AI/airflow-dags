@@ -108,6 +108,7 @@ for task, value in setting.items():
             task_id=value['name'],
             method='GET',
             http_conn_id='feishu-sensor-alert',
+            extra_options={"timeout": 120},
             endpoint=value["endpoint"],
         )
     globals()[value['name']] = dag
