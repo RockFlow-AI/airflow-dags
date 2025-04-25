@@ -140,3 +140,47 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=update_coupon_pending_status,
 )
+
+add_leaderboard_fake_data = DAG(
+    "add_leaderboard_fake_data",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 4, 4, tz='Asia/Shanghai'),
+    schedule_interval='0 9,15 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='add_leaderboard_fake_data',
+    method='PATCH',
+    http_conn_id='flow-promotion',
+    endpoint='/promotion/inner/leaderboard/fake/50',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=add_leaderboard_fake_data,
+)
+
+distribute_QUIZ_coupon_reward = DAG(
+    "distribute_QUIZ_coupon_reward",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 4, 4, tz='Asia/Shanghai'),
+    schedule_interval='0 0 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='distribute_QUIZ_coupon_reward',
+    method='PATCH',
+    http_conn_id='flow-promotion',
+    endpoint='/promotion/api/reward/QUIZ_REWARD/QUEST_USER_QUIZ',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=distribute_QUIZ_coupon_reward,
+)
