@@ -144,7 +144,7 @@ SimpleHttpOperator(
 add_leaderboard_fake_data = DAG(
     "add_leaderboard_fake_data",
     catchup=False,
-    start_date=pendulum.datetime(2024, 4, 4, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2024, 5, 1, tz='Asia/Shanghai'),
     schedule_interval='0 9,15 * * *',
     default_args={
         "owner": "yuzhiqiang",
