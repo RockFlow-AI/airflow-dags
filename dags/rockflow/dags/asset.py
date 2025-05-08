@@ -90,7 +90,7 @@ SimpleHttpOperator(
     task_id='yield_stat',
     method='PUT',
     http_conn_id='flow-ledger',
-    endpoint='ledger/inner/accountAsset/stat/earningYield/markets/US/{date}'.format(date=(datetime.now() + timedelta(days=-1)).strftime("%Y-%m-%d")),
+    endpoint='ledger/inner/accountAsset/stat/earningYield/markets/US',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
     dag=yield_stat,
