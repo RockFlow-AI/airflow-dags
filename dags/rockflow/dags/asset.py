@@ -55,7 +55,7 @@ asset_stat = DAG(
     "asset_stat",
     catchup=False,
     start_date=pendulum.datetime(2023, 7, 12, tz='America/New_York'),
-    schedule_interval='30 8 * * *',
+    schedule_interval='30 20 * * *',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
