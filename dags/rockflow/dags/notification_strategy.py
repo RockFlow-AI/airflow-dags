@@ -22,7 +22,7 @@ SimpleHttpOperator(
     http_conn_id='flow-notification-strategy',
     endpoint='/notification/strategy/inner/send/config/msg',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
+    extra_options={"timeout": 300},
     dag=send_msg_by_config_1m,
 )
 
