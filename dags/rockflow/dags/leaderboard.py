@@ -19,7 +19,7 @@ leaderboard_baseData_alarm = DAG(
 SimpleHttpOperator(
     task_id='leaderboard_baseData_alarm',
     method='POST',
-    http_conn_id='flow-feed-portfolio',
+    http_conn_id='flow-social',
     endpoint='/social/inner/leaderboard/update/alarm/baseData',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
@@ -41,7 +41,7 @@ leaderboard_daily_cutoff_alarm = DAG(
 SimpleHttpOperator(
     task_id='leaderboard_daily_cutoff_alarm',
     method='POST',
-    http_conn_id='flow-ledger',
+    http_conn_id='flow-social',
     endpoint='/social/inner/leaderboard/update/alarm/leaderboard',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
