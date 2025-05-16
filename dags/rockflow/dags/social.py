@@ -156,6 +156,6 @@ SimpleHttpOperator(
     http_conn_id='flow-social',
     endpoint='/social/inner/copyTrading/refresh/profit',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
+    extra_options={"timeout": 600},
     dag=refresh_copyTrading_profit,
 )
