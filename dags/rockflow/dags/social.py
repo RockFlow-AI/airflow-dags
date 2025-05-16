@@ -115,3 +115,24 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=copy_watchlist_task,
 )
+
+refresh_copyTrading_profit = DAG(
+    "refresh_copyTrading_profit",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 5, 15, tz='America/New_York'),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='refresh_copyTrading_profit',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/copyTrading/refresh/profit',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=refresh_copyTrading_profit,
+)
