@@ -139,7 +139,7 @@ SimpleHttpOperator(
     dag=copy_watchlist_task,
 )
 
-copy_watchlistrefresh_copyTrading_profit_task = DAG(
+refresh_copyTrading_profit = DAG(
     "refresh_copyTrading_profit",
     catchup=False,
     start_date=pendulum.datetime(2025, 5, 15, tz='America/New_York'),
