@@ -136,3 +136,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 600},
     dag=refresh_copyTrading_profit,
 )
+
+social_batch_create_virtual_account = DAG(
+    "social_batch_create_virtual_account",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 5, 20, tz='America/New_York'),
+    schedule_interval='*/5 * * * *',
+    default_args={
+        "owner": "maomao",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='social_batch_create_virtual_account',
+    method='POST',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/strategies/users',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=social_batch_create_virtual_account,
+)
