@@ -29,6 +29,30 @@ SimpleHttpOperator(
     dag=currencies_refresh,
 )
 
+# 汇率更新
+currencies_refresh_simulation = DAG(
+    "currencies_refresh_simulation",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 3, 22, tz='America/New_York'),
+    schedule_interval='30 0 * * *',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='currencies_refresh_simulation',
+    method='POST',
+    http_conn_id='flow-portfolio-service-simulation',
+    endpoint='/portfolio/inner/currencies/refresh',
+    headers={'appId': '1'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=currencies_refresh_simulation,
+)
+
 # 节假日更新
 holiday_refresh = DAG(
     "holiday_refresh_yearly",
