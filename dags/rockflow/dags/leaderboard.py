@@ -30,7 +30,7 @@ leaderboard_daily_cutoff_alarm = DAG(
     "leaderboard_daily_cutoff_alarm",
     catchup=False,
     start_date=pendulum.datetime(2025, 5, 9, tz='America/New_York'),
-    schedule_interval='10,20 4 * * *',
+    schedule_interval='10,20 4 * * 1-5',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
