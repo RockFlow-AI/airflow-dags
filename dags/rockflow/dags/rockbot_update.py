@@ -42,3 +42,28 @@ with DAG(
         endpoint="/bot/api/graphs/clean_expired_graphs",
         response_check=lambda response: response.json()["code"] == 200,
     )
+
+
+from datetime import datetime, timedelta
+from airflow import DAG
+import pendulum
+from airflow.providers.http.operators.http import SimpleHttpOperator
+with DAG(
+    "rockbot_update_user_index",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 6, 6),
+    schedule_interval="*/20 * * * *",
+    default_args={
+        "owner": "caohaoxuan",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+) as rockbot_update_user_index:
+    # refresh config
+    rockbot_update_user_index_task = SimpleHttpOperator(
+        task_id='rockbot_update_user_index',
+        method='POST',
+        http_conn_id='rockbot',
+        endpoint='/bot/api/user/dynamic_insert',
+        response_check=lambda response: response.json()['code'] == 200,
+    )
