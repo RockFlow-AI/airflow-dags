@@ -64,6 +64,6 @@ with DAG(
         task_id='rockbot_update_user_index',
         method='POST',
         http_conn_id='rockbot',
-        endpoint='/bot/api/user/dynamic_insert',
+        endpoint='/bot/api/index/user/dynamic_insert',
         response_check=lambda response: response.json()['code'] == 200,
     )
