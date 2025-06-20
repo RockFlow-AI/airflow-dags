@@ -421,7 +421,7 @@ daily_last_tick_us_yahoo = DAG(
     "daily_last_tick_us_yahoo",
     catchup=False,
     start_date=pendulum.datetime(2023, 1, 14, tz='America/New_York'),
-    schedule_interval='50 20 * * 1-5',
+    schedule_interval='50 17,18 * * 1-5',
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
