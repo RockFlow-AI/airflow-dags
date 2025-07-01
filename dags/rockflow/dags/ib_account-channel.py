@@ -139,6 +139,18 @@ SimpleHttpOperator(
     dag=fee_template_status_redo,
 )
 
+lock_ipo_record = DAG(
+    "lock_ipo_record",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 6, 25),
+    schedule_interval=timedelta(minutes=10),
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
 SimpleHttpOperator(
     task_id='lock_ipo_record',
     method='PATCH',
@@ -147,16 +159,4 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 1000},
     dag=lock_ipo_record,
-)
-
-lock_ipo_record = DAG(
-    "lock_ipo_record",
-    catchup=False,
-    start_date=pendulum.datetime(2025, 6, 25),
-    schedule_interval=timedelta(minutes=10),
-    default_args={
-        "owner": "jingjiadong",
-        "depends_on_past": False,
-        "retries": 0,
-    }
 )
