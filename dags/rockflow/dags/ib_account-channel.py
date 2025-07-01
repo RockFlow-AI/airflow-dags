@@ -155,7 +155,7 @@ lock_ipo_record = DAG(
     start_date=pendulum.datetime(2025, 6, 25),
     schedule_interval=timedelta(minutes=10),
     default_args={
-        "owner": "jingjiadong",
+        "owner": "yuzhiqiang",
         "depends_on_past": False,
         "retries": 0,
     }
