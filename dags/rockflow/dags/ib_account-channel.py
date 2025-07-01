@@ -139,16 +139,6 @@ SimpleHttpOperator(
     dag=fee_template_status_redo,
 )
 
-SimpleHttpOperator(
-    task_id='lock_ipo_record',
-    method='PATCH',
-    http_conn_id='flow-master-account',
-    endpoint='/masterAccount/inner/ipo/record/lock',
-    response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 1000},
-    dag=lock_ipo_record,
-)
-
 lock_ipo_record = DAG(
     "lock_ipo_record",
     catchup=False,
@@ -159,4 +149,14 @@ lock_ipo_record = DAG(
         "depends_on_past": False,
         "retries": 0,
     }
+)
+
+SimpleHttpOperator(
+    task_id='lock_ipo_record',
+    method='PATCH',
+    http_conn_id='flow-master-account',
+    endpoint='/masterAccount/inner/ipo/record/lock',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=lock_ipo_record,
 )
