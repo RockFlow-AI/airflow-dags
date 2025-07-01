@@ -138,3 +138,4 @@ SimpleHttpOperator(
     extra_options={"timeout": 1000},
     dag=fee_template_status_redo,
 )
+    extra_options={"timeout": 1000},
