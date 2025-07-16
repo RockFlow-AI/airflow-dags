@@ -153,7 +153,8 @@ RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1WEEK = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 0,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=1),
     }
 )
 
@@ -175,7 +176,8 @@ RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1MONTH = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 0,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=1),
     }
 )
 
@@ -197,7 +199,8 @@ RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1YEAR = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 0,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=1),
     }
 )
 
@@ -219,7 +222,8 @@ RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_5YEAR = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 0,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=1),
     }
 )
 
