@@ -72,3 +72,135 @@ SimpleHttpOperator(
     extra_options={"timeout": 3600},
     dag=FLUSH_HOT_WATCHLIST,
 )
+
+RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1DAY = DAG(
+    "RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1DAY",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 7, 15, tz='Asia/Shanghai'),
+    schedule_interval='*/1 * * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1DAY',
+    method='GET',
+    http_conn_id='flow-watchlist',
+    endpoint='inner/watchlist/reload/symbols/chart/cache/1day',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1DAY,
+)
+
+RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1WEEK = DAG(
+    "RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1WEEK",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 7, 15, tz='Asia/Shanghai'),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1WEEK',
+    method='GET',
+    http_conn_id='flow-watchlist',
+    endpoint='inner/watchlist/reload/symbols/chart/cache/1week',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1WEEK,
+)
+
+RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1MONTH = DAG(
+    "RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1MONTH",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 7, 15, tz='Asia/Shanghai'),
+    schedule_interval='0 0 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1MONTH',
+    method='GET',
+    http_conn_id='flow-watchlist',
+    endpoint='inner/watchlist/reload/symbols/chart/cache/1month',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1MONTH,
+)
+
+RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1YEAR = DAG(
+    "RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1YEAR",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 7, 15, tz='Asia/Shanghai'),
+    schedule_interval='0 0 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1YEAR',
+    method='GET',
+    http_conn_id='flow-watchlist',
+    endpoint='inner/watchlist/reload/symbols/chart/cache/1year',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1YEAR,
+)
+
+RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_5YEAR = DAG(
+    "RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_5YEAR",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 7, 15, tz='Asia/Shanghai'),
+    schedule_interval='0 0 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_5YEAR',
+    method='GET',
+    http_conn_id='flow-watchlist',
+    endpoint='inner/watchlist/reload/symbols/chart/cache/5year',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_5YEAR,
+)
+
+RELOAD_WATCHLIST_SYMBOL_FEED_CACHE = DAG(
+    "RELOAD_WATCHLIST_SYMBOL_FEED_CACHE",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 7, 15, tz='Asia/Shanghai'),
+    schedule_interval='*/1 * * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='RELOAD_WATCHLIST_SYMBOL_FEED_CACHE',
+    method='GET',
+    http_conn_id='flow-watchlist',
+    endpoint='inner/watchlist/reload/symbols/feed/cache',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 3600},
+    dag=RELOAD_WATCHLIST_SYMBOL_FEED_CACHE,
+)
