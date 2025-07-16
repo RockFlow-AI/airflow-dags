@@ -87,7 +87,7 @@ RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1DAY = DAG(
 
 SimpleHttpOperator(
     task_id='RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1DAY',
-    method='GET',
+    method='POST',
     http_conn_id='flow-watchlist',
     endpoint='inner/watchlist/reload/symbols/chart/cache/1day',
     response_check=lambda response: response.json()['code'] == 200,
@@ -109,7 +109,7 @@ RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1WEEK = DAG(
 
 SimpleHttpOperator(
     task_id='RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1WEEK',
-    method='GET',
+    method='POST',
     http_conn_id='flow-watchlist',
     endpoint='inner/watchlist/reload/symbols/chart/cache/1week',
     response_check=lambda response: response.json()['code'] == 200,
@@ -131,7 +131,7 @@ RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1MONTH = DAG(
 
 SimpleHttpOperator(
     task_id='RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1MONTH',
-    method='GET',
+    method='POST',
     http_conn_id='flow-watchlist',
     endpoint='inner/watchlist/reload/symbols/chart/cache/1month',
     response_check=lambda response: response.json()['code'] == 200,
@@ -153,7 +153,7 @@ RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1YEAR = DAG(
 
 SimpleHttpOperator(
     task_id='RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1YEAR',
-    method='GET',
+    method='POST',
     http_conn_id='flow-watchlist',
     endpoint='inner/watchlist/reload/symbols/chart/cache/1year',
     response_check=lambda response: response.json()['code'] == 200,
@@ -175,7 +175,7 @@ RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_5YEAR = DAG(
 
 SimpleHttpOperator(
     task_id='RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_5YEAR',
-    method='GET',
+    method='POST',
     http_conn_id='flow-watchlist',
     endpoint='inner/watchlist/reload/symbols/chart/cache/5year',
     response_check=lambda response: response.json()['code'] == 200,
@@ -197,7 +197,7 @@ RELOAD_WATCHLIST_SYMBOL_FEED_CACHE = DAG(
 
 SimpleHttpOperator(
     task_id='RELOAD_WATCHLIST_SYMBOL_FEED_CACHE',
-    method='GET',
+    method='POST',
     http_conn_id='flow-watchlist',
     endpoint='inner/watchlist/reload/symbols/feed/cache',
     response_check=lambda response: response.json()['code'] == 200,
