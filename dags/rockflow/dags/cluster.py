@@ -9,8 +9,8 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 currencies_refresh = DAG(
     "currencies_refresh_by_hour",
     catchup=False,
-    start_date=pendulum.datetime(2022, 3, 22, tz='America/New_York'),
-    schedule_interval='30 0 * * *',
+    start_date=pendulum.datetime(2022, 3, 22, tz='Asia/Shanghai'),
+    schedule_interval='58 08 * * *',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
@@ -33,8 +33,8 @@ SimpleHttpOperator(
 currencies_refresh_simulation = DAG(
     "currencies_refresh_simulation",
     catchup=False,
-    start_date=pendulum.datetime(2022, 3, 22, tz='America/New_York'),
-    schedule_interval='30 0 * * *',
+    start_date=pendulum.datetime(2022, 3, 22, tz='Asia/Shanghai'),
+    schedule_interval='58 08 * * *',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
