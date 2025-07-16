@@ -65,5 +65,5 @@ with DAG(
         method='POST',
         http_conn_id='rockbot',
         endpoint='/bot/api/index/user/dynamic_insert',
-        response_check=lambda response: response.json()['code'] == 200,
+        response_check=lambda response: response.json()['code'] == 201,
     )
