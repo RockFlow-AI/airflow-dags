@@ -172,7 +172,7 @@ RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1MONTH = DAG(
     "RELOAD_WATCHLIST_SYMBOL_CHART_CACHE_1MONTH",
     catchup=False,
     start_date=pendulum.datetime(2025, 7, 15, tz='Asia/Shanghai'),
-    schedule_interval='0 0 * * *',
+    schedule_interval='0 */1 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
