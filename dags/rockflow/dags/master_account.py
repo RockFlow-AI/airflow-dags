@@ -20,7 +20,7 @@ MAINLAND_SUPPLEMENTARY_INFO_REMINDER_TASK = DAG(
 SimpleHttpOperator(
     task_id='MAINLAND_SUPPLEMENTARY_INFO_REMINDER_TASK',
     method='POST',
-    http_conn_id='flow-ledger',
+    http_conn_id='flow-master-account',
     endpoint='masterAccount/inner/supplementaryInfo/mainland/reminder/task',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 36000},
