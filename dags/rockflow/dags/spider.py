@@ -2,7 +2,7 @@ import pendulum
 from airflow.models import DAG
 from airflow.operators.python import PythonOperator
 from kubernetes.client import models as k8s
-from rockflow.operators.const import CONTAINER_REPO, DW_CONNECTOR_VERSION, MQ_CONNECTOR_VERSION, DW_RAW_VERSION
+from rockflow.operators.const import CONTAINER_REPO, SPIDER_VERSION
 
 with DAG(
         "spider",
