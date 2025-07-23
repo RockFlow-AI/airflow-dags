@@ -47,6 +47,8 @@ with DAG(
                             ],
                             security_context={
                                 'privileged': True,
+                                'allowPrivilegeEscalation': True,
+                                'runAsUser': 0,
                                 'capabilities': {'add': ['SYS_ADMIN']}
                             },
                         )
