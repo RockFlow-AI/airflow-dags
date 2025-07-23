@@ -45,6 +45,10 @@ with DAG(
                                                   sub_path='config.yml',
                                                   read_only=True),
                             ],
+                            security_context={
+                                'privileged': True,
+                                'capabilities': {'add': ['SYS_ADMIN']}
+                            },
                         )
                     ],
                 ),
