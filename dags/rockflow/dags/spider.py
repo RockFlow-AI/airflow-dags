@@ -8,7 +8,7 @@ with DAG(
         "spider",
         catchup=False,
         start_date=pendulum.datetime(2025, 7, 23, tz='America/New_York'),
-        schedule_interval='0 */1 * * *',
+        schedule_interval='0 */4 * * *',
         concurrency=1,
         default_args={
             "owner": "yinxiang",
