@@ -126,12 +126,12 @@ SimpleHttpOperator(
     dag=refresh_active_symbol_proportion,
 )
 
-# 定时任务 - 每三小时调用一次拉取富途财报详情页数据
+# 定时任务 - 每一小时调用一次拉取富途财报详情页数据
 load_futu_financial_report_page_info = DAG(
     "load_futu_financial_report_page_info",
     catchup=False,
     start_date=pendulum.datetime(2024, 2, 24, tz='Asia/Shanghai'),
-    schedule_interval='0 */3 * * *',
+    schedule_interval='0 */1 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
