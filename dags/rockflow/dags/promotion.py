@@ -2,6 +2,7 @@ import time
 from datetime import datetime, timedelta
 
 import pendulum
+from dateutil.relativedelta import relativedelta
 from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
@@ -183,4 +184,28 @@ SimpleHttpOperator(
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
     dag=distribute_QUIZ_coupon_reward,
+)
+
+
+DISTRIBUTE_BOBBY_ORDER_COMMISSION_REDUCTION_REWARD = DAG(
+    "DISTRIBUTE_BOBBY_ORDER_COMMISSION_REDUCTION_REWARD",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 8, 7, tz='Asia/Shanghai'),
+    schedule_interval='0 14 1 1,4,7,10 *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='DISTRIBUTE_BOBBY_ORDER_COMMISSION_REDUCTION_REWARD',
+    method='PATCH',
+    http_conn_id='flow-promotion',
+    endpoint='/promotion/api/reward/BOBBY_ORDER_COMMISSION_REDUCTION/QUEST_BOBBY_ORDER?startDay={startDay}&endDay={endDay}'
+    .format(startDay=(datetime.now() - relativedelta(months=3)).strftime("%Y-%m-%d"), endDay=(datetime.now()).strftime("%Y-%m-%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=DISTRIBUTE_BOBBY_ORDER_COMMISSION_REDUCTION_REWARD,
 )
