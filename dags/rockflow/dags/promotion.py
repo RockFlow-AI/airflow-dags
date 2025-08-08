@@ -209,3 +209,27 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=DISTRIBUTE_BOBBY_ORDER_COMMISSION_REDUCTION_REWARD,
 )
+
+
+BOBBY_ORDER_COMMISSION_REDUCTION_LEADERBOARD = DAG(
+    "BOBBY_ORDER_COMMISSION_REDUCTION_LEADERBOARD",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 8, 7, tz='Asia/Shanghai'),
+    schedule_interval='0 0 1 * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='BOBBY_ORDER_COMMISSION_REDUCTION_LEADERBOARD',
+    method='PUT',
+    http_conn_id='flow-promotion',
+    endpoint='/promotion/api/promotions/BOBBY_ORDER_COMMISSION_REDUCTION/participation/leaderboard?month={month}'
+    .format(month=(datetime.now()).strftime("%Y-%m-%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=BOBBY_ORDER_COMMISSION_REDUCTION_LEADERBOARD,
+)
