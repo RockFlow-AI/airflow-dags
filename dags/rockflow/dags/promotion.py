@@ -227,7 +227,7 @@ SimpleHttpOperator(
     task_id='BOBBY_ORDER_COMMISSION_REDUCTION_LEADERBOARD',
     method='PUT',
     http_conn_id='flow-promotion',
-    endpoint='/promotion/api/promotions/BOBBY_ORDER_COMMISSION_REDUCTION/participation/leaderboard?month={month}'
+    endpoint='/promotion/inner/promotions/BOBBY_ORDER_COMMISSION_REDUCTION/participation/leaderboard?month={month}'
     .format(month=(datetime.now()).strftime("%Y-%m-%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
