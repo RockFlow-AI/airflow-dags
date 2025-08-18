@@ -6,12 +6,11 @@ from airflow.models import DAG
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
 
-# 定时任务 - 每三小时调用一次拉取富途财报数据
-load_futu_financial_report = DAG(
-    "load_futu_financial_report",
+load_futu_financial_report_calender_0_2 = DAG(
+    "load_futu_financial_report_calender_0_2",
     catchup=False,
     start_date=pendulum.datetime(2024, 1, 24, tz='Asia/Shanghai'),
-    schedule_interval='0 */3 * * *',
+    schedule_interval='0 17 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
@@ -21,13 +20,36 @@ load_futu_financial_report = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='load_futu_financial_report',
+    task_id='load_futu_financial_report_calender_0_2',
     method='POST',
     http_conn_id='flow-ticker-service',
-    endpoint='/ticker/financial/report/inner/loadFUTUSymbolReports',
+    endpoint='/ticker/financial/report/inner//loadFUTUFinancialCalendar/0/2',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 200},
-    dag=load_futu_financial_report,
+    dag=load_futu_financial_report_calender_0_2,
+)
+
+load_futu_financial_report_calender_15_17 = DAG(
+    "load_futu_financial_report_calender_15_17",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 1, 24, tz='Asia/Shanghai'),
+    schedule_interval='30 17 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 2,
+        "retry_delay": timedelta(minutes=2),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='load_futu_financial_report_calender_15_17',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/financial/report/inner//loadFUTUFinancialCalendar/15/17',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 200},
+    dag=load_futu_financial_report_calender_15_17,
 )
 
 # 定时任务 - 每天加载未发布的数据到 redis
