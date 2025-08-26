@@ -181,3 +181,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=social_batch_create_virtual_account,
 )
+
+finalize_copy_trading_plans = DAG(
+    "finalize_copy_trading_plans",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 8, 26, tz='America/New_York'),
+    schedule_interval='0 10 * * *',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='finalize_copy_trading_plans',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/copyTrading/plans',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=finalize_copy_trading_plans,
+)
