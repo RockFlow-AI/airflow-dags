@@ -47,3 +47,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 600},
     dag=leaderboard_daily_cutoff_alarm,
 )
+
+earningYield_leaderboard_alert = DAG(
+    "earningYield_leaderboard_alert",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 9, 4),
+    schedule_interval='0 * * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='earningYield_leaderboard_alert',
+    method='POST',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/earningYields/alert/task',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=earningYield_leaderboard_alert,
+)
