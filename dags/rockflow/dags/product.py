@@ -43,6 +43,29 @@ place_order = SimpleHttpOperator(
 create_product.post_execute = lambda **x: time.sleep(30)
 create_product >> place_order
 
+place_orders_task = DAG(
+    "place_orders_fund",
+    catchup=False,
+    start_date=pendulum.datetime(2023, 10, 30, tz='Asia/Shanghai'),
+    schedule_interval=None,
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 5,
+    }
+)
+
+place_order_manual = SimpleHttpOperator(
+    task_id='place_orders_manual',
+    method='POST',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/products/orders',
+    headers={'appId': '1'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=place_orders_task,
+)
+
 VIRTUAL_ORDER_TASK = DAG(
     "VIRTUAL_ORDER_TASK",
     catchup=False,
