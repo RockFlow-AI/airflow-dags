@@ -520,3 +520,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 200},
     dag=check_holiday_then_notice,
 )
+
+auto_update_fund_price = DAG(
+    "auto_update_fund_price",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 9, 10, tz='Asia/Shanghai'),
+    schedule_interval='30 09 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='auto_update_fund_price',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/daily-ticks/fund/auto/update',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=auto_update_fund_price,
+)
