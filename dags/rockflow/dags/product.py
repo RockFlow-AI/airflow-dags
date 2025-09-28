@@ -112,3 +112,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=PATROL_ORDER_TASK,
 )
+
+check_fund_order_expired = DAG(
+    "check_fund_order_expired",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 9, 25, tz='Asia/Shanghai'),
+    schedule_interval='0 0 * * 5',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='check_fund_order_expired',
+    method='PATCH',
+    http_conn_id='flow-portfolio-service',
+    endpoint='/portfolio/inner/fundOrders/check-expired',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=check_fund_order_expired,
+)
