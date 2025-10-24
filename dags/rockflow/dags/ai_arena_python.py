@@ -17,7 +17,7 @@ with DAG(
     # arena trade
     rockbot_arena_trade_task = SimpleHttpOperator(
         task_id='rockbot_arena_trade',
-        method='POST',
+        method='GET',
         http_conn_id='rockbot',
         endpoint='/bot/api/arena/schedule_routine',
         response_check=lambda response: response.json()['code'] == 200,
