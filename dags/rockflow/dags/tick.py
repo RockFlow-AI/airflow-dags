@@ -565,3 +565,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 200},
     dag=send_option_subscription_to_fiu,
 )
+
+mock_tick_us_fiu = DAG(
+    "mock_tick_us_fiu",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 1, 13, tz='America/New_York'),
+    schedule_interval='*/1 * * * *',
+    default_args={
+        "owner": "momo",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=5),
+    }
+)
+
+option_chain_us_fiu_task = SimpleHttpOperator(
+    task_id='mock_tick_us_fiu',
+    method='PATCH',
+    http_conn_id='flow-feed-tick-fiu',
+    endpoint='/tick/inner/mock/ticks',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=mock_tick_us_fiu,
+)
