@@ -308,3 +308,48 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=top_movers_2,
 )
+
+
+notify_unfinished_deposit = DAG(
+    "notify_unfinished_deposit",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 10, 15, tz='America/New_York'),
+    schedule_interval='*/5 * * * *',
+    default_args={
+        "owner": "maomao",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='notify_unfinished_deposit',
+    method='PATCH',
+    http_conn_id='flow-master-account',
+    endpoint='/inner/masterAccounts/notify/deposit',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=notify_unfinished_deposit,
+)
+
+auto_cancel_unfinished_deposit = DAG(
+    "auto_cancel_unfinished_deposit",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 10, 15, tz='America/New_York'),
+    schedule_interval='*/5 * * * *',
+    default_args={
+        "owner": "maomao",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='auto_cancel_unfinished_deposit',
+    method='PATCH',
+    http_conn_id='flow-master-account',
+    endpoint='/inner/masterAccounts/cancel/unfinished',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=auto_cancel_unfinished_deposit,
+)
