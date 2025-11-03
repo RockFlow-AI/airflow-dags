@@ -19,7 +19,7 @@ with DAG(
         task_id='rockbot_arena_news_push',
         method='GET',
         http_conn_id='rockbot',
-        endpoint='/bot/api/arena/schedule_routine',
+        endpoint='/bot/api/arena/news_push',
         response_check=lambda response: response.json()['code'] == 200,
     )
 
