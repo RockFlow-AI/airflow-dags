@@ -6,7 +6,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 with DAG(
     "rockbot_arena_news_push",
     catchup=False,
-    start_date=pendulum.datetime(2025, 10, 23),
+    start_date=pendulum.datetime(2025, 10, 23, tz='Asia/Shanghai'),
     schedule_interval='0 18-23/2,0-6/2 * * *',
     default_args={
         "owner": "caohaoxuan",
