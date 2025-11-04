@@ -3,7 +3,6 @@ from airflow.models import DAG
 from datetime import timedelta, datetime
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
-# 定时任务 - 每天北京时间六点调用一次
 ai_asset_refresh = DAG(
     "ai_asset_refresh",
     catchup=False,
