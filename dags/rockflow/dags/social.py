@@ -163,7 +163,7 @@ finalize_copy_trading_plans = DAG(
     "finalize_copy_trading_plans",
     catchup=False,
     start_date=pendulum.datetime(2025, 8, 26, tz='America/New_York'),
-    schedule_interval='*/10 * * * *',
+    schedule_interval='*/5 * * * *',
     default_args={
         "owner": "yinxiang",
         "depends_on_past": False,
