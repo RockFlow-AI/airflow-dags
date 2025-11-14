@@ -75,8 +75,8 @@ SimpleHttpOperator(
 yield_stat = DAG(
     "yield_stat",
     catchup=False,
-    start_date=pendulum.datetime(2025, 4, 12, tz='Asia/Shanghai'),
-    schedule_interval='0 9 * * *',
+    start_date=pendulum.datetime(2025, 4, 12, tz='America/New_York'),
+    schedule_interval='0 20 * * *',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
@@ -98,8 +98,8 @@ SimpleHttpOperator(
 yield_stat_simulation = DAG(
     "yield_stat_simulation",
     catchup=False,
-    start_date=pendulum.datetime(2025, 4, 12, tz='Asia/Shanghai'),
-    schedule_interval='20 9 * * *',
+    start_date=pendulum.datetime(2025, 4, 12, tz='America/New_York'),
+    schedule_interval='20 20 * * *',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
