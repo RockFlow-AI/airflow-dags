@@ -217,7 +217,7 @@ notify_subscribers = DAG(
 )
 
 notify_subscribers = SimpleHttpOperator(
-    task_id='ticks',
+    task_id='notify_subscribers',
     method='PATCH',
     http_conn_id='flow-social',
     endpoint='/social/inner/arena/notify/subscriber?time={{ macros.ds_format(ts, "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%d %H:%M:%S") }}',
