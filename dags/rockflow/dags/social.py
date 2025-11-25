@@ -207,7 +207,7 @@ SimpleHttpOperator(
 hightlight_subscribers = DAG(
     "hightlight_subscribers",
     catchup=False,
-    start_date=datetime(2025, 11, 25, 0, 0),
+    start_date=pendulum.datetime(2025, 8, 26, tz='America/New_York'),
     schedule_interval='*/5 * * * *',
     default_args={
         "owner": "maomao",
@@ -216,7 +216,7 @@ hightlight_subscribers = DAG(
     }
 )
 
-hightlight_subscribers = SimpleHttpOperator(
+SimpleHttpOperator(
     task_id='hightlight_subscribers',
     method='PATCH',
     http_conn_id='flow-social',
