@@ -203,3 +203,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=finalize_copy_trading_plans,
 )
+
+notify_subscribers = DAG(
+    "notify_subscribers",
+    catchup=False,
+    start_date=datetime(2025, 11, 25, 0, 0),
+    schedule_interval='*/5 * * * *',
+    default_args={
+        "owner": "maomao",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+notify_subscribers = SimpleHttpOperator(
+    task_id='ticks',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/arena/notify/subscriber?time={{ macros.ds_format(ts, "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%d %H:%M:%S") }}',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=notify_subscribers,
+)
