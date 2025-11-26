@@ -225,3 +225,45 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=hightlight_subscribers,
 )
+
+ai_strategy_daily_push = DAG(
+    "ai_strategy_daily_push",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 11, 24, tz='America/New_York'),
+    schedule_interval='00 18 * * 1-5',
+    default_args={
+        "owner": "maomao",
+        "depends_on_past": False,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ai_strategy_daily_push',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/arena/notify/push',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=ai_strategy_daily_push,
+)
+
+ai_strategy_weekly_email = DAG(
+    "ai_strategy_weekly_email",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 11, 24, tz='America/New_York'),
+    schedule_interval='00 18 * * 5',
+    default_args={
+        "owner": "maomao",
+        "depends_on_past": False,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ai_strategy_weekly_email',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/arena/notify/email',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=ai_strategy_weekly_email,
+)
