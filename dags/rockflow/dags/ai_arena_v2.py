@@ -7,7 +7,7 @@ with DAG(
     "rockbot_arena_trade_v2",
     catchup=False,
     start_date=pendulum.datetime(2025, 10, 23),
-    schedule_interval='*/15 * * * *',
+    schedule_interval='*/8 * * * *',
     default_args={
         "owner": "caohaoxuan",
         "depends_on_past": False,
