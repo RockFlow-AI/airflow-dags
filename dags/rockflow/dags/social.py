@@ -207,7 +207,7 @@ ai_strategy_daily_push = DAG(
     "ai_strategy_daily_push",
     catchup=False,
     start_date=pendulum.datetime(2024, 11, 24, tz='America/New_York'),
-    schedule_interval='00 18 * * 1-5',
+    schedule_interval='00 18 * * 1,3,5',
     default_args={
         "owner": "maomao",
         "depends_on_past": False,
