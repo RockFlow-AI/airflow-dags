@@ -267,3 +267,24 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=ai_strategy_weekly_email,
 )
+
+update_close_copy_plan_order_status = DAG(
+    "update_close_copy_plan_order_status",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 11, 24, tz='America/New_York'),
+    schedule_interval='*/1 * * * *,
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='update_close_copy_plan_order_status',
+    method='PUT',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/copyTradingOrder/close/position/status',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=update_close_copy_plan_order_status,
+)
