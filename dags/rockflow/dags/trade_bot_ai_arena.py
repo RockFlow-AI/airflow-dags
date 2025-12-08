@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from airflow import DAG
 import pendulum
+import json 
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
 with DAG(
