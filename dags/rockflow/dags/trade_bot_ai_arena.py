@@ -6,7 +6,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 with DAG(
     "tradebot_live_trade",
     catchup=False,
-    start_date=pendulum.datetime(2025, 12, 08),
+    start_date=pendulum.datetime(2025, 12, 8),
     schedule_interval="*/5 * * * *",
     default_args={
         "owner": "tanqiwen",
