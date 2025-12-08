@@ -20,12 +20,12 @@ with DAG(
         http_conn_id="tradebot",
         endpoint="/bot/api/arena/live/run",  # 注意前缀
         headers={"Content-Type": "application/json"},
-        data={
-            "disable_trades": False,        # True 时只做演练不下单
-            "max_arenas": None,             # 可设为整数限制数量
-            "dataset_prefix": None,         # 可选
-            "filter_arena_ids": None,       # "id1,id2" 或 None
-            "filter_participant_ids": None, # "uid1,uid2" 或 None
-        },
+        data=json.dumps({
+            "disable_trades": False,
+            "max_arenas": None,
+            "dataset_prefix": None,
+            "filter_arena_ids": None,
+            "filter_participant_ids": None,
+        }),
         response_check=lambda response: response.json().get("code") == 200,
     )
