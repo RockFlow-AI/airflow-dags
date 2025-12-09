@@ -49,6 +49,30 @@ SimpleHttpOperator(
     dag=copy_trading_copy_position_hk,
 )
 
+
+copy_trading_copy_position_hk_pm = DAG(
+    "copy_trading_copy_position_hk_pm",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 10, 14, tz='Asia/Shanghai'),
+    schedule_interval='05 13 * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=1),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='copy_trading_copy_position_hk_pm',
+    method='PUT',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/copyTrading/position/init?market=HK',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=copy_trading_copy_position_hk_pm,
+)
+
 copy_trading_auto_correction_us = DAG(
     "copy_trading_auto_correction_us",
     catchup=False,
