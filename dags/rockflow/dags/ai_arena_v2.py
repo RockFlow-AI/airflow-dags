@@ -7,7 +7,7 @@ with DAG(
     "rockbot_arena_trade_v2",
     catchup=False,
     start_date=pendulum.datetime(2025, 10, 23),
-    schedule_interval='*/5 * * * *',
+    schedule_interval='*/10 * * * *',
     default_args={
         "owner": "caohaoxuan",
         "depends_on_past": False,
@@ -19,7 +19,7 @@ with DAG(
         task_id='rockbot_arena_trade_v2',
         method='GET',
         http_conn_id='rockbot',
-        endpoint='/bot/api/arena/v2/ai_arena_v2',
+        endpoint='/bot/api/arena/v2/ai_arena_classic',
         response_check=lambda response: response.json()['code'] == 200,
     )
 
