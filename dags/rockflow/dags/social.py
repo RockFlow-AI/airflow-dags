@@ -249,7 +249,7 @@ update_close_copy_plan_order_status = DAG(
     "update_close_copy_plan_order_status",
     catchup=False,
     start_date=pendulum.datetime(2024, 11, 24, tz='America/New_York'),
-    schedule_interval='*/15 * * * *,
+    schedule_interval='*/15 * * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
