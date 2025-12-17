@@ -281,3 +281,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=auto_cancel_unfinished_deposit,
 )
+
+fetch_exchange_rate = DAG(
+    "fetch_exchange_rate",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 4, 12, tz='America/New_York'),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "momo",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='fetch_exchange_rate',
+    method='PUT',
+    http_conn_id='flow-ledger',
+    endpoint='/ledger/inner/currencies/exchangeRate',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=fetch_exchange_rate,
+)
