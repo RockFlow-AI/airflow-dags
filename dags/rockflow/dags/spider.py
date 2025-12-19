@@ -42,7 +42,7 @@ with DAG(
                             volume_mounts=[
                                 k8s.V1VolumeMount(name='spider-config',
                                                   mount_path="/config.yml",
-                                                  sub_path='config.yml',
+                                                  sub_path='config-spider.yml',
                                                   read_only=True),
                             ],
                             security_context={
