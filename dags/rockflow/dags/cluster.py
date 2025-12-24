@@ -296,7 +296,7 @@ fetch_exchange_rate = DAG(
 
 SimpleHttpOperator(
     task_id='fetch_exchange_rate',
-    method='PUT',
+    method='PATCH',
     http_conn_id='flow-ledger',
     endpoint='/ledger/inner/currencies/exchangeRate',
     response_check=lambda response: response.json()['code'] == 200,
