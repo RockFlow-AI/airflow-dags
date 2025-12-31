@@ -69,3 +69,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=earningYield_leaderboard_alert,
 )
+
+earningYield_realtime_task = DAG(
+    "earningYield_realtime_task",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 12, 30, tz='America/New_York'),
+    schedule_interval='58 19 * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='earningYield_realtime_task',
+    method='POST',
+    http_conn_id='flow-feed-portfolio',
+    endpoint='portfolio/inner/earningYield/realtime/task',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=earningYield_realtime_task,
+)
