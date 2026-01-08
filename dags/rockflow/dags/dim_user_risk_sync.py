@@ -43,7 +43,7 @@ with DAG(
                         ),
                         k8s.V1Container(
                             name='flow-data-connector-dw-userrisk',
-                            image=f"{CONTAINER_REPO}/flow-data-connector:{DW_USERRISK_VERSION}",
+                            image=f"{CONTAINER_REPO}/flow-data-connector-dw-userrisk:{DW_USERRISK_VERSION}",
                             volume_mounts=[
                                 k8s.V1VolumeMount(name='connector-pvc',
                                                   mount_path='/data',
