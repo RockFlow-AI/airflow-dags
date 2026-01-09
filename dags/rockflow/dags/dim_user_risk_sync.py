@@ -30,7 +30,7 @@ with DAG(
                         k8s.V1Volume(
                             name='connector-pvc',
                             persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(
-                                claim_name='flow-data-connector-pvc'),
+                                claim_name='sensordata-nfs'),
                         ),
                         k8s.V1Volume(
                             name='connector-config',
