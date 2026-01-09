@@ -50,8 +50,8 @@ with DAG(
                                                   sub_path=None,
                                                   read_only=False),
                                 k8s.V1VolumeMount(name='connector-config',
-                                                  mount_path="/config-user-risk-prd.yml",
-                                                  sub_path='config-user-risk-prd.yml',
+                                                  mount_path="/config-user-risk.yml",
+                                                  sub_path='config-user-risk.yml',
                                                   read_only=True),
                             ],
                         )
