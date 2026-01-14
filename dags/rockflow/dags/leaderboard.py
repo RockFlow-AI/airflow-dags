@@ -51,8 +51,8 @@ SimpleHttpOperator(
 earningYield_leaderboard_alert = DAG(
     "earningYield_leaderboard_alert",
     catchup=False,
-    start_date=pendulum.datetime(2025, 9, 4),
-    schedule_interval='0 * * * *',
+    start_date=pendulum.datetime(2025, 9, 4, tz='America/New_York'),
+    schedule_interval='30 4,19,20 * * *',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
