@@ -156,7 +156,7 @@ SimpleHttpOperator(
     method='PATCH',
     http_conn_id='flow-master-account',
     endpoint='/ticker/inner/ipo/record/lock',
-    headers={'Content-Type': 'application/json'},
+    headers={'accept': '*/*'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 1000},
     dag=lock_ipo_record,
