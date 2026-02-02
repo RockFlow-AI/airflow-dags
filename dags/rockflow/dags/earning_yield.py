@@ -194,3 +194,24 @@ SimpleHttpOperator(
     dag=earning_yield_nlv_data_compensate_1d,
 )
 
+earning_yield_leaderboard_listing_days = DAG(
+    "earning_yield_leaderboard_listing_days",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 2, 1, tz='America/New_York'),
+    schedule_interval='0 20 * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='earning_yield_leaderboard_listing_days',
+    method='PUT',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/earningYields/leaderboard/listingDays',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=earning_yield_leaderboard_listing_days,
+)
