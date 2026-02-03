@@ -154,9 +154,9 @@ lock_ipo_record = DAG(
 SimpleHttpOperator(
     task_id='lock_ipo_record',
     method='PATCH',
-    http_conn_id='flow-master-account',
-    endpoint='/masterAccount/inner/ipo/record/lock',
-    headers={'Content-Type': 'application/json'},
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ipo/record/lock',
+    headers={'accept': '*/*'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 1000},
     dag=lock_ipo_record,
