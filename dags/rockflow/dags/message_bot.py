@@ -49,3 +49,71 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=user_group_send_message_1d,
 )
+
+face_recognition_send_broadcast = DAG(
+    "face_recognition_send_broadcast",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 11, 14, tz='Asia/Shanghai'),
+    schedule_interval='0 10 * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='face_recognition_send_broadcast',
+    method='PUT',
+    http_conn_id='flow-admin',
+    endpoint='/admin/inner/user/group/faceRecognition/send/BROADCAST',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=face_recognition_send_broadcast,
+)
+
+
+face_recognition_send_push = DAG(
+    "face_recognition_send_push",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 11, 14, tz='Asia/Shanghai'),
+    schedule_interval='0 11 * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='face_recognition_send_push',
+    method='PUT',
+    http_conn_id='flow-admin',
+    endpoint='/admin/inner/user/group/faceRecognition/send/PUSH',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=face_recognition_send_push,
+)
+
+
+face_recognition_send_email = DAG(
+    "face_recognition_send_email",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 11, 14, tz='Asia/Shanghai'),
+    schedule_interval='0 10 * * 5',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='face_recognition_send_email',
+    method='PUT',
+    http_conn_id='flow-admin',
+    endpoint='/admin/inner/user/group/faceRecognition/send/EMAIL',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=face_recognition_send_email,
+)
