@@ -95,8 +95,8 @@ SimpleHttpOperator(
 earningYield_leaderboard_statistics = DAG(
     "earningYield_leaderboard_statistics",
     catchup=False,
-    start_date=pendulum.datetime(2022, 11, 4),
-    schedule_interval='*/10 * * * *',
+    start_date=pendulum.datetime(2023, 7, 12, tz='Asia/Shanghai'),
+    schedule_interval='0 0 9 * *',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
