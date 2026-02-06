@@ -32,7 +32,7 @@ with DAG(
         task_id="news_analyze",
         method="POST",
         http_conn_id="content-platform",
-        endpoint="/runs",
+        endpoint="/api/runs",
         headers={
             "Content-Type": "application/json",
             "Authorization": "Bearer {{ var.value.CONTENT_PLATFORM_SERVICE_KEY }}",
@@ -70,7 +70,7 @@ with DAG(
         task_id="news_digest",
         method="POST",
         http_conn_id="content-platform",
-        endpoint="/runs",
+        endpoint="/api/runs",
         headers={
             "Content-Type": "application/json",
             "Authorization": "Bearer {{ var.value.CONTENT_PLATFORM_SERVICE_KEY }}",
