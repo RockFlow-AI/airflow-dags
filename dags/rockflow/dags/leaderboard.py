@@ -91,3 +91,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=earningYield_realtime_task,
 )
+
+earningYield_leaderboard_statistics = DAG(
+    "earningYield_leaderboard_statistics",
+    catchup=False,
+    start_date=pendulum.datetime(2022, 11, 4),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='earningYield_leaderboard_statistics',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/earningYield/leaderboards/rank/statistics',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=earningYield_leaderboard_statistics,
+)
