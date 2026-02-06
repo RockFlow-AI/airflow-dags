@@ -99,7 +99,7 @@ yield_stat_simulation = DAG(
     "yield_stat_simulation",
     catchup=False,
     start_date=pendulum.datetime(2025, 4, 12, tz='Asia/Shanghai'),
-    schedule_interval='20 9 * * *',
+    schedule_interval='0 9 * * *',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
