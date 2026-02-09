@@ -122,7 +122,7 @@ user_group_send_push_broadcast = DAG(
     "user_group_send_push_broadcast",
     catchup=False,
     start_date=pendulum.datetime(2024, 11, 1, tz='Asia/Shanghai'),
-    schedule_interval='0 */10 * * *',
+    schedule_interval='*/10 * * * *',
     default_args={
         "owner": "momo",
         "depends_on_past": False,
