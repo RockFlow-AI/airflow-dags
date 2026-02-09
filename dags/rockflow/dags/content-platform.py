@@ -87,6 +87,7 @@ with DAG(
     catchup=False,
     start_date=pendulum.datetime(2026, 2, 6, tz="Asia/Shanghai"),
     schedule_interval="0 7,19 * * *",
+    max_active_runs=1,
     default_args={
         "owner": "tanqiwen",
         "depends_on_past": False,
@@ -221,7 +222,7 @@ with DAG(
         mode="reschedule",
     )
 
-    fetch_tickers >> index_metrics >> submit_metrics >> poll_metrics >> submit_seo >> poll_seo
+    [fetch_tickers, index_metrics] >> submit_metrics >> poll_metrics >> submit_seo >> poll_seo
 
 
 # ===========================================================================
