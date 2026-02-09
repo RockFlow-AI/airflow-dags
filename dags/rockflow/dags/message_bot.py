@@ -117,3 +117,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=face_recognition_send_email,
 )
+
+user_group_send_push_broadcast = DAG(
+    "user_group_send_push_broadcast",
+    catchup=False,
+    start_date=pendulum.datetime(2024, 11, 1, tz='Asia/Shanghai'),
+    schedule_interval='0 */10 * * *',
+    default_args={
+        "owner": "momo",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='user_group_send_push_broadcast',
+    method='PUT',
+    http_conn_id='flow-admin',
+    endpoint='/admin/inner/user/group/send/10m',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=user_group_send_push_broadcast,
+)
