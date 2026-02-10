@@ -8,11 +8,10 @@ News:
   news_digest_12h      — every 12h, generate daily digest
 
 Stock:
-  stock_daily          — 06:00 CST, metrics + SEO for top 1000 tickers
-  stock_weekly         — Sunday 04:00 CST, analysis
-  stock_monthly        — 1st 03:00 CST, identity
-  stock_quarterly      — Jan/Apr/Jul/Oct 1st 02:00 CST, financials
-
+  stock_daily                — 06:00 CST, metrics + SEO for top 1000 tickers
+  stock_weekly               — Sunday 04:00 CST, analysis
+  stock_monthly              — 1st 03:00 CST, identity
+  stock_quarterly            — Jan/Apr/Jul/Oct 1st 02:00 CST, financials
 Config:
   Airflow Connection "content-platform": base URL
   Airflow Variable "CONTENT_PLATFORM_SERVICE_KEY": service API key
@@ -21,6 +20,7 @@ import json
 
 import pendulum
 from airflow import DAG
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.providers.http.sensors.http import HttpSensor
 
@@ -60,7 +60,7 @@ with DAG(
         task_id="news_analyze",
         method="POST",
         http_conn_id="content-platform",
-        endpoint="/runs",
+        endpoint="/api/runs",
         headers={
             **_AUTH_HEADERS,
             "Idempotency-Key": "news-analyze-{{ logical_date.strftime('%Y%m%dT%H%M') }}",
@@ -101,7 +101,7 @@ with DAG(
         task_id="news_digest",
         method="POST",
         http_conn_id="content-platform",
-        endpoint="/runs",
+        endpoint="/api/runs",
         headers={
             **_AUTH_HEADERS,
             "Idempotency-Key": "news-digest-{{ logical_date.strftime('%Y%m%dT%H%M') }}",
@@ -137,7 +137,7 @@ with DAG(
         task_id="fetch_tickers",
         method="GET",
         http_conn_id="content-platform",
-        endpoint="/internal/stocks/top-tickers?limit=1000",
+        endpoint="/api/internal/stocks/top-tickers?limit=1000",
         headers={"Authorization": "Bearer {{ var.value.CONTENT_PLATFORM_SERVICE_KEY }}"},
         response_check=lambda r: r.status_code == 200,
         response_filter=lambda r: json.dumps(r.json()["tickers"]),
@@ -148,7 +148,7 @@ with DAG(
         task_id="index_metrics",
         method="POST",
         http_conn_id="content-platform",
-        endpoint="/runs",
+        endpoint="/api/runs",
         headers={
             **_AUTH_HEADERS,
             "Idempotency-Key": "stock_daily-stock_index_metrics-SPY-{{ ds }}",
@@ -163,7 +163,7 @@ with DAG(
         task_id="submit_metrics",
         method="POST",
         http_conn_id="content-platform",
-        endpoint="/internal/stocks/submit-pipeline",
+        endpoint="/api/internal/stocks/submit-pipeline",
         headers={
             **_AUTH_HEADERS,
             "Idempotency-Key": "stock_daily-stock_metrics-{{ ds }}",
@@ -178,7 +178,7 @@ with DAG(
     poll_metrics = HttpSensor(
         task_id="poll_metrics",
         http_conn_id="content-platform",
-        endpoint="/internal/stocks/batch-status",
+        endpoint="/api/internal/stocks/batch-status",
         request_params={
             "batch_ids": "{{ task_instance.xcom_pull(task_ids='submit_metrics') }}",
             "max_fail_pct": "5",
@@ -194,7 +194,7 @@ with DAG(
         task_id="submit_seo",
         method="POST",
         http_conn_id="content-platform",
-        endpoint="/internal/stocks/submit-pipeline",
+        endpoint="/api/internal/stocks/submit-pipeline",
         headers={
             **_AUTH_HEADERS,
             "Idempotency-Key": "stock_daily-stock_seo-{{ ds }}",
@@ -209,7 +209,7 @@ with DAG(
     poll_seo = HttpSensor(
         task_id="poll_seo",
         http_conn_id="content-platform",
-        endpoint="/internal/stocks/batch-status",
+        endpoint="/api/internal/stocks/batch-status",
         request_params={
             "batch_ids": "{{ task_instance.xcom_pull(task_ids='submit_seo') }}",
             "max_fail_pct": "5",
@@ -221,7 +221,18 @@ with DAG(
         mode="reschedule",
     )
 
-    [fetch_tickers, index_metrics] >> submit_metrics >> poll_metrics >> submit_seo >> poll_seo
+    trigger_seo_render = TriggerDagRunOperator(
+        task_id="trigger_seo_render",
+        trigger_dag_id="stocks_seo_daily_generate",
+        trigger_run_id="stocks_seo-{{ ds }}",
+        conf={
+            "tickers": "{{ task_instance.xcom_pull(task_ids='fetch_tickers') }}",
+        },
+        reset_dag_run=True,
+        wait_for_completion=False,
+    )
+
+    [fetch_tickers, index_metrics] >> submit_metrics >> poll_metrics >> submit_seo >> poll_seo >> trigger_seo_render
 
 
 # ===========================================================================
@@ -242,7 +253,7 @@ with DAG(
         task_id="submit_analysis",
         method="POST",
         http_conn_id="content-platform",
-        endpoint="/internal/stocks/submit-pipeline",
+        endpoint="/api/internal/stocks/submit-pipeline",
         headers={
             **_AUTH_HEADERS,
             "Idempotency-Key": "stock_weekly-stock_analysis-{{ ds }}",
@@ -257,7 +268,7 @@ with DAG(
     poll_analysis = HttpSensor(
         task_id="poll_analysis",
         http_conn_id="content-platform",
-        endpoint="/internal/stocks/batch-status",
+        endpoint="/api/internal/stocks/batch-status",
         request_params={
             "batch_ids": "{{ task_instance.xcom_pull(task_ids='submit_analysis') }}",
             "max_fail_pct": "15",
@@ -290,7 +301,7 @@ with DAG(
         task_id="submit_identity",
         method="POST",
         http_conn_id="content-platform",
-        endpoint="/internal/stocks/submit-pipeline",
+        endpoint="/api/internal/stocks/submit-pipeline",
         headers={
             **_AUTH_HEADERS,
             "Idempotency-Key": "stock_monthly-stock_identity-{{ ds }}",
@@ -305,7 +316,7 @@ with DAG(
     poll_identity = HttpSensor(
         task_id="poll_identity",
         http_conn_id="content-platform",
-        endpoint="/internal/stocks/batch-status",
+        endpoint="/api/internal/stocks/batch-status",
         request_params={
             "batch_ids": "{{ task_instance.xcom_pull(task_ids='submit_identity') }}",
             "max_fail_pct": "5",
@@ -338,7 +349,7 @@ with DAG(
         task_id="submit_financials",
         method="POST",
         http_conn_id="content-platform",
-        endpoint="/internal/stocks/submit-pipeline",
+        endpoint="/api/internal/stocks/submit-pipeline",
         headers={
             **_AUTH_HEADERS,
             "Idempotency-Key": "stock_quarterly-stock_financials-{{ ds }}",
@@ -353,7 +364,7 @@ with DAG(
     poll_financials = HttpSensor(
         task_id="poll_financials",
         http_conn_id="content-platform",
-        endpoint="/internal/stocks/batch-status",
+        endpoint="/api/internal/stocks/batch-status",
         request_params={
             "batch_ids": "{{ task_instance.xcom_pull(task_ids='submit_financials') }}",
             "max_fail_pct": "5",
