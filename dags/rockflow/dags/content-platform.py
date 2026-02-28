@@ -377,3 +377,37 @@ with DAG(
     )
 
     submit_financials >> poll_financials
+
+
+# ===========================================================================
+# News: news_submit_google_sitemap (every 2 hours)
+# ===========================================================================
+
+with DAG(
+    dag_id="news_submit_google_sitemap",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 2, 28, tz="Asia/Shanghai"),
+    schedule_interval="0 */2 * * *",
+    max_active_runs=1,
+    default_args={
+        "owner": "tanqiwen",
+        "depends_on_past": False,
+        "retries": 2,
+        "retry_delay": pendulum.duration(minutes=5),
+    },
+    tags=["news", "content-platform", "seo"],
+) as dag_google:
+
+    SimpleHttpOperator(
+        task_id="submit_google_sitemap",
+        method="POST",
+        http_conn_id="content-platform",
+        endpoint="/api/internal/news/submit-google-sitemap",
+        headers={
+            **_AUTH_HEADERS,
+            "Idempotency-Key": "news-google-sitemap-{{ logical_date.strftime('%Y%m%dT%H') }}",
+        },
+        extra_options={"timeout": 60},
+        response_check=lambda response: response.status_code == 200,
+        log_response=True,
+    )
