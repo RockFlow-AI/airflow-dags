@@ -176,24 +176,24 @@ SimpleHttpOperator(
 
 # 定时任务 - 每分钟调用一次拉取暗盘股票信息
 fetch_grey_market_stock_info = DAG(
-  "fetch_grey_market_stock_info",
-  catchup=False,
-  start_date=pendulum.datetime(2026, 3, 4, tz='Asia/Shanghai'),
-  schedule_interval='*/1 * * * *',
-  default_args={
-    "owner": "yuzhiqiang",
-    "depends_on_past": False,
-    "retries": 2,
-    "retry_delay": timedelta(minutes=2),
-  }
+    "fetch_grey_market_stock_info",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 3, 4, tz='Asia/Shanghai'),
+    schedule_interval='*/1 * * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 10,
+        "retry_delay": timedelta(seconds=5),
+    }
 )
 
 SimpleHttpOperator(
-  task_id='fetch_grey_market_stock_info',
-  method='GET',
-  http_conn_id='flow-ticker-service',
-  endpoint='/ticker/inner/ipo/fetchGreyMarketStockInfo',
-  response_check=lambda response: response.json()['code'] == 200,
-  extra_options={"timeout": 2000},
-  dag=fetch_grey_market_stock_info,
+    task_id='fetch_grey_market_stock_info',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ipo/fetchGreyMarketStockInfo',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 30},
+    dag=fetch_grey_market_stock_info,
 )
