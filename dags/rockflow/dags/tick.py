@@ -588,3 +588,26 @@ option_chain_us_fiu_task = SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=mock_tick_us_fiu,
 )
+
+append_tick_before_listing = DAG(
+    "append_tick_before_listing",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 9, 10, tz='Asia/Shanghai'),
+    schedule_interval='30 08 * * *',
+    default_args={
+        "owner": "momo",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='append_tick_before_listing',
+    method='PATCH',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ipo/tick',
+    headers={'accept': '*/*'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=run_sql_stats_task
+)
