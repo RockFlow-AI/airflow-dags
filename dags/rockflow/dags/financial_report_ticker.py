@@ -174,12 +174,12 @@ SimpleHttpOperator(
     dag=reload_yahoo_openInterest,
 )
 
-# 定时任务 - 每分钟调用一次拉取暗盘股票信息
+# 定时任务 - 14:15-18:30 之间每分钟调用一次拉取暗盘股票信息
 fetch_grey_market_stock_info = DAG(
     "fetch_grey_market_stock_info",
     catchup=False,
     start_date=pendulum.datetime(2026, 3, 4, tz='Asia/Shanghai'),
-    schedule_interval='*/1 * * * *',
+    schedule_interval='* 14-18 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
