@@ -609,5 +609,5 @@ SimpleHttpOperator(
     headers={'accept': '*/*'},
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 1000},
-    dag=run_sql_stats_task
+    dag=append_tick_before_listing
 )
