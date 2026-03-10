@@ -593,7 +593,7 @@ append_tick_before_listing = DAG(
     "append_tick_before_listing",
     catchup=False,
     start_date=pendulum.datetime(2025, 9, 10, tz='Asia/Shanghai'),
-    schedule_interval='30 08 * * *',
+    schedule_interval='0 08 * * *',
     default_args={
         "owner": "momo",
         "depends_on_past": False,
