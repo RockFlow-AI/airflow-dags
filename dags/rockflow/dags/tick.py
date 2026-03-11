@@ -398,7 +398,7 @@ daily_last_tick_us_yahoo = DAG(
     "daily_last_tick_us_yahoo",
     catchup=False,
     start_date=pendulum.datetime(2023, 1, 14, tz='America/New_York'),
-    schedule_interval='50 16,17 * * 1-5',
+    schedule_interval='20 16,17,20 * * 1-5',
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
@@ -406,6 +406,7 @@ daily_last_tick_us_yahoo = DAG(
         "retry_delay": timedelta(minutes=5),
     }
 )
+
 
 SimpleHttpOperator(
     task_id='ticks',
