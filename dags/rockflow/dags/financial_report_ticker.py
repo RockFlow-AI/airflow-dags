@@ -179,7 +179,7 @@ fetch_grey_market_stock_info = DAG(
     "fetch_grey_market_stock_info",
     catchup=False,
     start_date=pendulum.datetime(2026, 3, 4, tz='Asia/Shanghai'),
-    schedule_interval='* 10-22 * * *',
+    schedule_interval='* 14-18 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
