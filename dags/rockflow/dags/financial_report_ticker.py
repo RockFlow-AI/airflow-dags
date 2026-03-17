@@ -195,3 +195,27 @@ SimpleHttpOperator(
     extra_options={"timeout": 3600},
     dag=reload_yahoo_openInterest,
 )
+
+# 定时任务 - 14:00-18:59 之间每分钟调用一次拉取暗盘股票信息
+fetch_grey_market_stock_info = DAG(
+    "fetch_grey_market_stock_info",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 3, 4, tz='Asia/Shanghai'),
+    schedule_interval='* 14-18 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 10,
+        "retry_delay": timedelta(seconds=5),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='fetch_grey_market_stock_info',
+    method='POST',
+    http_conn_id='flow-ticker-service',
+    endpoint='/ticker/inner/ipo/fetchGreyMarketStockInfo',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 30},
+    dag=fetch_grey_market_stock_info,
+)
