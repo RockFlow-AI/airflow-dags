@@ -8,18 +8,21 @@ News:
   news_digest_12h      — every 12h, generate daily digest
 
 Stock:
-  stock_daily                — 06:00 CST, metrics + SEO for top 1000 tickers
+  stock_daily                — 06:00 CST, metrics (all) + SEO (progressive rollout)
   stock_weekly               — Sunday 04:00 CST, analysis
   stock_monthly              — 1st 03:00 CST, identity
   stock_quarterly            — Jan/Apr/Jul/Oct 1st 02:00 CST, financials
 Config:
   Airflow Connection "content-platform": base URL
   Airflow Variable "CONTENT_PLATFORM_SERVICE_KEY": service API key
+  Airflow Variable "SEO_WAVE_SIZE": tickers added per week (default 100)
+  Airflow Variable "SEO_LAUNCH_DATE": rollout start date (ISO format)
 """
 import json
 
 import pendulum
 from airflow import DAG
+from airflow.operators.python import ShortCircuitOperator
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.providers.http.sensors.http import HttpSensor
@@ -144,6 +147,31 @@ with DAG(
         log_response=True,
     )
 
+    fetch_seo_tickers = SimpleHttpOperator(
+        task_id="fetch_seo_tickers",
+        method="POST",
+        http_conn_id="content-platform",
+        endpoint="/api/internal/stocks/seo-tickers",
+        headers={**_AUTH_HEADERS},
+        data=(
+            '{"tickers": {{ task_instance.xcom_pull(task_ids="fetch_tickers") }},'
+            ' "effective_date": "{{ ds }}",'
+            ' "wave_size": {{ var.value.SEO_WAVE_SIZE }},'
+            ' "launch_date": "{{ var.value.SEO_LAUNCH_DATE }}"}'
+        ),
+        extra_options={"timeout": 60},
+        response_check=lambda r: r.status_code == 200,
+        response_filter=lambda r: json.dumps(r.json()["tickers"]),
+        log_response=True,
+    )
+
+    seo_gate = ShortCircuitOperator(
+        task_id="seo_gate",
+        python_callable=lambda **ctx: bool(
+            json.loads(ctx["task_instance"].xcom_pull(task_ids="fetch_seo_tickers") or "[]")
+        ),
+    )
+
     index_metrics = SimpleHttpOperator(
         task_id="index_metrics",
         method="POST",
@@ -199,7 +227,7 @@ with DAG(
             **_AUTH_HEADERS,
             "Idempotency-Key": "stock_daily-stock_seo-{{ ds }}",
         },
-        data='{"plan_id": "stock_seo", "tickers": {{ task_instance.xcom_pull(task_ids="fetch_tickers") }}}',
+        data='{"plan_id": "stock_seo", "tickers": {{ task_instance.xcom_pull(task_ids="fetch_seo_tickers") }}}',
         extra_options={"timeout": 300},
         response_check=lambda r: r.status_code in (200, 201),
         response_filter=lambda r: ",".join(r.json()["batch_ids"]),
@@ -226,13 +254,17 @@ with DAG(
         trigger_dag_id="stocks_seo_daily_generate",
         trigger_run_id="stocks_seo-{{ ds }}",
         conf={
-            "tickers": "{{ task_instance.xcom_pull(task_ids='fetch_tickers') }}",
+            "tickers": "{{ task_instance.xcom_pull(task_ids='fetch_seo_tickers') }}",
         },
         reset_dag_run=True,
         wait_for_completion=False,
     )
 
-    [fetch_tickers, index_metrics] >> submit_metrics >> poll_metrics >> submit_seo >> poll_seo >> trigger_seo_render
+    # Metrics branch: all tickers
+    [fetch_tickers, index_metrics] >> submit_metrics >> poll_metrics
+    # SEO branch: rollout-gated tickers
+    fetch_tickers >> fetch_seo_tickers >> seo_gate
+    [poll_metrics, seo_gate] >> submit_seo >> poll_seo >> trigger_seo_render
 
 
 # ===========================================================================
