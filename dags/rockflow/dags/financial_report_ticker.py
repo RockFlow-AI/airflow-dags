@@ -205,8 +205,8 @@ fetch_grey_market_stock_info = DAG(
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
-        "retries": 10,
-        "retry_delay": timedelta(seconds=5),
+        "retries": 1,
+        "retry_delay": timedelta(minutes=2),
     }
 )
 
@@ -216,6 +216,6 @@ SimpleHttpOperator(
     http_conn_id='flow-ticker-service',
     endpoint='/ticker/inner/ipo/fetchGreyMarketStockInfo',
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 30},
+    extra_options={"timeout": 120},
     dag=fetch_grey_market_stock_info,
 )
