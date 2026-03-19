@@ -135,7 +135,7 @@ copy_trading_commission_period_refresh = DAG(
 
 SimpleHttpOperator(
     task_id='copy_trading_commission_period_refresh',
-    method='PUT',
+    method='PATCH',
     http_conn_id='flow-social',
     endpoint='/social/inner/copyTrading/commission/periodRecords/refresh',
     response_check=lambda response: response.json()['code'] == 200,
