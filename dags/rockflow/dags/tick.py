@@ -572,7 +572,7 @@ append_tick_before_grey = DAG(
     "append_tick_before_grey",
     catchup=False,
     start_date=pendulum.datetime(2025, 9, 10, tz='Asia/Shanghai'),
-    schedule_interval='10 14/16 * * *',
+    schedule_interval='10 14,16 * * *',
     default_args={
         "owner": "momo",
         "depends_on_past": False,
