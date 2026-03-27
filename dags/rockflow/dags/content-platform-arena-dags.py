@@ -1,8 +1,6 @@
-"""Arena Content DAGs — daily content generation
+"""Arena Content DAG — daily content generation
 
-Schedule:
-    arena_morning_content — 10:15 CST: 昨日战况回顾
-    arena_evening_content — 18:00 CST: 今日赛场看点
+Schedule: 10:00 / 15:00 / 18:00 CST
 
 Config:
     Airflow Connection "content-platform": base URL
@@ -26,9 +24,16 @@ _DEFAULT_ARGS = {
     "retry_delay": pendulum.duration(minutes=3),
 }
 
-
-def _arena_task(*, content_slot: str) -> SimpleHttpOperator:
-    return SimpleHttpOperator(
+with DAG(
+    dag_id="arena_content",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 3, 24, tz="Asia/Shanghai"),
+    schedule_interval="0 10,15,18 * * *",
+    max_active_runs=1,
+    default_args=_DEFAULT_ARGS,
+    tags=["arena", "content-platform"],
+):
+    SimpleHttpOperator(
         task_id="run",
         method="POST",
         http_conn_id="content-platform",
@@ -43,7 +48,7 @@ def _arena_task(*, content_slot: str) -> SimpleHttpOperator:
             "input_data": {
                 "arena_ids": ["r1"],
                 "business_date": "{{ logical_date.in_tz('Asia/Shanghai').strftime('%Y-%m-%d') }}",
-                "content_slot": content_slot,
+                "content_slot": "{{ logical_date.in_tz('Asia/Shanghai').strftime('%H') }}",
             },
         }),
         response_check=lambda response: (
@@ -52,26 +57,3 @@ def _arena_task(*, content_slot: str) -> SimpleHttpOperator:
         ),
         log_response=True,
     )
-
-
-with DAG(
-    dag_id="arena_morning_content",
-    catchup=False,
-    start_date=pendulum.datetime(2026, 3, 24, tz="Asia/Shanghai"),
-    schedule_interval="15 10 * * *",
-    max_active_runs=1,
-    default_args=_DEFAULT_ARGS,
-    tags=["arena", "content-platform"],
-):
-    _arena_task(content_slot="morning")
-
-with DAG(
-    dag_id="arena_evening_content",
-    catchup=False,
-    start_date=pendulum.datetime(2026, 3, 24, tz="Asia/Shanghai"),
-    schedule_interval="0 18 * * *",
-    max_active_runs=1,
-    default_args=_DEFAULT_ARGS,
-    tags=["arena", "content-platform"],
-):
-    _arena_task(content_slot="evening")
