@@ -32,6 +32,9 @@ _AUTH_HEADERS = {
     "Authorization": "Bearer {{ var.value.CONTENT_PLATFORM_SERVICE_KEY }}",
 }
 
+# Idempotency-Key: unique per (dag, task, run), stable across retries within same run
+_IDEM_KEY = "{{ dag.dag_id }}-{{ task.task_id }}-{{ run_id }}"
+
 _STOCK_DEFAULT_ARGS = {
     "owner": "tanqiwen",
     "depends_on_past": False,
@@ -66,7 +69,7 @@ with DAG(
         endpoint="/api/runs",
         headers={
             **_AUTH_HEADERS,
-            "Idempotency-Key": "news-analyze-{{ logical_date.strftime('%Y%m%dT%H%M') }}",
+            "Idempotency-Key": _IDEM_KEY,
         },
         extra_options={"timeout": 300},
         data=json.dumps({
@@ -107,7 +110,7 @@ with DAG(
         endpoint="/api/runs",
         headers={
             **_AUTH_HEADERS,
-            "Idempotency-Key": "news-digest-{{ logical_date.strftime('%Y%m%dT%H%M') }}",
+            "Idempotency-Key": _IDEM_KEY,
         },
         extra_options={"timeout": 120},
         data=json.dumps({
@@ -179,7 +182,7 @@ with DAG(
         endpoint="/api/runs",
         headers={
             **_AUTH_HEADERS,
-            "Idempotency-Key": "stock_daily-stock_index_metrics-SPY-{{ ds }}",
+            "Idempotency-Key": _IDEM_KEY,
         },
         data=json.dumps({"plan_id": "stock_index_metrics", "input_data": {"ticker": "SPY"}}),
         extra_options={"timeout": 300},
@@ -194,7 +197,7 @@ with DAG(
         endpoint="/api/internal/stocks/submit-pipeline",
         headers={
             **_AUTH_HEADERS,
-            "Idempotency-Key": "stock_daily-stock_metrics-{{ ds }}",
+            "Idempotency-Key": _IDEM_KEY,
         },
         data='{"plan_id": "stock_metrics", "tickers": {{ task_instance.xcom_pull(task_ids="fetch_tickers") }}}',
         extra_options={"timeout": 300},
@@ -225,7 +228,7 @@ with DAG(
         endpoint="/api/internal/stocks/submit-pipeline",
         headers={
             **_AUTH_HEADERS,
-            "Idempotency-Key": "stock_daily-stock_seo-{{ ds }}",
+            "Idempotency-Key": _IDEM_KEY,
         },
         data='{"plan_id": "stock_seo", "tickers": {{ task_instance.xcom_pull(task_ids="fetch_seo_tickers") }}}',
         extra_options={"timeout": 300},
@@ -252,7 +255,7 @@ with DAG(
     trigger_seo_render = TriggerDagRunOperator(
         task_id="trigger_seo_render",
         trigger_dag_id="stocks_seo_daily_generate",
-        trigger_run_id="stocks_seo-{{ ds }}",
+        trigger_run_id="stocks_seo-{{ ts_nodash }}",
         conf={
             "tickers": "{{ task_instance.xcom_pull(task_ids='fetch_seo_tickers') }}",
         },
@@ -288,7 +291,7 @@ with DAG(
         endpoint="/api/internal/stocks/submit-pipeline",
         headers={
             **_AUTH_HEADERS,
-            "Idempotency-Key": "stock_weekly-stock_analysis-{{ ds }}",
+            "Idempotency-Key": _IDEM_KEY,
         },
         data=json.dumps({"plan_id": "stock_analysis", "ticker_limit": 1000}),
         extra_options={"timeout": 300},
@@ -336,7 +339,7 @@ with DAG(
         endpoint="/api/internal/stocks/submit-pipeline",
         headers={
             **_AUTH_HEADERS,
-            "Idempotency-Key": "stock_monthly-stock_identity-{{ ds }}",
+            "Idempotency-Key": _IDEM_KEY,
         },
         data=json.dumps({"plan_id": "stock_identity", "ticker_limit": 1000}),
         extra_options={"timeout": 300},
@@ -384,7 +387,7 @@ with DAG(
         endpoint="/api/internal/stocks/submit-pipeline",
         headers={
             **_AUTH_HEADERS,
-            "Idempotency-Key": "stock_quarterly-stock_financials-{{ ds }}",
+            "Idempotency-Key": _IDEM_KEY,
         },
         data=json.dumps({"plan_id": "stock_financials", "ticker_limit": 1000}),
         extra_options={"timeout": 300},
@@ -437,7 +440,7 @@ with DAG(
         endpoint="/api/internal/news/submit-google-sitemap",
         headers={
             **_AUTH_HEADERS,
-            "Idempotency-Key": "news-google-sitemap-{{ logical_date.strftime('%Y%m%dT%H') }}",
+            "Idempotency-Key": _IDEM_KEY,
         },
         extra_options={"timeout": 60},
         response_check=lambda response: response.status_code == 200,
