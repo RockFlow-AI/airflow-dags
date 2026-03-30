@@ -33,8 +33,8 @@ with DAG(
     default_args=_DEFAULT_ARGS,
     tags=["arena", "content-platform"],
 ):
-    SimpleHttpOperator(
-        task_id="run",
+    content_run = SimpleHttpOperator(
+        task_id="content_run",
         method="POST",
         http_conn_id="content-platform",
         endpoint="/api/runs",
@@ -57,3 +57,32 @@ with DAG(
         ),
         log_response=True,
     )
+
+    chat_digest_run = SimpleHttpOperator(
+        task_id="chat_digest_run",
+        method="POST",
+        http_conn_id="content-platform",
+        endpoint="/api/runs",
+        headers={
+            **_AUTH_HEADERS,
+            "Idempotency-Key": "arena-chat-digest-{{ logical_date.strftime('%Y%m%dT%H%M') }}",
+        },
+        extra_options={"timeout": 300},
+        data=json.dumps({
+            "plan_id": "arena_chat_digest",
+            "input_data": {
+                "arena_ids": ["r1"],
+                "business_date": "{{ logical_date.in_tz('Asia/Shanghai').strftime('%Y-%m-%d') }}",
+                "content_slot": "{{ logical_date.in_tz('Asia/Shanghai').strftime('%H') }}",
+            },
+        }),
+        response_check=lambda response: (
+            response.status_code in (200, 201)
+            and response.json().get("status") != "FAILED"
+        ),
+        log_response=True,
+    )
+
+    # Run in parallel — digest failure doesn't block main content
+    content_run
+    chat_digest_run
