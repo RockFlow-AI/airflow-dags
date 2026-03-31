@@ -155,7 +155,10 @@ with DAG(
         method="POST",
         http_conn_id="content-platform",
         endpoint="/api/internal/stocks/seo-tickers",
-        headers={**_AUTH_HEADERS},
+        headers={
+            **_AUTH_HEADERS,
+            "Idempotency-Key": _IDEM_KEY,
+        },
         data=(
             '{"tickers": {{ task_instance.xcom_pull(task_ids="fetch_tickers") }},'
             ' "effective_date": "{{ ds }}",'
