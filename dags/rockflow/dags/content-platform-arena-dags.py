@@ -1,6 +1,9 @@
-"""Arena Content DAG — daily content generation
+"""Arena Unified DAG — single pipeline for battle report + chat digest.
 
 Schedule: 10:00 / 15:00 / 18:00 CST
+
+One pipeline, one LLM call, one coherent story.
+The battle report's community_discussion previews what the chat digest expands on.
 
 Config:
     Airflow Connection "content-platform": base URL
@@ -33,18 +36,18 @@ with DAG(
     default_args=_DEFAULT_ARGS,
     tags=["arena", "content-platform"],
 ):
-    content_run = SimpleHttpOperator(
-        task_id="content_run",
+    unified_run = SimpleHttpOperator(
+        task_id="unified_run",
         method="POST",
         http_conn_id="content-platform",
         endpoint="/api/runs",
         headers={
             **_AUTH_HEADERS,
-            "Idempotency-Key": "arena-content-{{ logical_date.strftime('%Y%m%dT%H%M') }}",
+            "Idempotency-Key": "arena-unified-{{ logical_date.strftime('%Y%m%dT%H%M') }}",
         },
-        extra_options={"timeout": 300},
+        extra_options={"timeout": 600},
         data=json.dumps({
-            "plan_id": "arena_daily_content",
+            "plan_id": "arena_unified",
             "input_data": {
                 "arena_ids": ["r1"],
                 "business_date": "{{ logical_date.in_tz('Asia/Shanghai').strftime('%Y-%m-%d') }}",
@@ -57,32 +60,3 @@ with DAG(
         ),
         log_response=True,
     )
-
-    chat_digest_run = SimpleHttpOperator(
-        task_id="chat_digest_run",
-        method="POST",
-        http_conn_id="content-platform",
-        endpoint="/api/runs",
-        headers={
-            **_AUTH_HEADERS,
-            "Idempotency-Key": "arena-chat-digest-{{ logical_date.strftime('%Y%m%dT%H%M') }}",
-        },
-        extra_options={"timeout": 300},
-        data=json.dumps({
-            "plan_id": "arena_chat_digest",
-            "input_data": {
-                "arena_ids": ["r1"],
-                "business_date": "{{ logical_date.in_tz('Asia/Shanghai').strftime('%Y-%m-%d') }}",
-                "content_slot": "{{ logical_date.in_tz('Asia/Shanghai').strftime('%H') }}",
-            },
-        }),
-        response_check=lambda response: (
-            response.status_code in (200, 201)
-            and response.json().get("status") != "FAILED"
-        ),
-        log_response=True,
-    )
-
-    # Run in parallel — digest failure doesn't block main content
-    content_run
-    chat_digest_run
