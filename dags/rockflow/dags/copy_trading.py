@@ -118,3 +118,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=copy_trading_auto_correction_hk,
 )
+
+copy_trading_commission_period_refresh = DAG(
+    "copy_trading_commission_period_refresh",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 3, 14, tz='Asia/Shanghai'),
+    schedule_interval='0 0 1 1,4,7,10 *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 5,
+        "retry_delay": timedelta(minutes=1),
+    }
+)
+
+SimpleHttpOperator(
+    task_id='copy_trading_commission_period_refresh',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/copyTrading/commission/periodRecords/refresh',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=copy_trading_commission_period_refresh,
+)
