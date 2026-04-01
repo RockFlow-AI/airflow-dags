@@ -69,7 +69,7 @@ SimpleHttpOperator(
     http_conn_id='flow-statement',
     endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 600},
+    extra_options={"timeout": 1800},
     dag=statement_sync_ftp_file,
 )
 
