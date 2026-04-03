@@ -19,7 +19,7 @@ nz_statement_sync_ftp_file = DAG(
 SimpleHttpOperator(
     task_id='nz_statement_sync_ftp_file',
     method='PATCH',
-    http_conn_id='flow-statement.qyzj',
+    http_conn_id='flow-statement-nz',
     endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
@@ -42,7 +42,7 @@ nz_statement_sync_delay_file = DAG(
 SimpleHttpOperator(
     task_id='nz_statement_sync_delay_file',
     method='PATCH',
-    http_conn_id='flow-statement.qyzj',
+    http_conn_id='flow-statement-nz',
     endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
@@ -66,7 +66,7 @@ nz_statement_sync_delay_file_1755 = DAG(
 SimpleHttpOperator(
     task_id='nz_statement_sync_delay_file_1755',
     method='PATCH',
-    http_conn_id='flow-statement.qyzj',
+    http_conn_id='flow-statement-nz',
     endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
@@ -90,7 +90,7 @@ nz_statement_sync_file_2010 = DAG(
 SimpleHttpOperator(
     task_id='nz_statement_sync_file_2010',
     method='PATCH',
-    http_conn_id='flow-statement.qyzj',
+    http_conn_id='flow-statement-nz',
     endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
@@ -114,7 +114,7 @@ nz_statement_sync_ftp_file_previous = DAG(
 SimpleHttpOperator(
     task_id='nz_statement_sync_ftp_file_previous',
     method='PATCH',
-    http_conn_id='flow-statement.qyzj',
+    http_conn_id='flow-statement-nz',
     endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=(datetime.now() + timedelta(days=-1)).strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
@@ -138,7 +138,7 @@ nz_statement_sync_file_23 = DAG(
 SimpleHttpOperator(
     task_id='nz_statement_sync_file_23',
     method='PATCH',
-    http_conn_id='flow-statement.qyzj',
+    http_conn_id='flow-statement-nz',
     endpoint='/inner/statement/ftpFiles/sync?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
