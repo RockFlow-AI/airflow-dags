@@ -144,3 +144,25 @@ SimpleHttpOperator(
     extra_options={"timeout": 600},
     dag=nz_statement_sync_file_23,
 )
+
+NZ_US_trade_match_report = DAG(
+    "NZ_US_trade_match_report",
+    catchup=False,
+    start_date=datetime(2023, 3, 2, 0, 0),
+    schedule_interval='20,25,40,59 10,11 * * 1-7',
+    default_args={
+        "owner": "caoyunfei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='NZ_US_trade_match_report',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statements/tradeMatch/daily?market=US&date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=NZ_US_trade_match_report,
+)
