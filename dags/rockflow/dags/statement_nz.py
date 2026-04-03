@@ -160,7 +160,7 @@ NZ_US_trade_match_report = DAG(
 SimpleHttpOperator(
     task_id='NZ_US_trade_match_report',
     method='PATCH',
-    http_conn_id='flow-statement',
+    http_conn_id='flow-statement-nz',
     endpoint='/inner/statements/tradeMatch/daily?market=US&date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 60},
