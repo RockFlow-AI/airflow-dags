@@ -334,3 +334,27 @@ SimpleHttpOperator(
     extra_options={"timeout": 1000},
     dag=arena_participant_asset_chart
 )
+
+
+update_arena_from_pending_to_running = DAG(
+    "update_arena_from_pending_to_running",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 1, 1),
+    schedule_interval=timedelta(minutes=3),
+    default_args={
+        "owner": "momo",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='update_arena_from_pending_to_running',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/arena/check/running',
+    headers={'accept': '*/*'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=update_arena_from_pending_to_running
+)
