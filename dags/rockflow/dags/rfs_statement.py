@@ -7,7 +7,7 @@ rfs_statement = DAG(
     "rfs_statement",
     catchup=False,
     start_date=pendulum.datetime(2026, 4, 10, tz='Asia/Shanghai'),
-    schedule_interval='00 21 * * *',
+    schedule_interval='00 21 * * 1-5',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
@@ -30,7 +30,7 @@ import_statement = DAG(
     "import_statement",
     catchup=False,
     start_date=pendulum.datetime(2026, 4, 10, tz='Asia/Shanghai'),
-    schedule_interval='00 20 * * *',
+    schedule_interval='00 20 * * 1-5',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
