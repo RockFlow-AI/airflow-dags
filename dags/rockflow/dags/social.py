@@ -363,8 +363,8 @@ SimpleHttpOperator(
 hk_arena_trading_analysis_1 = DAG(
     "hk_arena_trading_analysis_1",
     catchup=False,
-    start_date=pendulum.datetime(2026, 4, 14, tz='Asia/Hong_Kong'),
-    schedule_interval='30 9 * * *',
+    start_date=pendulum.datetime(2026, 4, 14, tz='Asia/Shanghai'),
+    schedule_interval='30 9 * * 1-5',
     default_args={
         "owner": "momo",
         "depends_on_past": False,
@@ -386,8 +386,8 @@ SimpleHttpOperator(
 hk_arena_trading_analysis_2 = DAG(
     "hk_arena_trading_analysis_2",
     catchup=False,
-    start_date=pendulum.datetime(2026, 4, 14, tz='Asia/Hong_Kong'),
-    schedule_interval='0 16 * * *',
+    start_date=pendulum.datetime(2026, 4, 14, tz='Asia/Shanghai'),
+    schedule_interval='0 16 * * 1-5',
     default_args={
         "owner": "momo",
         "depends_on_past": False,
