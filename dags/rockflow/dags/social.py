@@ -360,6 +360,29 @@ SimpleHttpOperator(
   dag=hk_arena_trading_analysis_2,
 )
 
+# 港股调度任务 - 12:00
+hk_arena_trading_analysis_3 = DAG(
+  "hk_arena_trading_analysis_3",
+  catchup=False,
+  start_date=pendulum.datetime(2026, 4, 14, tz='Asia/Shanghai'),
+  schedule_interval='0 12 * * 1-5',
+  default_args={
+    "owner": "momo",
+    "depends_on_past": False,
+    "retries": 0,
+  }
+)
+
+SimpleHttpOperator(
+  task_id='hk_arena_trading_analysis_3',
+  method='POST',
+  http_conn_id='flow-social',
+  endpoint='/social/inner/arena/analysis/batch/arena',
+  response_check=lambda response: response.json()['code'] == 200,
+  extra_options={"timeout": 60},
+  dag=hk_arena_trading_analysis_3,
+)
+
 # 美股调度任务
 us_arena_trading_analysis_1 = DAG(
   "us_arena_trading_analysis_1",
@@ -403,4 +426,26 @@ SimpleHttpOperator(
   response_check=lambda response: response.json()['code'] == 200,
   extra_options={"timeout": 60},
   dag=us_arena_trading_analysis_2,
+)
+
+us_arena_trading_analysis_3 = DAG(
+  "us_arena_trading_analysis_3",
+  catchup=False,
+  start_date=pendulum.datetime(2026, 4, 14, tz='America/New_York'),
+  schedule_interval='0 12 * * 1-5',
+  default_args={
+    "owner": "momo",
+    "depends_on_past": False,
+    "retries": 0,
+  }
+)
+
+SimpleHttpOperator(
+  task_id='us_arena_trading_analysis_3',
+  method='POST',
+  http_conn_id='flow-social',
+  endpoint='/social/inner/arena/analysis/batch/arena',
+  response_check=lambda response: response.json()['code'] == 200,
+  extra_options={"timeout": 60},
+  dag=us_arena_trading_analysis_3,
 )
