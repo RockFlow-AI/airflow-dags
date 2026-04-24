@@ -449,3 +449,25 @@ SimpleHttpOperator(
   extra_options={"timeout": 60},
   dag=us_arena_trading_analysis_3,
 )
+
+# add a schedule, call "/social/inner/arena/earning/snapshot",per hour onetime
+earning_snapshot = DAG(
+    "earning_snapshot",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 1, 1),
+    schedule_interval='0 * * * *',
+    default_args={
+        "owner": "momo",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+SimpleHttpOperator(
+  task_id='earning_snapshot',
+  method='POST',
+  http_conn_id='flow-social',
+  endpoint='/social/inner/arena/earning/snapshot',
+  response_check=lambda response: response.json()['code'] == 200,
+  extra_options={"timeout": 60},
+  dag=earning_snapshot,
+)
