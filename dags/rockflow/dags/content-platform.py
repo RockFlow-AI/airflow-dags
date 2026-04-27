@@ -22,16 +22,80 @@ import json
 
 import pendulum
 from airflow import DAG
+from airflow.exceptions import AirflowException
 from airflow.operators.python import ShortCircuitOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.providers.http.sensors.http import HttpSensor
 
-from _helpers import (
-    AUTH_HEADERS as _AUTH_HEADERS,
-    IDEM_KEY as _IDEM_KEY,
-    READ_AUTH_HEADERS as _READ_AUTH_HEADERS,
-    submit_and_wait,
-)
+
+# DAG 文件单独部署到 airflow,不带 sibling module — helpers 必须 inline。
+_AUTH_HEADERS = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer {{ var.value.CONTENT_PLATFORM_SERVICE_KEY }}",
+}
+
+_READ_AUTH_HEADERS = {
+    "Authorization": "Bearer {{ var.value.CONTENT_PLATFORM_SERVICE_KEY }}",
+}
+
+_IDEM_KEY = "{{ dag.dag_id }}-{{ task.task_id }}-{{ run_id }}"
+
+
+def _check_run_terminal(response):
+    """sensor response_check.
+
+    DONE → True (sensor 通过)
+    FAILED / CANCELED → raise AirflowException (立刻 fail, 不等 timeout)
+    其他 (PENDING / RUNNING / WAITING) → False (继续 poll)
+    """
+    status = response.json()["status"]
+    if status == "DONE":
+        return True
+    if status in ("FAILED", "CANCELED"):
+        raise AirflowException(f"run terminated with status={status}")
+    return False
+
+
+def submit_and_wait(
+    name: str,
+    plan_id: str,
+    input_data: dict,
+    timeout: int = 1800,
+    poke_interval: int = 30,
+):
+    """Submit content-platform run + sensor wait — returns ``(submit, poll)``.
+
+    POST ``/api/runs`` 立即返回 PENDING run_id; HttpSensor poll
+    ``/api/runs/{run_id}`` 直到 DONE / FAILED / CANCELED.
+    下游必须 ref ``poll`` (sensor terminal) 而非 ``submit``, 否则跳过等待。
+    """
+    submit = SimpleHttpOperator(
+        task_id=f"submit_{name}",
+        method="POST",
+        http_conn_id="content-platform",
+        endpoint="/api/runs",
+        headers={**_AUTH_HEADERS, "Idempotency-Key": _IDEM_KEY},
+        data=json.dumps({"plan_id": plan_id, "input_data": input_data}),
+        response_check=lambda r: r.status_code in (200, 201),
+        response_filter=lambda r: r.json()["run_id"],
+        log_response=True,
+    )
+    poll = HttpSensor(
+        task_id=f"poll_{name}",
+        http_conn_id="content-platform",
+        endpoint=(
+            "/api/runs/{{ task_instance.xcom_pull(task_ids='submit_"
+            + name
+            + "') }}"
+        ),
+        headers=_AUTH_HEADERS,
+        response_check=_check_run_terminal,
+        poke_interval=poke_interval,
+        timeout=timeout,
+        mode="reschedule",
+    )
+    submit >> poll
+    return submit, poll
 
 _STOCK_DEFAULT_ARGS = {
     "owner": "tanqiwen",
@@ -60,9 +124,14 @@ with DAG(
     tags=["news", "content-platform"],
 ) as dag_analyze:
 
+    # timeout/poke 基于 prod 实测:full-pipeline p50≈160s / p95≈470s;1200s 覆盖
+    # backend watchdog 一次 self-heal (15min stuck threshold + retry),false-positive≈0,
+    # 真 hang 时 alarm 比默认 30min 快 10min。15s poke 把 DONE 检测延迟从 15s 降到 7.5s。
     submit_and_wait(
         "news_analyze", "news_analyze",
         {"limit": 50, "target_locales": ["zh_hans", "zh_hant"]},
+        timeout=1200,
+        poke_interval=15,
     )
 
 
