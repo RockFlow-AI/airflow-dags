@@ -606,3 +606,58 @@ with DAG(
         response_check=lambda response: response.status_code == 200,
         log_response=True,
     )
+
+
+# ===========================================================================
+# Dashboard: bobby_filled_orders daily backfill (06:40 CST)
+#
+# Powers the Bobby 成交金额 (Bottom card) and OrdersDistribution
+# dashboards. portfolio-service is the source of truth; this DAG keeps
+# ``bobby_filled_orders`` current. Prior to this DAG the table was
+# populated only by hand-run script — it stalled for 7 days
+# (2026-04-21 → 2026-04-28) before anyone noticed the dashboard hadn't
+# moved.
+#
+# Window is "last 3 Asia/Shanghai days" (the script's default overlap),
+# wide enough that a row whose ``updateTime`` shifts mid-run on
+# portfolio-service's offset-paginated API gets re-pulled in subsequent
+# runs. Upsert is stale-safe (newer ``update_time`` wins) so consecutive
+# runs only converge.
+#
+# Scheduled 5 minutes after dashboard_attribution_daily so the daily
+# backfill chain (DUA → SA → orders) lines up on the timeline — easier
+# triage when one fails.
+# ===========================================================================
+
+with DAG(
+    dag_id="dashboard_filled_orders_daily",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 4, 28, tz="Asia/Shanghai"),
+    schedule_interval="40 6 * * *",
+    max_active_runs=1,
+    default_args={
+        "owner": "tanqiwen",
+        "depends_on_past": False,
+        "retries": 2,
+        "retry_delay": pendulum.duration(minutes=5),
+    },
+    tags=["dashboard", "content-platform", "daily"],
+) as dag_filled_orders:
+
+    SimpleHttpOperator(
+        task_id="backfill_filled_orders",
+        method="POST",
+        http_conn_id="content-platform",
+        endpoint="/api/internal/admin/dashboard/backfill-filled-orders",
+        headers={
+            **_AUTH_HEADERS,
+            "Idempotency-Key": _IDEM_KEY,
+        },
+        data=json.dumps({"days": 3}),
+        # 3-day window = ~15 portfolio-service pages × ~3s each + upsert
+        # batches; settles in well under 2 minutes. 180s timeout absorbs
+        # the slow-SA-day case without masking a genuinely stuck run.
+        extra_options={"timeout": 180},
+        response_check=lambda response: response.status_code == 200,
+        log_response=True,
+    )
