@@ -594,3 +594,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 300},
     dag=send_hk_monthly_statement_email,
 )
+
+populate_statement_email_pdf = DAG(
+    "populate_statement_email_pdf",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 4, 25, 0, 0, tz='Asia/Shanghai'),
+    schedule_interval='30 21 * * 1-7',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 1,
+        "retry_delay": timedelta(minutes=5)
+    }
+)
+
+SimpleHttpOperator(
+    task_id='populate_statement_email_pdf',
+    method='PATCH',
+    http_conn_id='flow-statement',
+    endpoint='/inner/statement/zv/populateFromOss/today',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 300},
+    dag=populate_statement_email_pdf,
+)
