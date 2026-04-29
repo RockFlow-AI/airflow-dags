@@ -49,7 +49,7 @@ with DAG(
         data=json.dumps({
             "plan_id": "arena_unified",
             "input_data": {
-                "arena_ids": ["r2"],
+                "arena_ids": ["mbti"],
                 "business_date": "{{ logical_date.in_tz('Asia/Shanghai').strftime('%Y-%m-%d') }}",
                 "content_slot": "{{ logical_date.in_tz('Asia/Shanghai').strftime('%H') }}",
             },
