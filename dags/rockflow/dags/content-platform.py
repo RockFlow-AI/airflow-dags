@@ -708,7 +708,7 @@ with DAG(
 # is {"as_of_date": ds} not {"ticker": t}.
 
 _VENDOR_PLAN_DEFAULT_ARGS = {
-    "owner": "content-platform",
+    "owner": "tanqiwen",
     "retries": 1,
     "retry_delay": pendulum.duration(minutes=5),
 }
@@ -813,7 +813,7 @@ with DAG(
     schedule_interval="0 2 1-7 * 0",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "cn_a", "monthly"],
+    tags=["stock", "content-platform", "cn_a", "monthly"],
 ) as dag_cn_a_master:
     submit_master = SimpleHttpOperator(
         task_id="submit_master",
@@ -853,7 +853,7 @@ with DAG(
     schedule_interval="0 3 * * 0",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "cn_a", "weekly"],
+    tags=["stock", "content-platform", "cn_a", "weekly"],
 ) as dag_cn_a_concept:
     _submit_pipeline_fanout("concept", "stock_cn_a_concept", timeout=2 * 60 * 60)
 
@@ -867,7 +867,7 @@ with DAG(
     schedule_interval="0 22 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "cn_a", "daily"],
+    tags=["stock", "content-platform", "cn_a", "daily"],
 ) as dag_cn_a_capital_flow:
     _submit_pipeline_fanout(
         "capital_flow", "stock_cn_a_capital_flow", timeout=60 * 60,
@@ -883,7 +883,7 @@ with DAG(
     schedule_interval="30 18 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "cn_a", "daily"],
+    tags=["stock", "content-platform", "cn_a", "daily"],
 ) as dag_cn_a_northbound:
     _submit_pipeline_fanout(
         "northbound", "stock_cn_a_northbound", timeout=60 * 60,
@@ -899,7 +899,7 @@ with DAG(
     schedule_interval="0 19 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "cn_a", "daily"],
+    tags=["stock", "content-platform", "cn_a", "daily"],
 ) as dag_cn_a_earnings_preview:
     _submit_pipeline_fanout(
         "earnings_preview", "stock_cn_a_earnings_preview", timeout=60 * 60,
@@ -924,7 +924,7 @@ with DAG(
     schedule_interval="30 22 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "cn_a", "daily"],
+    tags=["stock", "content-platform", "cn_a", "daily"],
 ) as dag_cn_a_aggregate:
     # Wait for upstream poll sensors (terminal task in capital_flow + northbound
     # DAGs). All 3 DAGs share daily schedule so ExternalTaskSensor's default
@@ -988,7 +988,7 @@ with DAG(
     schedule_interval="0 2 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "cn_a", "daily", "envelope"],
+    tags=["stock", "content-platform", "cn_a", "daily", "envelope"],
 ) as dag_cn_a_news:
     _submit_pipeline_fanout(
         "cn_a_news", "stock_cn_a_news", timeout=60 * 60,
@@ -1004,7 +1004,7 @@ with DAG(
     schedule_interval="30 2 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "cn_a", "daily", "envelope"],
+    tags=["stock", "content-platform", "cn_a", "daily", "envelope"],
 ) as dag_cn_a_financials:
     _submit_pipeline_fanout(
         "cn_a_financials", "stock_cn_a_financials", timeout=60 * 60,
@@ -1020,7 +1020,7 @@ with DAG(
     schedule_interval="30 23 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "cn_a", "daily", "envelope"],
+    tags=["stock", "content-platform", "cn_a", "daily", "envelope"],
 ) as dag_cn_a_price_history:
     _submit_pipeline_fanout(
         "cn_a_price_history", "stock_cn_a_price_history", timeout=60 * 60,
@@ -1036,7 +1036,7 @@ with DAG(
     schedule_interval="0 3 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "cn_a", "daily", "envelope"],
+    tags=["stock", "content-platform", "cn_a", "daily", "envelope"],
 ) as dag_cn_a_analyst_rating:
     _submit_pipeline_fanout(
         "cn_a_analyst_rating", "stock_cn_a_analyst_rating", timeout=60 * 60,
@@ -1052,7 +1052,7 @@ with DAG(
     schedule_interval="30 3 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "cn_a", "daily", "envelope"],
+    tags=["stock", "content-platform", "cn_a", "daily", "envelope"],
 ) as dag_cn_a_dividend:
     _submit_pipeline_fanout(
         "cn_a_dividend", "stock_cn_a_dividend", timeout=60 * 60,
@@ -1081,7 +1081,7 @@ with DAG(
     schedule_interval="30 2 1-7 * 0",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "hk", "monthly"],
+    tags=["stock", "content-platform", "hk", "monthly"],
 ) as dag_hk_master:
     submit_hk_master = SimpleHttpOperator(
         task_id="submit_hk_master",
@@ -1123,7 +1123,7 @@ with DAG(
     schedule_interval="45 18 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "hk", "daily", "envelope"],
+    tags=["stock", "content-platform", "hk", "daily", "envelope"],
 ) as dag_hk_southbound:
     wait_master = _wait_hk_master_published()
     submit, poll = _submit_pipeline_fanout(
@@ -1141,7 +1141,7 @@ with DAG(
     schedule_interval="15 2 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "hk", "daily", "envelope"],
+    tags=["stock", "content-platform", "hk", "daily", "envelope"],
 ) as dag_hk_news:
     wait_master = _wait_hk_master_published()
     submit, poll = _submit_pipeline_fanout(
@@ -1159,7 +1159,7 @@ with DAG(
     schedule_interval="45 2 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "hk", "daily", "envelope"],
+    tags=["stock", "content-platform", "hk", "daily", "envelope"],
 ) as dag_hk_financials:
     wait_master = _wait_hk_master_published()
     submit, poll = _submit_pipeline_fanout(
@@ -1190,7 +1190,7 @@ with DAG(
     schedule_interval="0 14 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "us", "daily", "envelope"],
+    tags=["stock", "content-platform", "us", "daily", "envelope"],
     is_paused_upon_creation=True,
 ) as dag_us_financials:
     _submit_pipeline_fanout(
@@ -1213,7 +1213,7 @@ with DAG(
     schedule_interval="45 23 * * *",
     max_active_runs=1,
     default_args=_VENDOR_PLAN_DEFAULT_ARGS,
-    tags=["stock", "hk", "daily", "envelope"],
+    tags=["stock", "content-platform", "hk", "daily", "envelope"],
 ) as dag_hk_price_history:
     wait_master = _wait_hk_master_published()
     submit, poll = _submit_pipeline_fanout(
