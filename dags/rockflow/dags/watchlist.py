@@ -56,7 +56,7 @@ UPSERT_ES_WATCHLIST = DAG(
     "UPSERT_ES_WATCHLIST",
     catchup=False,
     start_date=pendulum.datetime(2024, 1, 12, tz='Asia/Shanghai'),
-    schedule_interval='*/10 * * * *',
+    schedule_interval='*/15 * * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
