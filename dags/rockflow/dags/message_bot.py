@@ -62,6 +62,15 @@ user_group_send_message_1w = DAG(
     }
 )
 
+SimpleHttpOperator(
+    task_id='user_group_send_message_1w',
+    method='PUT',
+    http_conn_id='flow-admin',
+    endpoint='/admin/inner/user/group/send/1w',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=user_group_send_message_1w,
+)
 
 face_recognition_send_broadcast = DAG(
     "face_recognition_send_broadcast",
