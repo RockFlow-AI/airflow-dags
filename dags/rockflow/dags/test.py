@@ -24,7 +24,7 @@ with DAG(
         task_id="test______fetch_news",
         name="fetch-news-debug-airflow",
         namespace="airflow",
-        image="rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:be1bce6dab0e97aaa1093d95f971271e3860839f",
+        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:be1bce6dab0e97aaa1093d95f971271e3860839f",
 
         cmds=["python"],
         arguments=["-m", "jobs.news"],
