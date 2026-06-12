@@ -15,7 +15,7 @@ with DAG(
         default_args={
             "owner": "xiangpingjiang",
             "depends_on_past": False,
-            "retries": 12,
+            "retries": 1,
             "retry_delay": timedelta(minutes=1),
         }
 ) as symbol_dag:
@@ -24,7 +24,7 @@ with DAG(
         task_id="test______fetch_news",
         name="fetch-news-debug-airflow",
         namespace="prod",
-        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:630dd2137aac0e2a42ca128faf6fb1265432895f",
+        image="rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:630dd2137aac0e2a42ca128faf6fb1265432895f",
 
         cmds=["python"],
         arguments=["-m", "jobs.news"],
