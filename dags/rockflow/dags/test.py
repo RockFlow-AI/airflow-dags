@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from airflow.models import DAG
 from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
-from kubernetes.client import V1LocalObjectReference
+from kubernetes.client import models as k8s
 
 
 DAG_ID = "test_fetch_news"
@@ -28,9 +28,16 @@ with DAG(
 
         cmds=["python"],
         arguments=["-m", "jobs.news"],
-        image_pull_secrets=[
-            V1LocalObjectReference(name="registry-tmp")
-        ],
+        container_resources=k8s.V1ResourceRequirements(
+            requests={
+                "cpu": "500m",
+                "memory": "512Mi",
+            },
+            limits={
+                "cpu": "1",
+                "memory": "1Gi",
+            },
+        ),
         get_logs=True,
         is_delete_operator_pod=True,
     )
