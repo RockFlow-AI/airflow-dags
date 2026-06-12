@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 from airflow.models import DAG
 from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
+from kubernetes.client import V1LocalObjectReference
+
 
 DAG_ID = "test_fetch_news"
 
@@ -26,6 +28,9 @@ with DAG(
 
         cmds=["python"],
         arguments=["-m", "jobs.news"],
+
+        image_pull_secrets=[
+        V1LocalObjectReference("registry-tmp")],
 
         get_logs=True,
         is_delete_operator_pod=False,
