@@ -28,5 +28,5 @@ with DAG(
         arguments=["-m", "jobs.news"],
 
         get_logs=True,
-        is_delete_operator_pod=True,
+        is_delete_operator_pod=False,
     )
