@@ -3,7 +3,12 @@ from datetime import datetime, timedelta
 from airflow.models import DAG
 from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
 from kubernetes.client import models as k8s
-
+from airflow.providers.cncf.kubernetes.secret import Secret
+secret_file = Secret(
+    deploy_type="volume",
+    deploy_target="/root/.ssh",
+    secret="devpod-ssh-secret",
+)
 
 DAG_ID = "test_fetch_news"
 
@@ -24,7 +29,7 @@ with DAG(
         task_id="test______fetch_news",
         name="fetch-news-debug-airflow",
         namespace="airflow",
-        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:be1bce6dab0e97aaa1093d95f971271e3860839f",
+        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:2d791f6b798229555ea667e8fe9a3820e4ce54b9",
 
         cmds=["python"],
         arguments=["-m", "jobs.news"],
@@ -40,4 +45,5 @@ with DAG(
         ),
         get_logs=True,
         is_delete_operator_pod=True,
+        secrets=[secret_file],
     )
