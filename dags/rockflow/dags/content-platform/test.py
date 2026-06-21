@@ -29,7 +29,7 @@ with DAG(
         task_id="test______fetch_news",
         name="fetch-news-debug-airflow",
         namespace="airflow",
-        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:dae71be28053111d23a2bfd5e32f2c865776c52f",
+        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:8c494a443951e227ff9a0d87a8ba83a4074e2904",
 
         cmds=["python"],
         arguments=["jobs/content_generate.py/single_personal.py", "--bobbyUserId","7472495549074249214"],
