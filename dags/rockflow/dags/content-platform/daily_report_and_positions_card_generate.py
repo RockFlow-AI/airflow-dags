@@ -10,13 +10,14 @@ secret_file = Secret(
     secret="devpod-ssh-secret",
 )
 
-DAG_ID = "test_fetch_news"
+DAG_ID = "daily_report_and_positions_card_generate"
 
 with DAG(
         DAG_ID,
+        tags=["content-platform-airflow"],
         catchup=False,
         start_date=datetime(2022, 1, 1),
-        schedule_interval=timedelta(hours=8),
+        schedule_interval=None,
         default_args={
             "owner": "xiangpingjiang",
             "depends_on_past": False,
