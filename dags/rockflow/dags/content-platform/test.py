@@ -29,10 +29,10 @@ with DAG(
         task_id="test______fetch_news",
         name="fetch-news-debug-airflow",
         namespace="airflow",
-        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:286f6d4db5b4edba8c17166691972daa91072a2c",
+        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:dae71be28053111d23a2bfd5e32f2c865776c52f",
 
         cmds=["python"],
-        arguments=["-m", "jobs.big_mover"],
+        arguments=["jobs/content_generate.py/single_personal.py", "--bobbyUserId","7472495549074249214"],
         container_resources=k8s.V1ResourceRequirements(
             requests={
                 "cpu": "500m",
