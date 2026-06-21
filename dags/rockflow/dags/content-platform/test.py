@@ -44,6 +44,6 @@ with DAG(
             },
         ),
         get_logs=True,
-        is_delete_operator_pod=True,
+        is_delete_operator_pod=False,
         secrets=[secret_file],
     )
