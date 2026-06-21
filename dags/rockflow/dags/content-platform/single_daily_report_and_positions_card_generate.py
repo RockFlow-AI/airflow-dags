@@ -10,7 +10,7 @@ secret_file = Secret(
     secret="devpod-ssh-secret",
 )
 
-DAG_ID = "daily_report_and_positions_card_generate"
+DAG_ID = "single_daily_report_and_positions_card_generate"
 
 with DAG(
         DAG_ID,
@@ -31,7 +31,7 @@ with DAG(
 
     daily_report_and_positions_card_generate = KubernetesPodOperator(
         task_id="daily_report_and_positions_card_generate",
-        name="daily-report-and-positions-card-generate",
+        name="single-daily-report-and-positions-card-generate",
         namespace="airflow",
         image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:8c494a443951e227ff9a0d87a8ba83a4074e2904",
 
