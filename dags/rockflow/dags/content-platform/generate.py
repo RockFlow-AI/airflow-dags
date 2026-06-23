@@ -49,33 +49,14 @@ def make_dag(dag_id, arguments, params=None):
 
 
 make_dag(
-    "big_mover_price_us",
-    ["jobs/event_data_source/big_mover_price_us.py"],
+    "single_education_card_generate",
+    ["jobs/content_generate.py/single_investor_education.py", "--bobbyUserId", "{{ params.bobbyUserId }}"],
+    params={"bobbyUserId": "7472495549074249214"},
 )
 
 
 make_dag(
-    "big_mover_volume_us",
-    ["jobs/event_data_source/big_mover_volume_us.py"],
+    "single_daily_report_and_positions_card_generate",
+    ["jobs/content_generate.py/single_positions.py", "--bobbyUserId", "{{ params.bobbyUserId }}"],
+    params={"bobbyUserId": "7472495549074249214"},
 )
-
-
-make_dag(
-    "dividends_calendar",
-    ["jobs/event_data_source/dividends_calendar.py"],
-)
-
-
-
-make_dag(
-    "splits_calendar",
-    ["jobs/event_data_source/splits_calendar.py"],
-)
-
-
-
-make_dag(
-    "earnings_calendar",
-    ["jobs/event_data_source/earnings_calendar.py"],
-)
-
