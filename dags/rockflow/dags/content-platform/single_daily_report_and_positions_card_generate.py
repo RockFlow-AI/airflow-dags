@@ -33,10 +33,10 @@ with DAG(
         task_id="daily_report_and_positions_card_generate",
         name="single-daily-report-and-positions-card-generate",
         namespace="airflow",
-        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:084e24bee12ecabc158c091cd32f604b7922bdee",
+        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:793e946afe4b88a86b98c237a511d955eb08794e",
 
         cmds=["python"],
-        arguments=["jobs/content_generate.py/single_personal.py", "--bobbyUserId", "{{ params.bobbyUserId }}"],
+        arguments=["jobs/content_generate.py/single_positions.py", "--bobbyUserId", "{{ params.bobbyUserId }}"],
         container_resources=k8s.V1ResourceRequirements(
             requests={
                 "cpu": "500m",
