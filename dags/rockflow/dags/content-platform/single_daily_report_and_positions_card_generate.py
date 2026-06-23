@@ -33,7 +33,7 @@ with DAG(
         task_id="daily_report_and_positions_card_generate",
         name="single-daily-report-and-positions-card-generate",
         namespace="airflow",
-        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:793e946afe4b88a86b98c237a511d955eb08794e",
+        image="rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:820e73a9f9814706061922d5b04ec44e0483a8f9",
 
         cmds=["python"],
         arguments=["jobs/content_generate.py/single_positions.py", "--bobbyUserId", "{{ params.bobbyUserId }}"],
