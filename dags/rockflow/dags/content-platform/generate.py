@@ -60,3 +60,10 @@ make_dag(
     ["jobs/content_generate.py/single_positions.py", "--bobbyUserId", "{{ params.bobbyUserId }}"],
     params={"bobbyUserId": "7472495549074249214"},
 )
+
+make_dag(
+    "single_translate",
+    ["jobs/content_generate.py/single_translate.py", "--bobbyUserId", "{{ params.bobbyUserId }}"],
+    params={"bobbyUserId": "7472495549074249214"},
+)
+
