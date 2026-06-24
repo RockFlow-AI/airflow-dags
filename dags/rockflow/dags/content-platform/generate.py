@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-
+import pendulum
 from airflow.models import DAG
 from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
 from airflow.providers.cncf.kubernetes.secret import Secret
@@ -21,13 +21,13 @@ DEFAULT_ARGS = {
 }
 
 
-def make_dag(dag_id, arguments, params=None):
+def make_dag(dag_id, arguments, params=None, schedule_interval=None, timezone="UTC"):
     with DAG(
         dag_id,
         tags=["content-platform-airflow"],
         catchup=False,
-        start_date=datetime(2022, 1, 1),
-        schedule_interval=None,
+        start_date=pendulum.datetime(2022, 1, 1, tz=timezone),
+        schedule_interval=schedule_interval,
         default_args=DEFAULT_ARGS,
         params=params,
     ):
