@@ -80,6 +80,6 @@ make_dag(
 make_dag(
     "translate_daily_generate",
     ["jobs/content_generate.py/translate_daily_generate.py"],
-    schedule_interval="00 19 * * *",
+    schedule_interval="20 19 * * *",
     timezone="America/New_York",
 )
