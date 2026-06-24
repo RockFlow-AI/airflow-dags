@@ -11,7 +11,7 @@ secret_file = Secret(
     secret="devpod-ssh-secret",
 )
 
-IMAGE = "rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:95826103cc780b25be717de166f490bd759aee7e"
+IMAGE = "rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:e97f03cc722d44a202b41b8dd5218a89a3c2c036"
 
 DEFAULT_ARGS = {
     "owner": "xiangpingjiang",
