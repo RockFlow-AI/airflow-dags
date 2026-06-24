@@ -44,7 +44,7 @@ def make_dag(dag_id, arguments, params=None, schedule_interval=None, timezone="U
                 limits={"cpu": "1", "memory": "1Gi"},
             ),
             get_logs=True,
-            is_delete_operator_pod=True,
+            is_delete_operator_pod=False,
             secrets=[secret_file],
         )
 
