@@ -11,7 +11,7 @@ secret_file = Secret(
     secret="prod-ssh-secret",
 )
 
-IMAGE = "rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:fb968d01e90e12f045c033313f39c6ae833a02b7"
+IMAGE = "rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:0849cf8e570394011f0f3e361bd003ea7a4b9ff8"
 
 DEFAULT_ARGS = {
     "owner": "xiangpingjiang",
@@ -42,6 +42,9 @@ def make_dag(dag_id, arguments, params=None):
                 requests={"cpu": "500m", "memory": "512Mi"},
                 limits={"cpu": "1", "memory": "1Gi"},
             ),
+            env_vars=[
+                k8s.V1EnvVar(name="NAMESPACE", value="prod"),
+            ],
             get_logs=True,
             is_delete_operator_pod=True,
             secrets=[secret_file],

@@ -43,6 +43,9 @@ def make_dag(dag_id, arguments, params=None, schedule_interval=None, timezone="U
                 requests={"cpu": "500m", "memory": "512Mi"},
                 limits={"cpu": "1", "memory": "1Gi"},
             ),
+            env_vars=[
+                k8s.V1EnvVar(name="NAMESPACE", value="prod"),
+            ],
             get_logs=True,
             is_delete_operator_pod=False,
             secrets=[secret_file],
