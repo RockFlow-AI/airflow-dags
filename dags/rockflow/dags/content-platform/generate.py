@@ -34,7 +34,7 @@ def make_dag(dag_id, arguments, params=None):
         KubernetesPodOperator(
             task_id=dag_id,
             name=dag_id.replace("_", "-"),
-            namespace="airflow",
+            namespace="prod",
             image=IMAGE,
             cmds=["python"],
             arguments=arguments,
