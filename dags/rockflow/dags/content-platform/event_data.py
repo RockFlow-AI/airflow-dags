@@ -8,7 +8,10 @@ from kubernetes.client import models as k8s
 
 import os
 
-ENV = os.environ.get("NAMESPACE", "airflow")  # 测试环境 默认 
+
+# 依赖数据库连接域名判断环境
+_db_conn = os.environ.get("AIRFLOW_CONN_AIRFLOW_DB", "")
+ENV = "prod" if "rds-prod.rds.rockflow.ai" in _db_conn else "airflow"
 
 secret_file = Secret(
     deploy_type="volume",
@@ -18,7 +21,7 @@ secret_file = Secret(
 image_tag = "de95bd0dea94807fb0b4382f26439c201398457d"
 IMAGES = {
     "prod": f"rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
-    "dev":  f"rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
+    "airflow":  f"rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
 }
 IMAGE = IMAGES[ENV]
 DEFAULT_ARGS = {
