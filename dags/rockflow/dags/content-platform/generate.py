@@ -8,7 +8,7 @@ from kubernetes.client import models as k8s
 secret_file = Secret(
     deploy_type="volume",
     deploy_target="/root/.ssh",
-    secret="devpod-ssh-secret",
+    secret="prod-ssh-secret",
 )
 
 IMAGE = "rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:122fe435fcb03a7ea2db455a81bb41416d99d1c8"
