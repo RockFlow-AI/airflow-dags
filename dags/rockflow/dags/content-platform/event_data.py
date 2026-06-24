@@ -60,6 +60,8 @@ make_dag(
 make_dag(
     "big_mover_volume_us",
     ["jobs/event_data_source/big_mover_volume_us.py"],
+    schedule_interval="30 17 * * *",
+    timezone="America/New_York",
 )
 
 
