@@ -11,7 +11,7 @@ secret_file = Secret(
     secret="prod-ssh-secret",
 )
 
-IMAGE = "rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:0849cf8e570394011f0f3e361bd003ea7a4b9ff8"
+IMAGE = "rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:de95bd0dea94807fb0b4382f26439c201398457d"
 
 DEFAULT_ARGS = {
     "owner": "xiangpingjiang",
@@ -73,9 +73,13 @@ make_dag(
 make_dag(
     "positions_card_daily_generate",
     ["jobs/content_generate.py/positions_card_daily_generate.py"],
+    schedule_interval="00 19 * * *",
+    timezone="America/New_York",
 )
 
 make_dag(
     "translate_daily_generate",
     ["jobs/content_generate.py/translate_daily_generate.py"],
+    schedule_interval="00 19 * * *",
+    timezone="America/New_York",
 )

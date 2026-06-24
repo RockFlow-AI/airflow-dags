@@ -12,7 +12,7 @@ secret_file = Secret(
     secret="prod-ssh-secret",
 )
 
-IMAGE = "rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:0849cf8e570394011f0f3e361bd003ea7a4b9ff8"
+IMAGE = "rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:de95bd0dea94807fb0b4382f26439c201398457d"
 
 DEFAULT_ARGS = {
     "owner": "xiangpingjiang",
@@ -71,6 +71,8 @@ make_dag(
 make_dag(
     "dividends_calendar",
     ["jobs/event_data_source/dividends_calendar.py"],
+    schedule_interval="00 18 * * *",
+    timezone="America/New_York",
 )
 
 
@@ -78,6 +80,8 @@ make_dag(
 make_dag(
     "splits_calendar",
     ["jobs/event_data_source/splits_calendar.py"],
+    schedule_interval="02 18 * * *",
+    timezone="America/New_York",
 )
 
 
@@ -85,4 +89,6 @@ make_dag(
 make_dag(
     "earnings_calendar",
     ["jobs/event_data_source/earnings_calendar.py"],
+    schedule_interval="05 18 * * *",
+    timezone="America/New_York",
 )
