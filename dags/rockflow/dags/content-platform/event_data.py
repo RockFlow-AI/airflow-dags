@@ -25,7 +25,7 @@ DEFAULT_ARGS = {
 def make_dag(dag_id, arguments, params=None, schedule_interval=None, timezone="UTC"):
     with DAG(
         dag_id,
-        tags=["content-platform-airflow"],
+        tags=["content-platform-airflow-data"],
         catchup=False,
         start_date=pendulum.datetime(2022, 1, 1, tz=timezone),
         schedule_interval=schedule_interval,
