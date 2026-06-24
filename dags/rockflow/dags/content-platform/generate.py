@@ -11,7 +11,7 @@ secret_file = Secret(
     secret="devpod-ssh-secret",
 )
 
-IMAGE = "rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:20a419cb5c9fdd0382018f62a219d5506f9be8f3"
+IMAGE = "rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:0ac34f0d616ba0b7a3a28ecb799c3a48ce9f8d3b"
 
 DEFAULT_ARGS = {
     "owner": "xiangpingjiang",
@@ -72,3 +72,7 @@ make_dag(
     ["jobs/content_generate.py/positions_card_daily_generate.py"],
 )
 
+make_dag(
+    "translate_daily_generate",
+    ["jobs/content_generate.py/translate_daily_generate.py"],
+)
