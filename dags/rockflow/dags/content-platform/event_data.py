@@ -47,7 +47,7 @@ def make_dag(dag_id, arguments, params=None, schedule_interval=None, timezone="U
                 k8s.V1EnvVar(name="NAMESPACE", value="prod"),
             ],
             get_logs=True,
-            is_delete_operator_pod=False,
+            is_delete_operator_pod=True,
             secrets=[secret_file],
         )
 
