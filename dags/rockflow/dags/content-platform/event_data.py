@@ -6,14 +6,21 @@ from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperato
 from airflow.providers.cncf.kubernetes.secret import Secret
 from kubernetes.client import models as k8s
 
+import os
+
+ENV = os.environ.get("NAMESPACE", "airflow")  # 测试环境 默认 
+
 secret_file = Secret(
     deploy_type="volume",
     deploy_target="/root/.ssh",
-    secret="prod-ssh-secret",
+    secret="prod-ssh-secret" if ENV == "prod" else "devpod-ssh-secret",
 )
-
-IMAGE = "rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:de95bd0dea94807fb0b4382f26439c201398457d"
-
+image_tag = "de95bd0dea94807fb0b4382f26439c201398457d"
+IMAGES = {
+    "prod": f"rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
+    "dev":  f"rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
+}
+IMAGE = IMAGES[ENV]
 DEFAULT_ARGS = {
     "owner": "xiangpingjiang",
     "depends_on_past": False,
@@ -35,7 +42,7 @@ def make_dag(dag_id, arguments, params=None, schedule_interval=None, timezone="U
         KubernetesPodOperator(
             task_id=dag_id,
             name=dag_id.replace("_", "-"),
-            namespace="prod",
+            namespace=ENV,
             image=IMAGE,
             cmds=["python"],
             arguments=arguments,
@@ -43,9 +50,7 @@ def make_dag(dag_id, arguments, params=None, schedule_interval=None, timezone="U
                 requests={"cpu": "500m", "memory": "512Mi"},
                 limits={"cpu": "1", "memory": "1Gi"},
             ),
-            env_vars=[
-                k8s.V1EnvVar(name="NAMESPACE", value="prod"),
-            ],
+            env_vars=[k8s.V1EnvVar(name="NAMESPACE", value=ENV)] if ENV == "prod" else [],
             get_logs=True,
             is_delete_operator_pod=True,
             secrets=[secret_file],
