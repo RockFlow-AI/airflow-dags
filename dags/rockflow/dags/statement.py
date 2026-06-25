@@ -594,3 +594,26 @@ SimpleHttpOperator(
     extra_options={"timeout": 300},
     dag=send_hk_monthly_statement_email,
 )
+
+send_hk_position_inout = DAG(
+    "send_hk_position_inout",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 6, 25, 0, 0, tz='Asia/Shanghai'),
+    schedule_interval='10,30,50 18,19 * * 1-7',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 1,
+        "retry_delay": timedelta(minutes=5)
+    }
+)
+
+SimpleHttpOperator(
+    task_id='send_hk_position_inout',
+    method='PATCH',
+    http_conn_id='flow-statement-qyzj',
+    endpoint='/inner/statement/zv/positionInOuts/send?symbols=YFDHKD,YFDUSD&statementDay={date}'.format(date=(datetime.now() + timedelta(days=-1)).strftime("%Y-%m-%d")),
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 300},
+    dag=send_hk_position_inout,
+)
