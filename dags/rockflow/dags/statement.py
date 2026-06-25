@@ -611,7 +611,7 @@ send_hk_position_inout = DAG(
 SimpleHttpOperator(
     task_id='send_hk_position_inout',
     method='PATCH',
-    http_conn_id='flow-statement-qyzj',
+    http_conn_id='flow-statement.qyzj',
     endpoint='/inner/statement/zv/positionInOuts/send?symbols=YFDHKD,YFDUSD&statementDay={date}'.format(date=(datetime.now() + timedelta(days=-1)).strftime("%Y-%m-%d")),
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 300},
