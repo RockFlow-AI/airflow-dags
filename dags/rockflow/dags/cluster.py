@@ -29,6 +29,29 @@ SimpleHttpOperator(
     dag=currencies_refresh,
 )
 
+ledger_currencies_refresh = DAG(
+    "ledger_currencies_refresh_weekly",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 6, 26, tz='America/New_York'),
+    schedule_interval='30 1 * * 1',
+    default_args={
+        "owner": "yinxiang",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='ledger_currencies_refresh',
+    method='PATCH',
+    http_conn_id='flow-ledger.qyzj',
+    endpoint='/ledger/inner/forex/rates',
+    headers={'appId': '1'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=ledger_currencies_refresh,
+)
+
 # 碎股及港股更新
 contracts_refresh = DAG(
     "contracts_refresh_daily",
