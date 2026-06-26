@@ -17,7 +17,7 @@ with DAG(
 ) as support_daily_report:
     support_daily_report_task = SimpleHttpOperator(
         task_id="support_daily_report",
-        method="GET",
+        method="POST",
         http_conn_id="rockbot",
         endpoint="/inner/support/conversation-report",
         response_check=lambda response: response.json()["code"] == 200,
