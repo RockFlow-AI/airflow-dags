@@ -18,7 +18,7 @@ secret_file = Secret(
     deploy_target="/root/.ssh",
     secret="prod-ssh-secret" if ENV == "prod" else "devpod-ssh-secret",
 )
-image_tag = "88a28043d48b97cf3ec6c08709f37f8dad42bd84"
+image_tag = "13279b8db156c54ee9dc15d5539edab6d5b41bf6"
 IMAGES = {
     "prod": f"rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
     "airflow":  f"rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
