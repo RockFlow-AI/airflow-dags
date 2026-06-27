@@ -149,12 +149,14 @@ make_dag(
 make_dag(
     "investor_education_generate",
     ["jobs/content_generate.py/investor_education_generate.py"],
+    schedule_interval="00 21 * * 3,6",
+    timezone="America/New_York",
 
 )
 
 make_dag(
     "translate_daily_generate",
     ["jobs/content_generate.py/translate_daily_generate.py"],
-    schedule_interval="20 20 * * *",
+    schedule_interval="00 22 * * *",
     timezone="America/New_York",
 )
