@@ -18,7 +18,7 @@ secret_file = Secret(
     deploy_target="/root/.ssh",
     secret="prod-ssh-secret" if ENV == "prod" else "devpod-ssh-secret",
 )
-image_tag = "0bec3a3b651f7e184d64f27c4934e4fe86c13a76"
+image_tag = "50c7d359fc90ddb3679f0d1b3e4a8467b0837cd3"
 IMAGES = {
     "prod": f"rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
     "airflow":  f"rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
@@ -127,8 +127,8 @@ make_dag(
 
 make_dag(
     "single_education_card_generate",
-    ["jobs/content_generate.py/single_investor_education.py", "--bobbyUserId", "{{ params.bobbyUserId }}"],
-    params={"bobbyUserId": "7472495549074249214"},
+    ["jobs/content_generate.py/single_investor_education.py", "--cardId", "{{ params.cardId }}"],
+    params={"cardId": "123"},
 )
 
 
