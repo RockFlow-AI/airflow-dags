@@ -111,6 +111,7 @@ make_dag(
 make_dag(
     "clear_events",
     ["jobs/event_data_source/clear_events.py", "--date", "{{ params.date }}"],
+    params={"date": "2026-06-28"},
 )
 
 
@@ -169,4 +170,6 @@ make_dag(
 make_dag(
     "clear_cards",
     ["jobs/content_generate.py/clear_cards.py", "--date", "{{ params.date }}","--user_id","{{ params.bobbyUserId }}"],
+    params={"bobbyUserId": "7472495549074249214",
+            "date": "2026-06-28"},
 )
