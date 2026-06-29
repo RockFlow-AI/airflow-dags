@@ -127,8 +127,8 @@ make_dag(
 
 make_dag(
     "single_education_card_generate",
-    ["jobs/content_generate.py/single_investor_education.py", "--bobbyUserId", "{{ params.bobbyUserId }}"],
-    params={"bobbyUserId": "7472495549074249214"},
+    ["jobs/content_generate.py/single_investor_education.py", "--cardId", "{{ params.cardId }}"],
+    params={"cardId": "123"},
 )
 
 
