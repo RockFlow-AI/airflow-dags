@@ -18,6 +18,8 @@ with DAG(
     support_daily_report_task = SimpleHttpOperator(
         task_id="support_daily_report",
         method="POST",
+        headers={"Content-Type": "application/json"},
+        data=json.dumps({}),
         http_conn_id="rockbot",
         endpoint="/inner/support/conversation-report",
         response_check=lambda response: response.json()["code"] == 200,
