@@ -8,7 +8,7 @@ with DAG(
     "support_daily_report",
     catchup=False,
     start_date=pendulum.datetime(2026, 6, 26, tz="Asia/Shanghai"),
-    schedule_interval="0 18 * * *",
+    schedule_interval="0 10 * * *",
     default_args={
         "owner": "caohaoxuan",
         "depends_on_past": False,
