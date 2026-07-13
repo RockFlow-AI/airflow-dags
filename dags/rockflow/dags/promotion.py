@@ -259,8 +259,8 @@ SimpleHttpOperator(
     dag=account_reward_recovery,
 )
 
-tesla_stock_check = DAG(
-    "tesla_stock_check",
+stock_reward_check = DAG(
+    "stock_reward_check",
     catchup=False,
     start_date=pendulum.datetime(2026, 7, 1, tz='Asia/Shanghai'),
     schedule_interval='0 10 * * *',
@@ -272,17 +272,17 @@ tesla_stock_check = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='tesla_stock_check',
+    task_id='stock_reward_check',
     method='PUT',
     http_conn_id='flow-promotion',
-    endpoint='/promotion/inner/task/reward/tesla/check',
+    endpoint='/promotion/inner/task/reward/stock/check',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
-    dag=tesla_stock_check,
+    dag=stock_reward_check,
 )
 
-tesla_stock_dispatch = DAG(
-    "tesla_stock_dispatch",
+stock_reward_dispatch = DAG(
+    "stock_reward_dispatch",
     catchup=False,
     start_date=pendulum.datetime(2026, 7, 1, tz='Asia/Shanghai'),
     schedule_interval='0 15 * * *',
@@ -294,17 +294,17 @@ tesla_stock_dispatch = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='tesla_stock_dispatch',
+    task_id='stock_reward_dispatch',
     method='PUT',
     http_conn_id='flow-promotion',
-    endpoint='/promotion/inner/task/reward/tesla/dispatch',
+    endpoint='/promotion/inner/task/reward/stock/dispatch',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 1800},
-    dag=tesla_stock_dispatch,
+    dag=stock_reward_dispatch,
 )
 
-tesla_stock_unfreeze = DAG(
-    "tesla_stock_unfreeze",
+stock_reward_unfreeze = DAG(
+    "stock_reward_unfreeze",
     catchup=False,
     start_date=pendulum.datetime(2026, 7, 1, tz='Asia/Shanghai'),
     schedule_interval='0 11 * * *',
@@ -316,13 +316,13 @@ tesla_stock_unfreeze = DAG(
 )
 
 SimpleHttpOperator(
-    task_id='tesla_stock_unfreeze',
+    task_id='stock_reward_unfreeze',
     method='PUT',
     http_conn_id='flow-promotion',
-    endpoint='/promotion/inner/task/reward/tesla/unfreeze',
+    endpoint='/promotion/inner/task/reward/stock/unfreeze',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
-    dag=tesla_stock_unfreeze,
+    dag=stock_reward_unfreeze,
 )
 
 invite_reward_unfreeze = DAG(
