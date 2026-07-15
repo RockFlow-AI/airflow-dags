@@ -253,7 +253,7 @@ SimpleHttpOperator(
     task_id='account_reward_recovery',
     method='PUT',
     http_conn_id='flow-promotion',
-    endpoint='/promotion/inner/task/reward/account-recovery',
+    endpoint='/promotion/inner/task/reward/account/recovery',
     response_check=lambda response: response.json()['code'] == 200,
     extra_options={"timeout": 600},
     dag=account_reward_recovery,
