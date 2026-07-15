@@ -117,6 +117,7 @@ make_dag(
 make_dag(
     "press_releases",
     ["jobs/event_data_source/press_releases.py"],
+    schedule_interval="00 20 * * *",
 )
 
 
