@@ -18,7 +18,7 @@ secret_file = Secret(
     deploy_target="/root/.ssh",
     secret="prod-ssh-secret" if ENV == "prod" else "devpod-ssh-secret",
 )
-image_tag = "be2a170ddaa2ce1b0a9cd569ba0ade91705de218"
+image_tag = "9b3de48697d894292ec478ca60eb9a92bc6d78c5"
 IMAGES = {
     "prod": f"rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
     "airflow":  f"rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
@@ -114,7 +114,10 @@ make_dag(
     params={"date": "2026-06-28"},
 )
 
-
+make_dag(
+    "press_releases",
+    ["jobs/event_data_source/press_releases.py"],
+)
 
 
 
