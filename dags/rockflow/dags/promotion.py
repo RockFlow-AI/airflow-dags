@@ -237,28 +237,6 @@ SimpleHttpOperator(
 
 # ========== 奖励自动发放与回收定时任务 ==========
 
-account_reward_recovery = DAG(
-    "account_reward_recovery",
-    catchup=False,
-    start_date=pendulum.datetime(2026, 7, 1, tz='Asia/Shanghai'),
-    schedule_interval='0 12 * * *',
-    default_args={
-        "owner": "chengwei",
-        "depends_on_past": False,
-        "retries": 0
-    }
-)
-
-SimpleHttpOperator(
-    task_id='account_reward_recovery',
-    method='PUT',
-    http_conn_id='flow-promotion',
-    endpoint='/promotion/inner/task/reward/account/recovery',
-    response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 600},
-    dag=account_reward_recovery,
-)
-
 stock_reward_pending_check = DAG(
     "stock_reward_pending_check",
     catchup=False,
