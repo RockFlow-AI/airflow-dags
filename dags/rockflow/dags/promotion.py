@@ -241,7 +241,7 @@ stock_reward_pending_check = DAG(
     "stock_reward_pending_check",
     catchup=False,
     start_date=pendulum.datetime(2026, 7, 1, tz='Asia/Shanghai'),
-    schedule_interval='0 10 * * *',
+    schedule_interval='0 */6 * * *',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
