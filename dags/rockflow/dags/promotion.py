@@ -307,7 +307,7 @@ stock_reward_unfreeze = DAG(
     "stock_reward_unfreeze",
     catchup=False,
     start_date=pendulum.datetime(2026, 7, 1, tz='Asia/Shanghai'),
-    schedule_interval='0 11 * * *',
+    schedule_interval='*/10 * * * *',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
