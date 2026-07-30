@@ -234,3 +234,116 @@ SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=BOBBY_ORDER_COMMISSION_REDUCTION_LEADERBOARD,
 )
+
+
+# ========== 奖励自动发放与回收定时任务 ==========
+
+stock_reward_pending_check = DAG(
+    "stock_reward_pending_check",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 7, 1, tz='Asia/Shanghai'),
+    schedule_interval='0 */6 * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='stock_reward_pending_check',
+    method='PUT',
+    http_conn_id='flow-promotion',
+    endpoint='/promotion/inner/task/reward/stock/pending/check',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=stock_reward_pending_check,
+)
+
+stock_reward_dispatch = DAG(
+    "stock_reward_dispatch",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 7, 1, tz='Asia/Shanghai'),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='stock_reward_dispatch',
+    method='PUT',
+    http_conn_id='flow-promotion',
+    endpoint='/promotion/inner/task/reward/stock/deposit/dispatch',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1800},
+    dag=stock_reward_dispatch,
+)
+
+invite_reward_dispatch = DAG(
+    "invite_reward_dispatch",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 7, 1, tz='Asia/Shanghai'),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='invite_reward_dispatch',
+    method='PUT',
+    http_conn_id='flow-promotion',
+    endpoint='/promotion/inner/task/reward/stock/invite/dispatch',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1800},
+    dag=invite_reward_dispatch,
+)
+
+stock_reward_unfreeze = DAG(
+    "stock_reward_unfreeze",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 7, 1, tz='Asia/Shanghai'),
+    schedule_interval='0 10 * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='stock_reward_unfreeze',
+    method='PUT',
+    http_conn_id='flow-promotion',
+    endpoint='/promotion/inner/task/reward/stock/unfreeze',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=stock_reward_unfreeze,
+)
+
+invite_reward_unfreeze = DAG(
+    "invite_reward_unfreeze",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 7, 1, tz='Asia/Shanghai'),
+    schedule_interval='0 10 * * *',
+    default_args={
+        "owner": "chengwei",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='invite_reward_unfreeze',
+    method='PUT',
+    http_conn_id='flow-promotion',
+    endpoint='/promotion/inner/task/reward/invite/unfreeze',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=invite_reward_unfreeze,
+)
