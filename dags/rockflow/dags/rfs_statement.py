@@ -3,6 +3,7 @@ import pendulum
 from airflow.models import DAG
 from datetime import date, datetime, timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
+from zoneinfo import ZoneInfo
 
 rfs_statement = DAG(
     "rfs_statement",
