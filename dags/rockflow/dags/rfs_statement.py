@@ -95,7 +95,7 @@ replay_trades_qyzj = SimpleHttpOperator(
     task_id='replay_trades_qyzj',
     method='POST',
     content_type='application/json',
-    data=json.dumps({"startTime":f"{(date.today() - timedelta(days=1)).strftime("%Y-%m-%d")}T04:00:00-04:00","endTime":f"{datetime.now().strftime("%Y-%m-%d")}T04:00:00-04:00"}),
+    data=json.dumps({"startTime":f"{(date.today() - timedelta(days=1)).strftime('%Y-%m-%d')}T04:00:00-04:00","endTime":f"{datetime.now().strftime('%Y-%m-%d')}T04:00:00-04:00"}),
     http_conn_id='flow-order-gateway-zv-usd.qyzj',
     endpoint='localhost:8081/orders/inner/send',
     response_check=lambda response: response.json()['code'] == 200,
