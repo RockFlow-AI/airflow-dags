@@ -1,3 +1,4 @@
+import json
 import pendulum
 from airflow.models import DAG
 from datetime import date, datetime, timedelta
@@ -94,7 +95,7 @@ replay_trades_qyzj = SimpleHttpOperator(
     task_id='replay_trades_qyzj',
     method='POST',
     content_type='application/json',
-    data="{\"startTime\":\"{replay_date}T04:00:00-04:00\",\"endTime\":\"{next_date}T04:00:00-04:00\"}".format(replay_date=(date.today() - timedelta(days=1)).strftime("%Y-%m-%d"), next_date=datetime.now().strftime("%Y-%m-%d")),
+    data=json.dumps({"startTime":f"{(date.today() - timedelta(days=1)).strftime("%Y-%m-%d")}T04:00:00-04:00","endTime":f"{datetime.now().strftime("%Y-%m-%d")}T04:00:00-04:00"}),
     http_conn_id='flow-order-gateway-zv-usd.qyzj',
     endpoint='localhost:8081/orders/inner/send',
     response_check=lambda response: response.json()['code'] == 200,
