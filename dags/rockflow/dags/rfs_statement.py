@@ -155,4 +155,4 @@ data_reconcile_qyzj = SimpleHttpOperator(
     dag=import_statement,
 )
 
-import_statement_task >> verify_statement_imported >> import_data_to_statement_qyzj >> replay_deposit_withdrawal_qyzj >> replay_cash_change_qyzj >> replay_trades_qyzj >> replay_corporate_action_qyzj >> replay_option_exercise_qyzj >> ledger_reconcile_qyzj >> align_datetime_qyzj >> data_reconcile_qyz
+import_statement_task >> verify_statement_imported >> import_data_to_statement_qyzj >> replay_deposit_withdrawal_qyzj >> replay_cash_change_qyzj >> replay_trades_qyzj >> replay_corporate_action_qyzj >> replay_option_exercise_qyzj >> ledger_reconcile_qyzj >> align_datetime_qyzj >> data_reconcile_qyzj
