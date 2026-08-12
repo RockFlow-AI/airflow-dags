@@ -172,8 +172,8 @@ def build_replay_tasks(dag):
             "type": 4,
             "language": "zh-cn",
             "payload": {
-                "userCashRecords": len("{{ task_instance.xcom_pull(task_ids=['" + data_reconcile_qyzj.task_id + "'], key=return_value.json()['data']['misalignedCashRecords']) }}"),
-                "userPositionRecords": len("{{ task_instance.xcom_pull(task_ids=['" + data_reconcile_qyzj.task_id + "'], key=return_value.json()['data']['misalignedPositionRecords']) }}"),
+                "userCashRecords": len("{{ task_instance.xcom_pull(task_ids=['data_reconcile_qyzj'], key=return_value.json()['data']['misalignedCashRecords']) }}"),
+                "userPositionRecords": len("{{ task_instance.xcom_pull(task_ids=['data_reconcile_qyzj'], key=return_value.json()['data']['misalignedPositionRecords']) }}"),
             }}]),
         response_check=lambda response: response.json()['code'] == 200,
         extra_options={"timeout": 60},
