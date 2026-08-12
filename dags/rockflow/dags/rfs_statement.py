@@ -1,9 +1,11 @@
 import json
 import pendulum
 from airflow.models import DAG
+from airflow.models.baseoperator import chain
 from datetime import date, datetime, timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
 from zoneinfo import ZoneInfo
+from rockflow.operators.const import LARK_ALERT_USER_ID
 
 rfs_statement = DAG(
     "rfs_statement",
@@ -60,6 +62,10 @@ verify_statement_imported = SimpleHttpOperator(
     extra_options={"timeout": 60},
     dag=import_statement,
 )
+
+def decode_json_field(task, field):
+    payload = json.loads("{{ task_instance.xcom_pull('" + task.task_id + "') }}")
+    return payload.get('data', {}).get(field, None)
 
 
 def build_replay_tasks(dag):
@@ -150,12 +156,30 @@ def build_replay_tasks(dag):
         method='GET',
         http_conn_id='flow-statement.qyzj',
         endpoint='/statement/inner/data/reconcile',
-        response_check=lambda response: response.json()['code'] == 200 and len(response.json()['data']['misalignedCashRecords']) == 0 and len(response.json()['data']['misalignedPositionRecords']) == 0,
+        response_check=lambda response: response.json()['code'] == 200,
         extra_options={"timeout": 60},
         dag=dag,
     )
 
-    import_data_to_statement_qyzj >> replay_deposit_withdrawal_qyzj >> replay_cash_change_qyzj >> replay_trades_qyzj >> replay_corporate_action_qyzj >> replay_option_exercise_qyzj >> ledger_reconcile_qyzj >> align_datetime_qyzj >> data_reconcile_qyzj
+    lark_notification = SimpleHttpOperator(
+        task_id='lark_notification',
+        method='POST',
+        http_conn_id='flow-notification',
+        endpoint='/notification/inner/specification/notifications/specify/push/HK_DATA_RECONCILIATION',
+        data=json.dumps([{
+            "userId": LARK_ALERT_USER_ID,
+            "type": 4,
+            "language": "zh-cn",
+            "payload": {
+                "userCashRecords": len(decode_json_field(data_reconcile_qyzj, "misalignedCashRecords")),
+                "userPositionRecords": len(decode_json_field(data_reconcile_qyzj, "misalignedPositionRecords"))
+            }}]),
+        response_check=lambda response: response.json()['code'] == 200,
+        extra_options={"timeout": 60},
+        dag=dag,
+    )
+
+    import_data_to_statement_qyzj >> replay_deposit_withdrawal_qyzj >> replay_cash_change_qyzj >> replay_trades_qyzj >> replay_corporate_action_qyzj >> replay_option_exercise_qyzj >> ledger_reconcile_qyzj >> align_datetime_qyzj >> data_reconcile_qyzj >> lark_notification
 
     return import_data_to_statement_qyzj
 
