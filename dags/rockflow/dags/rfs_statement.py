@@ -66,11 +66,10 @@ verify_statement_imported = SimpleHttpOperator(
     dag=import_statement,
 )
 
-def decode_json_field(task, field):
-    previous_response = "{{ task_instance.xcom_pull('" + task.task_id + "') }}"
-    logger.info(f"Pulled previous response from XCOM with task {task.task_id}: {previous_response}")
-    payload = json.loads(previous_response)
-    logger.info(f"Decoded previous response from XCOM with task {task.task_id} to: {payload}")
+def decode_json_field(body, field):
+    logger.info(f"Pulled previous response from XCOM: {body}")
+    payload = json.loads(body)
+    logger.info(f"Decoded previous response from XCOM to: {payload}")
     return payload.get('data', {}).get(field, None)
 
 
@@ -177,8 +176,8 @@ def build_replay_tasks(dag):
             "type": 4,
             "language": "zh-cn",
             "payload": {
-                "userCashRecords": len(decode_json_field(data_reconcile_qyzj, "misalignedCashRecords")),
-                "userPositionRecords": len(decode_json_field(data_reconcile_qyzj, "misalignedPositionRecords"))
+                "userCashRecords": len(decode_json_field("{{ task_instance.xcom_pull('" + data_reconcile_qyzj.task_id + "') }}", "misalignedCashRecords")),
+                "userPositionRecords": len(decode_json_field("{{ task_instance.xcom_pull('" + data_reconcile_qyzj.task_id + "') }}", "misalignedPositionRecords"))
             }}]),
         response_check=lambda response: response.json()['code'] == 200,
         extra_options={"timeout": 60},
