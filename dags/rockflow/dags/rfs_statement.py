@@ -165,6 +165,7 @@ def build_replay_tasks(dag):
         task_id='lark_notification',
         method='POST',
         http_conn_id='flow-notification',
+        headers={"Content-Type": "application/json"},
         endpoint='/notification/inner/specification/notifications/specify/push/HK_DATA_RECONCILIATION',
         data=json.dumps([{
             "userId": LARK_ALERT_USER_ID,
