@@ -1,3 +1,4 @@
+import logging
 import json
 import pendulum
 from airflow.models import DAG
@@ -6,6 +7,8 @@ from datetime import date, datetime, timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
 from zoneinfo import ZoneInfo
 from rockflow.operators.const import LARK_ALERT_USER_ID
+
+logger = logging.getLogger("airflow.task")
 
 rfs_statement = DAG(
     "rfs_statement",
@@ -64,7 +67,10 @@ verify_statement_imported = SimpleHttpOperator(
 )
 
 def decode_json_field(task, field):
-    payload = json.loads("{{ task_instance.xcom_pull('" + task.task_id + "') }}")
+    previous_response = "{{ task_instance.xcom_pull('" + task.task_id + "') }}"
+    logger.info(f"Pulled previous response from XCOM with task {task.task_id}: {previous_response}")
+    payload = json.loads(previous_response)
+    logger.info(f"Decoded previous response from XCOM with task {task.task_id} to: {payload}")
     return payload.get('data', {}).get(field, None)
 
 
@@ -176,6 +182,7 @@ def build_replay_tasks(dag):
             }}]),
         response_check=lambda response: response.json()['code'] == 200,
         extra_options={"timeout": 60},
+        provide_context=True,
         dag=dag,
     )
 
