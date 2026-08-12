@@ -43,6 +43,7 @@ import_statement = DAG(
         "depends_on_past": False,
         "retries": 0,
         "retry_delay": timedelta(minutes=1),
+        "provide_context": True,
     }
 )
 
@@ -175,7 +176,6 @@ def build_replay_tasks(dag):
             }}]),
         response_check=lambda response: response.json()['code'] == 200,
         extra_options={"timeout": 60},
-        provide_context=True,
         dag=dag,
     )
 
@@ -197,6 +197,7 @@ import_statement_saturday = DAG(
         "depends_on_past": False,
         "retries": 0,
         "retry_delay": timedelta(minutes=1),
+        "provide_context": True,
     }
 )
 
