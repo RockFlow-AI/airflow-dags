@@ -157,8 +157,26 @@ def build_replay_tasks(dag):
         http_conn_id='flow-statement.qyzj',
         endpoint='/statement/inner/data/reconcile',
         response_check=lambda response: response.json()['code'] == 200,
+        response_filter=lambda response: response.json(),
         extra_options={"timeout": 60},
         dag=dag,
+    )
+
+    cash_count_placeholder = "__CASH_COUNT__"
+    position_count_placeholder = "__POSITION_COUNT__"
+    lark_notification_data = json.dumps([{
+        "userId": LARK_ALERT_USER_ID,
+        "type": 4,
+        "language": "zh-cn",
+        "payload": {
+            "userCashRecords": cash_count_placeholder,
+            "userPositionRecords": position_count_placeholder,
+        }}]).replace(
+        f'"{cash_count_placeholder}"',
+        "{{ task_instance.xcom_pull(task_ids='data_reconcile_qyzj')['data']['misalignedCashRecords'] | length }}"
+    ).replace(
+        f'"{position_count_placeholder}"',
+        "{{ task_instance.xcom_pull(task_ids='data_reconcile_qyzj')['data']['misalignedPositionRecords'] | length }}"
     )
 
     lark_notification = SimpleHttpOperator(
@@ -167,14 +185,7 @@ def build_replay_tasks(dag):
         http_conn_id='flow-notification',
         headers={"Content-Type": "application/json"},
         endpoint='/notification/inner/specification/notifications/specify/push/HK_DATA_RECONCILIATION',
-        data=json.dumps([{
-            "userId": LARK_ALERT_USER_ID,
-            "type": 4,
-            "language": "zh-cn",
-            "payload": {
-                "userCashRecords": len("{{ task_instance.xcom_pull(task_ids=['data_reconcile_qyzj'], key=return_value.json()['data']['misalignedCashRecords']) }}"),
-                "userPositionRecords": len("{{ task_instance.xcom_pull(task_ids=['data_reconcile_qyzj'], key=return_value.json()['data']['misalignedPositionRecords']) }}"),
-            }}]),
+        data=lark_notification_data,
         response_check=lambda response: response.json()['code'] == 200,
         extra_options={"timeout": 60},
         dag=dag,
