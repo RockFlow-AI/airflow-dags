@@ -66,7 +66,7 @@ def _attempts_key(dag_id: str, run_id: str) -> str:
 
 
 def _read_attempts(dag_id: str, run_id: str) -> int:
-    return int(Variable.get(_attempts_key(dag_id, run_id), default=0))
+    return int(Variable.get(_attempts_key(dag_id, run_id), default_var=0))
 
 
 def _bump_attempts(dag_id: str, run_id: str) -> int:
