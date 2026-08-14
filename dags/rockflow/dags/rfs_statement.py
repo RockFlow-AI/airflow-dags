@@ -54,6 +54,8 @@ import_statement_task = SimpleHttpOperator(
     endpoint='/inner/statement/ftpFiles/import?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
     response_check=lambda response: response.json()['code'] == 200 and response.json()['data']['balanceCount'] >= 14,
     extra_options={"timeout": 60},
+    retries=3,
+    retry_delay=timedelta(minutes=1),
     dag=import_statement,
 )
 
