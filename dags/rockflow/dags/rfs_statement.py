@@ -52,21 +52,10 @@ import_statement_task = SimpleHttpOperator(
     method='PATCH',
     http_conn_id='flow-statement',
     endpoint='/inner/statement/ftpFiles/import?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
-    response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 60},
-    dag=import_statement,
-)
-
-verify_statement_imported = SimpleHttpOperator(
-    task_id='verify_statement_imported',
-    method='GET',
-    http_conn_id='flow-statement',
-    endpoint='/inner/statement/zv/count?statementDate={date}'.format(date=datetime.now().strftime("%Y-%m-%d")),
     response_check=lambda response: response.json()['code'] == 200 and response.json()['data']['balanceCount'] >= 14,
     extra_options={"timeout": 60},
     dag=import_statement,
 )
-
 
 def build_replay_tasks(dag):
     import_data_to_statement_qyzj = SimpleHttpOperator(
@@ -197,7 +186,7 @@ def build_replay_tasks(dag):
 
 
 replay_tasks_start = build_replay_tasks(import_statement)
-import_statement_task >> verify_statement_imported >> replay_tasks_start
+import_statement_task >> replay_tasks_start
 
 import_statement_saturday = DAG(
     "import_statement_saturday",
