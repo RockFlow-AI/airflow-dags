@@ -3,9 +3,8 @@ import json
 from time import sleep
 
 import pendulum
-from airflow.models import DAG
+from airflow.models import DAG, Variable
 from airflow.models.baseoperator import chain
-from airflow.sdk import Variable
 from datetime import date, datetime, timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
 import requests
