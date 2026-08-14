@@ -1,17 +1,12 @@
 import logging
 import json
-from time import sleep
-
 import pendulum
 from airflow.models import DAG
 from airflow.models.baseoperator import chain
-from airflow.sdk import Variable
 from datetime import date, datetime, timedelta
 from airflow.providers.http.operators.http import SimpleHttpOperator
-import requests
-from urllib.parse import quote
 from zoneinfo import ZoneInfo
-from rockflow.operators.const import LARK_ALERT_USER_ID, AIRFLOW_API_BASE, MAX_DAG_RETRIES, DAG_RETRY_DELAY_SECONDS
+from rockflow.operators.const import LARK_ALERT_USER_ID
 
 logger = logging.getLogger("airflow.task")
 
@@ -62,55 +57,12 @@ import_statement_task = SimpleHttpOperator(
     dag=import_statement,
 )
 
-def _attempts_key(dag_id: str, run_id: str) -> str:
-    return f"dag_run_attempts::{dag_id}::{run_id}"
-
-
-def _read_attempts(dag_id: str, run_id: str) -> int:
-    return int(Variable.get(_attempts_key(dag_id, run_id), default=0))
-
-
-def _bump_attempts(dag_id: str, run_id: str) -> int:
-    new_value = _read_attempts(dag_id, run_id) + 1
-    Variable.set(_attempts_key(dag_id, run_id), str(new_value))
-    return new_value
-
-def _cleanup_attempts(context):
-    dag_run = context["dag_run"]
-    Variable.delete(_attempts_key(dag_run.dag_id, dag_run.run_id))
-
-def clear_dag_run_on_failure(context):
-    dag_run = context["dag_run"]
-    dag_id_path = quote(dag_run.dag_id, safe="")
-    run_id_path = quote(dag_run.run_id, safe="")
-    url = f"{AIRFLOW_API_BASE}/dags/{dag_id_path}/dagRuns/{run_id_path}/clear"
-
-    attempts = _read_attempts(dag_id_path, run_id_path)
-    if attempts >= MAX_DAG_RETRIES:
-        logger.info(f"Skipping due to max DAG retry reached on failure at {url}")
-        _cleanup_attempts(context)
-        return
-
-    logger.info(f"Sleeping {DAG_RETRY_DELAY_SECONDS}s before clearing DAG run on failure at {url}")
-    sleep(DAG_RETRY_DELAY_SECONDS)
-
-    _bump_attempts(dag_id_path, run_id_path)
-    logger.info(f"Clearing DAG run on failure {attempts}/{MAX_DAG_RETRIES} at {url}")
-    response = requests.post(
-        url,
-        json={"dry_run": False},
-        timeout=30,
-    )
-    response.raise_for_status()
-
 verify_statement_imported = SimpleHttpOperator(
     task_id='verify_statement_imported',
     method='GET',
     http_conn_id='flow-statement',
     endpoint='/inner/statement/zv/count?statementDate={date}'.format(date=datetime.now().strftime("%Y-%m-%d")),
     response_check=lambda response: response.json()['code'] == 200 and response.json()['data']['balanceCount'] >= 14,
-    on_failure_callback=clear_dag_run_on_failure,
-    on_success_callback=_cleanup_attempts,
     extra_options={"timeout": 60},
     dag=import_statement,
 )
