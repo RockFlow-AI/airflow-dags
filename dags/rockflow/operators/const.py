@@ -8,7 +8,7 @@ DEFAULT_PROXY = Proxy(Variable.get("PROXY_URL"),
 DEFAULT_REGION = Variable.get("REGION")
 DEFAULT_BUCKET_NAME = Variable.get("BUCKET_NAME")
 AVATAR_BUCKET_NAME = Variable.get("BUCKET_NAME_AVATAR")
-AIRFLOW_API_BASE = f"{Variable.get('AIRFLOW_BASE_URL')}/api/v2"
+AIRFLOW_API_BASE = f"{Variable.get("AIRFLOW_BASE_URL")}/api/v2"
 APOLLO_HOST = Variable.get("APOLLO_HOST")
 APOLLO_PORT = Variable.get("APOLLO_PORT")
 GLOBAL_DEBUG = (Variable.get("DEBUG", "false") == "true")
