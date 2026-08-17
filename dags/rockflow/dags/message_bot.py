@@ -98,7 +98,7 @@ user_group_send_message_long_1d = DAG(
     "user_group_send_message_long_1d",
     catchup=False,
     start_date=pendulum.datetime(2026, 6, 1, tz='Asia/Shanghai'),
-    schedule_interval='0 10 * * *',
+    schedule_interval='0 18 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
@@ -120,7 +120,7 @@ user_group_send_message_long_3d = DAG(
     "user_group_send_message_long_3d",
     catchup=False,
     start_date=pendulum.datetime(2026, 6, 1, tz='Asia/Shanghai'),
-    schedule_interval='0 20 * * *',
+    schedule_interval='0 18 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
