@@ -72,6 +72,72 @@ SimpleHttpOperator(
     dag=user_group_send_message_1w,
 )
 
+user_group_send_message_1m = DAG(
+    "user_group_send_message_1m",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 6, 1, tz='Asia/Shanghai'),
+    schedule_interval='*/1 * * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='user_group_send_message_1m',
+    method='PUT',
+    http_conn_id='flow-admin',
+    endpoint='/admin/inner/user/group/send/1m',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=user_group_send_message_1m,
+)
+
+user_group_send_message_long_1d = DAG(
+    "user_group_send_message_long_1d",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 6, 1, tz='Asia/Shanghai'),
+    schedule_interval='0 18 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='user_group_send_message_long_1d',
+    method='PUT',
+    http_conn_id='flow-admin',
+    endpoint='/admin/inner/user/group/longTermQuestionnaire/send/1d',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=user_group_send_message_long_1d,
+)
+
+user_group_send_message_long_3d = DAG(
+    "user_group_send_message_long_3d",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 6, 1, tz='Asia/Shanghai'),
+    schedule_interval='0 18 * * *',
+    default_args={
+        "owner": "yuzhiqiang",
+        "depends_on_past": False,
+        "retries": 0
+    }
+)
+
+SimpleHttpOperator(
+    task_id='user_group_send_message_long_3d',
+    method='PUT',
+    http_conn_id='flow-admin',
+    endpoint='/admin/inner/user/group/longTermQuestionnaire/send/3d',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 60},
+    dag=user_group_send_message_long_3d,
+)
+
 face_recognition_send_broadcast = DAG(
     "face_recognition_send_broadcast",
     catchup=False,
