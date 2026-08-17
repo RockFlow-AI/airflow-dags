@@ -290,6 +290,29 @@ SimpleHttpOperator(
     dag=run_sql_stats_task
 )
 
+run_sql_stats_task_stat = DAG(
+    "run_sql_stats_task_stat",
+    catchup=False,
+    start_date=pendulum.datetime(2026, 8, 5),
+    schedule_interval=timedelta(minutes=10),
+    default_args={
+        "owner": "momo",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='run_sql_stats_task_stat',
+    method='PATCH',
+    http_conn_id='flow-social',
+    endpoint='/social/inner/sqlStats?type=2',
+    headers={'accept': '*/*'},
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 1000},
+    dag=run_sql_stats_task_stat
+)
+
 
 arena_participant_asset_chart = DAG(
     "arena_participant_asset_chart",
