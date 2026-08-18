@@ -62,7 +62,7 @@ def statement_import(cluster: str, cron: str):
     )
     return import_statement, import_statement_task
 
-_, _ = statement_import('', '00 20 * * 1-5')
+import_statement, _ = statement_import('', '00 20 * * 1-5')
 
 import_statement_qyzj, import_statement_task_qyzj = statement_import('.qyzj', '30 18 * * 1-5')
 
