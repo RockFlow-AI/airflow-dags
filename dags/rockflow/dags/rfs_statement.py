@@ -105,7 +105,7 @@ def build_replay_tasks(dag):
         http_conn_id='flow-order-gateway-zv-usd.qyzj',
         endpoint='/orders/inner/send',
         response_check=lambda response: response.json()['code'] == 200,
-        extra_options={"timeout": 60},
+        extra_options={"timeout": 600},
         dag=dag,
     )
 
