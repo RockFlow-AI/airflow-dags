@@ -36,7 +36,7 @@ SimpleHttpOperator(
 import_statement = DAG(
     "import_statement",
     catchup=False,
-    start_date=pendulum.datetime(2026, 4, 10, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2026, 8, 18, tz='Asia/Shanghai'),
     schedule_interval='00 20 * * 1-5',
     default_args={
         "owner": "chengwei",
