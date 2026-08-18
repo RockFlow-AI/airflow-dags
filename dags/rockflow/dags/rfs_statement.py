@@ -33,31 +33,38 @@ SimpleHttpOperator(
     dag=rfs_statement,
 )
 
-import_statement = DAG(
-    "import_statement",
-    catchup=False,
-    start_date=pendulum.datetime(2026, 8, 18, tz='Asia/Shanghai'),
-    schedule_interval='00 20 * * 1-5',
-    default_args={
-        "owner": "chengwei",
-        "depends_on_past": False,
-        "retries": 0,
-        "retry_delay": timedelta(minutes=1),
-        "provide_context": True,
-    }
-)
+def statement_import(cluster: str, cron: str):
 
-import_statement_task = SimpleHttpOperator(
-    task_id='import_statement',
-    method='PATCH',
-    http_conn_id='flow-statement',
-    endpoint='/inner/statement/ftpFiles/import?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
-    response_check=lambda response: response.json()['code'] == 200 and response.json()['data']['balanceCount'] >= 14,
-    extra_options={"timeout": 60},
-    retries=5,
-    retry_delay=timedelta(minutes=30),
-    dag=import_statement,
-)
+    import_statement = DAG(
+        f"import_statement{cluster}",
+        catchup=False,
+        start_date=pendulum.datetime(2026, 8, 18, tz='Asia/Shanghai'),
+        schedule_interval=cron,
+        default_args={
+            "owner": "chengwei",
+            "depends_on_past": False,
+            "retries": 0,
+            "retry_delay": timedelta(minutes=1),
+            "provide_context": True,
+        }
+    )
+
+    import_statement_task = SimpleHttpOperator(
+        task_id=f'import_statement{cluster}',
+        method='PATCH',
+        http_conn_id=f'flow-statement{cluster}',
+        endpoint='/inner/statement/ftpFiles/import?date={date}'.format(date=datetime.now().strftime("%Y%m%d")),
+        response_check=lambda response: response.json()['code'] == 200 and response.json()['data']['balanceCount'] >= 14,
+        extra_options={"timeout": 60},
+        retries=5,
+        retry_delay=timedelta(minutes=30),
+        dag=import_statement,
+    )
+    return import_statement, import_statement_task
+
+_, _ = statement_import('', '00 20 * * 1-5')
+
+import_statement_qyzj, import_statement_task_qyzj = statement_import('.qyzj', '30 18 * * 1-5')
 
 def build_replay_tasks(dag):
     import_data_to_statement_qyzj = SimpleHttpOperator(
@@ -187,14 +194,14 @@ def build_replay_tasks(dag):
     return import_data_to_statement_qyzj
 
 
-replay_tasks_start = build_replay_tasks(import_statement)
-import_statement_task >> replay_tasks_start
+replay_tasks_start = build_replay_tasks(import_statement_qyzj)
+import_statement_task_qyzj >> replay_tasks_start
 
 import_statement_saturday = DAG(
-    "import_statement_saturday",
+    "import_statement_saturday_qyzj",
     catchup=False,
-    start_date=pendulum.datetime(2026, 8, 12, tz='Asia/Shanghai'),
-    schedule_interval='00 20 * * 6',
+    start_date=pendulum.datetime(2026, 8, 18, tz='Asia/Shanghai'),
+    schedule_interval='30 18 * * 6',
     default_args={
         "owner": "chengwei",
         "depends_on_past": False,
