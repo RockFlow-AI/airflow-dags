@@ -123,7 +123,7 @@ def build_replay_tasks(dag):
         task_id='replay_option_exercise_qyzj',
         method='PATCH',
         http_conn_id='flow-statement.qyzj',
-        endpoint="/inner/option/exercise/send?date={date}".format(date=datetime.now().strftime("%Y-%m-%d")),
+        endpoint="/inner/option/exercise/send?date={date}".format(date=datetime.now().strftime("%Y%m%d")),
         response_check=lambda response: response.json()['code'] == 200,
         extra_options={"timeout": 60},
         dag=dag,
