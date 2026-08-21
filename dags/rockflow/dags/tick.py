@@ -475,28 +475,6 @@ corporate_actions_future = SimpleHttpOperator(
 
 corporate_actions_today >> corporate_actions_future
 
-update_better_buys_year_yield = DAG(
-    "update_better_buys_year_yield",
-    catchup=False,
-    start_date=pendulum.datetime(2023, 11, 4, tz='America/New_York'),
-    schedule_interval='*/5 * * * *',
-    default_args={
-        "owner": "yuzhiqiang",
-        "depends_on_past": False,
-        "retries": 2,
-        "retry_delay": timedelta(minutes=2),
-    }
-)
-
-SimpleHttpOperator(
-    task_id='update_better_buys_year_yield',
-    method='PUT',
-    http_conn_id='flow-ticker-service',
-    endpoint='/ticker/inner/options/update/better/yield',
-    response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 200},
-    dag=update_better_buys_year_yield,
-)
 
 
 check_holiday_then_notice = DAG(
