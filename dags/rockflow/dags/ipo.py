@@ -22,6 +22,6 @@ SimpleHttpOperator(
     endpoint='/ticker/inner/ipo/unlisted',
     headers={'accept': '*/*'},
     response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 30},
+    extra_options={"timeout": 120},
     dag=ipo_unlisted,
 )
