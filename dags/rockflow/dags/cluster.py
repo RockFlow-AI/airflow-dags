@@ -376,3 +376,31 @@ SimpleHttpOperator(
     extra_options={"timeout": 600},
     dag=fetch_exchange_rate,
 )
+
+
+# 汇率缓存刷新（模拟盘）
+# 与上面的 fetch_exchange_rate 成对：ledger 换汇结算读 Redis 里的 DBS 牌价
+# （key ledger:forex:{base}{quote}），缺了这个刷新，模拟盘换汇单一律失败在
+# failureCause=39 INVALID_CURRENCY。模拟盘 ledger 的 Redis 与实盘独立
+# （Apollo app.id 分别是 flow-ledger-simulation / flow-ledger），必须单独刷。
+fetch_exchange_rate_simulation = DAG(
+    "fetch_exchange_rate_simulation",
+    catchup=False,
+    start_date=pendulum.datetime(2025, 4, 12, tz='America/New_York'),
+    schedule_interval='*/10 * * * *',
+    default_args={
+        "owner": "momo",
+        "depends_on_past": False,
+        "retries": 0,
+    }
+)
+
+SimpleHttpOperator(
+    task_id='fetch_exchange_rate_simulation',
+    method='PATCH',
+    http_conn_id='flow-ledger-simulation',
+    endpoint='/ledger/inner/currencies/exchangeRate',
+    response_check=lambda response: response.json()['code'] == 200,
+    extra_options={"timeout": 600},
+    dag=fetch_exchange_rate_simulation,
+)
