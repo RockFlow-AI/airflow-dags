@@ -234,7 +234,7 @@ daily_last_tick_us_aggregation = DAG(
     "daily_last_tick_us_aggregation",
     catchup=False,
     start_date=pendulum.datetime(2022, 9, 2, tz='America/New_York'),
-    schedule_interval='30 20 * * 1-5',
+    schedule_interval='30 19 * * 1-5',
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
@@ -257,7 +257,7 @@ daily_last_tick_us_option_aggregation = DAG(
     "daily_last_tick_us_option_aggregation",
     catchup=False,
     start_date=pendulum.datetime(2022, 9, 2, tz='America/New_York'),
-    schedule_interval='30 20 * * 1-5',
+    schedule_interval='30 19 * * 1-5',
     default_args={
         "owner": "jingjiadong",
         "depends_on_past": False,
