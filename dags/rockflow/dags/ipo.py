@@ -6,7 +6,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 ipo_unlisted = DAG(
     "ipo_unlisted",
     catchup=False,
-    start_date=pendulum.datetime(2026, 9, 3, tz='Asia/Shanghai'),
+    start_date=pendulum.datetime(2026, 9, 23, tz='Asia/Shanghai'),
     schedule_interval='30 8 * * *',
     default_args={
         "owner": "yuzhiqiang",
