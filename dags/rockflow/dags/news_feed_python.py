@@ -8,7 +8,7 @@ with DAG(
     "feed_news_scraping_weekdays",
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1, tz='Asia/Shanghai'),
-    schedule_interval='0 0,9,13,15,17,20,22,23 * * 1-5',  # Cron expression for specific times on Monday to Friday
+    schedule_interval='*/5 * * * 1-5',  # Cron expression for specific times on Monday to Friday
     default_args={
         "owner": "caohaoxuan",
         "depends_on_past": False,
@@ -29,7 +29,7 @@ with DAG(
     "feed_news_scraping_weekends",
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1, tz='Asia/Shanghai'),
-    schedule_interval='0 15 * * 6,0',  # Cron expression for 3 PM on Saturday and Sunday
+    schedule_interval='*/5 * * * 6,0',  # Cron expression for 3 PM on Saturday and Sunday
     default_args={
         "owner": "caohaoxuan",
         "depends_on_past": False,
@@ -69,7 +69,7 @@ with DAG(
     "feed_news_analyze_and_generate",
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1),
-    schedule_interval='0,30 * * * *',  # Cron expression for specific times on Monday to Friday
+    schedule_interval='*/5 * * * *',  # Cron expression for specific times on Monday to Friday
     default_args={
         "owner": "caohaoxuan",
         "depends_on_past": False,
