@@ -7,6 +7,7 @@ from airflow.models.baseoperator import chain
 with DAG(
     "feed_news_scraping_weekdays",
     catchup=False,
+    max_active_runs=1,
     start_date=pendulum.datetime(2023, 9, 1, tz='Asia/Shanghai'),
     schedule_interval='*/5 * * * 1-5',  # Cron expression for specific times on Monday to Friday
     default_args={
@@ -28,6 +29,7 @@ with DAG(
 with DAG(
     "feed_news_scraping_weekends",
     catchup=False,
+    max_active_runs=1,
     start_date=pendulum.datetime(2023, 9, 1, tz='Asia/Shanghai'),
     schedule_interval='*/5 * * * 6,0',  # Cron expression for 3 PM on Saturday and Sunday
     default_args={
@@ -67,6 +69,7 @@ with DAG(
 #  DAG for every day
 with DAG(
     "feed_news_analyze_and_generate",
+    max_active_runs=1,
     catchup=False,
     start_date=pendulum.datetime(2023, 9, 1),
     schedule_interval='*/5 * * * *',  # Cron expression for specific times on Monday to Friday
