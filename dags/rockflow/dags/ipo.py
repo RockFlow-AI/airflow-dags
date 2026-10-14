@@ -7,7 +7,7 @@ ipo_unlisted = DAG(
     "ipo_unlisted",
     catchup=False,
     start_date=pendulum.datetime(2026, 9, 23, tz='Asia/Shanghai'),
-    schedule_interval='30 8 * * *',
+    schedule_interval='0 7-21 * * *',
     default_args={
         "owner": "yuzhiqiang",
         "depends_on_past": False,
