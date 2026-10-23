@@ -13,6 +13,11 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 # 只补记漏掉的扣款，绝不撤权益、不判终态 —— 那是不可逆的资损方向。Apple 说已过期或不认识这条
 # 订阅时服务端只告警，等真事件或人工。
 #
+# 同一轮里还会收尾「放弃支付的下单意向」：用户点了订阅却没在 StoreKit 付掉，留下的待支付单
+# （`abandoned` 计数）。这步没有上面那条顾虑 —— 订单的已支付状态允许从已取消翻回来，迟到的
+# verify 仍能把它改正，所以作废是可逆的。默认超过 24 小时才收
+# （`flow.order.iap.reconcile.abandon-after-minutes`），给 Ask to Buy 的家长审批留足时间。
+#
 # 接口幂等（同一笔扣款按 Apple 的 transactionId 判重）且服务端有 Redisson 锁，重试与并发均安全。
 #
 # 首次启用前先手工跑一次 dryRun=true，在日志里确认 [iap][reconcile] dry-run would repair 扫出来
