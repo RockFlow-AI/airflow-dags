@@ -617,3 +617,58 @@ SimpleHttpOperator(
     extra_options={"timeout": 300},
     dag=send_hk_position_inout,
 )
+
+
+# 老虎（TBHK）日结报表：从老虎 SFTP 拉报表（sync）→ 入库并按产物生成伪装成尊嘉的 TradeDetail / Position / Balance
+# 文件（import），供下游 tradeMatch / position / risk / import_statement 等 DAG 照旧读取。TBHK 北京时间 T+1 17:00
+# 推送（周五的报表下周一推送，老虎宋祺 2026-10-29 确认），T 日报表落在下一个交易日的文件日 D（方案 B）。两个接口都幂等，所以按尊嘉的做法多轮调：报表没到齐时
+# import 只生成齐了的产物，下游接口对没生成的产物返回非 200、等下一轮，不会提前发出 totalCount=0。
+# 依赖 flow-statement 20261027-tiger-p0 分支（fileDate 参数）；切到老虎前保持暂停。
+# D 在运行时按北京时间取本次调度点（重试跨零点也不变）；手工 trigger 可传 conf {"fileDate": "yyyyMMdd"}。
+TIGER_FILE_DATE = ("{{ (dag_run.conf or {}).get('fileDate') "
+                   "or data_interval_end.in_timezone('Asia/Shanghai').strftime('%Y%m%d') }}")
+
+
+def tiger_report_sync_dag(dag_id, schedule_interval, query, retries, retry_delay):
+    dag = DAG(
+        dag_id,
+        catchup=False,
+        start_date=pendulum.datetime(2026, 10, 29, 0, 0, tz='Asia/Shanghai'),
+        schedule_interval=schedule_interval,
+        max_active_runs=1,
+        default_args={
+            "owner": "guoshizhe",
+            "depends_on_past": False,
+            "retries": retries,
+            "retry_delay": retry_delay
+        }
+    )
+    sync = SimpleHttpOperator(
+        task_id='tiger_report_sync',
+        method='PATCH',
+        http_conn_id='flow-statement',
+        endpoint='/inner/tiger/reports/sync?' + query,
+        response_check=lambda response: response.json()['code'] == 200,
+        extra_options={"timeout": 300},
+        dag=dag,
+    )
+    ingest = SimpleHttpOperator(
+        task_id='tiger_report_import',
+        method='PATCH',
+        http_conn_id='flow-statement',
+        endpoint='/inner/tiger/reports/import?' + query,
+        response_check=lambda response: response.json()['code'] == 200,
+        extra_options={"timeout": 300},
+        dag=dag,
+    )
+    sync >> ingest
+    return dag
+
+
+# 每天 17:00–19:45 每 15 分钟；周末文件日换算为空，接口直接返回
+tiger_report_sync = tiger_report_sync_dag(
+    "tiger_report_sync", '*/15 17-19 * * *', 'fileDate=' + TIGER_FILE_DATE, 1, timedelta(minutes=5))
+
+# 晚间兜底两轮，与尊嘉 statement_sync_file_2010 / _23 同一思路
+tiger_report_sync_late = tiger_report_sync_dag(
+    "tiger_report_sync_late", '50 20,23 * * *', 'fileDate=' + TIGER_FILE_DATE, 3, timedelta(minutes=30))
