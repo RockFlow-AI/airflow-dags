@@ -412,18 +412,18 @@ with DAG(
     submit_identity >> poll_identity
 
 
-# ===========================================================================
-# Stock: stock_quarterly (Jan/Apr/Jul/Oct 1st 02:00 CST)
-# ===========================================================================
+# Stock: stock_quarterly (Saturday 02:00 CST)
+# Weekly despite the name (kept so the DAG stays unpaused): picks up
+# earnings within a week and runs before Sunday's stock_weekly analysis.
 
 with DAG(
     dag_id="stock_quarterly",
     catchup=False,
     start_date=pendulum.datetime(2026, 2, 6, tz="Asia/Shanghai"),
-    schedule_interval="0 2 1 1,4,7,10 *",
+    schedule_interval="0 2 * * 6",
     max_active_runs=1,
     default_args=_STOCK_DEFAULT_ARGS,
-    tags=["stock", "content-platform", "quarterly"],
+    tags=["stock", "content-platform", "weekly"],
 ) as dag_quarterly:
 
     submit_financials = SimpleHttpOperator(
@@ -435,7 +435,7 @@ with DAG(
             **_AUTH_HEADERS,
             "Idempotency-Key": _IDEM_KEY,
         },
-        data=json.dumps({"plan_id": "stock_financials", "ticker_limit": 1000}),
+        data=json.dumps({"plan_id": "stock_financials", "ticker_limit": 1000,"include_seo_tickers":True}),
         extra_options={"timeout": 300},
         response_check=lambda r: r.status_code in (200, 201),
         response_filter=lambda r: ",".join(r.json()["batch_ids"]),
