@@ -245,6 +245,11 @@ with DAG(
         "index_metrics", "stock_index_metrics", {"ticker": "SPY"},
     )
 
+    # 行业 P/E 由当天 stock.metrics 计算, 必须在 metrics 之后、SEO 之前
+    submit_industry, poll_industry = submit_and_wait(
+        "industry", "industry_overview", {},
+    )
+
     submit_metrics = SimpleHttpOperator(
         task_id="submit_metrics",
         method="POST",
@@ -311,6 +316,7 @@ with DAG(
     # ref poll_index_metrics (sensor terminal) — 不是 submit, 否则 submit_metrics
     # 在 stock_index_metrics pipeline 真正完成前就启动, 读到旧 stock.index_metrics
     [fetch_tickers, poll_index_metrics] >> submit_metrics >> poll_metrics
+    poll_metrics >> submit_industry
     # SEO branch: rollout-gated tickers
     fetch_tickers >> fetch_seo_tickers >> seo_gate
     [poll_metrics, seo_gate] >> submit_seo >> poll_seo
