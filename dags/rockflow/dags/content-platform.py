@@ -319,7 +319,7 @@ with DAG(
     poll_metrics >> submit_industry
     # SEO branch: rollout-gated tickers
     fetch_tickers >> fetch_seo_tickers >> seo_gate
-    [poll_metrics, seo_gate] >> submit_seo >> poll_seo
+    [poll_industry, seo_gate] >> submit_seo >> poll_seo
 
 
 # ===========================================================================
