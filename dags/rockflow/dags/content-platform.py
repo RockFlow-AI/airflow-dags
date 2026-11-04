@@ -8,10 +8,10 @@ News:
   news_digest_12h      — every 12h, generate daily digest
 
 Stock:
-  stock_daily                — 06:00 CST, metrics (all) + SEO (progressive rollout)
-  stock_weekly               — Sunday 04:00 CST, analysis
-  stock_monthly              — 1st 03:00 CST, identity
-  stock_quarterly            — Jan/Apr/Jul/Oct 1st 02:00 CST, financials
+  stock_daily                — 06:00 CST, metrics + SEO on SEO coverage (top 1000 + peers + kept pages)
+  stock_weekly               — Sunday 07:00 CST (after stock_daily), analysis on SEO coverage
+  stock_monthly              — 1st 03:00 CST, identity on SEO coverage
+  stock_quarterly            — Saturday 02:00 CST, financials on SEO coverage
 
 Tags:
   ``envelope`` — feeds CP /api/internal/records/{kind} consumed directly
@@ -259,7 +259,7 @@ with DAG(
             **_AUTH_HEADERS,
             "Idempotency-Key": _IDEM_KEY,
         },
-        data='{"plan_id": "stock_metrics", "tickers": {{ task_instance.xcom_pull(task_ids="fetch_tickers") }}}',
+        data='{"plan_id": "stock_metrics", "tickers": {{ task_instance.xcom_pull(task_ids="fetch_seo_tickers") }}}',
         extra_options={"timeout": 300},
         response_check=lambda r: r.status_code in (200, 201),
         response_filter=lambda r: ",".join(r.json()["batch_ids"]),
@@ -312,10 +312,10 @@ with DAG(
         mode="reschedule",
     )
 
-    # Metrics branch: all tickers
+    # Metrics branch: SEO coverage (top 1000 + peers + kept pages)
     # ref poll_index_metrics (sensor terminal) — 不是 submit, 否则 submit_metrics
     # 在 stock_index_metrics pipeline 真正完成前就启动, 读到旧 stock.index_metrics
-    [fetch_tickers, poll_index_metrics] >> submit_metrics >> poll_metrics
+    [fetch_seo_tickers, poll_index_metrics] >> submit_metrics >> poll_metrics
     poll_metrics >> submit_industry
     # SEO branch: rollout-gated tickers
     fetch_tickers >> fetch_seo_tickers >> seo_gate
@@ -323,14 +323,16 @@ with DAG(
 
 
 # ===========================================================================
-# Stock: stock_weekly (Sunday 04:00 CST)
+# Stock: stock_weekly (Sunday 07:00 CST, after stock_daily — the worker runs
+# FIFO, so at 04:00 its ~1500 runs queued stock_daily behind them past its
+# 30-min wait and Sunday metrics/SEO never ran)
 # ===========================================================================
 
 with DAG(
     dag_id="stock_weekly",
     catchup=False,
     start_date=pendulum.datetime(2026, 2, 6, tz="Asia/Shanghai"),
-    schedule_interval="0 4 * * 0",
+    schedule_interval="0 7 * * 0",
     max_active_runs=1,
     default_args=_STOCK_DEFAULT_ARGS,
     tags=["stock", "content-platform", "weekly"],
@@ -345,7 +347,7 @@ with DAG(
             **_AUTH_HEADERS,
             "Idempotency-Key": _IDEM_KEY,
         },
-        data=json.dumps({"plan_id": "stock_analysis", "ticker_limit": 1000}),
+        data=json.dumps({"plan_id": "stock_analysis", "ticker_limit": 1000, "include_seo_tickers": True}),
         extra_options={"timeout": 300},
         response_check=lambda r: r.status_code in (200, 201),
         response_filter=lambda r: ",".join(r.json()["batch_ids"]),
@@ -363,7 +365,7 @@ with DAG(
         headers=_READ_AUTH_HEADERS,
         response_check=lambda r: r.json().get("terminal", False),
         poke_interval=30,
-        timeout=360 * 60,
+        timeout=600 * 60,
         mode="reschedule",
     )
 
@@ -393,7 +395,7 @@ with DAG(
             **_AUTH_HEADERS,
             "Idempotency-Key": _IDEM_KEY,
         },
-        data=json.dumps({"plan_id": "stock_identity", "ticker_limit": 1000}),
+        data=json.dumps({"plan_id": "stock_identity", "ticker_limit": 1000, "include_seo_tickers": True}),
         extra_options={"timeout": 300},
         response_check=lambda r: r.status_code in (200, 201),
         response_filter=lambda r: ",".join(r.json()["batch_ids"]),
