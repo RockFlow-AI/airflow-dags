@@ -9,6 +9,7 @@ News:
 
 Stock:
   stock_daily                — 06:00 CST, metrics + SEO on SEO coverage (top 1000 + peers + kept pages)
+                               then regenerates analysis for up to 100 pages whose price drifted >= 5%
   stock_weekly               — Sunday 07:00 CST (after stock_daily), analysis on SEO coverage
   stock_monthly              — 1st 03:00 CST, identity on SEO coverage
   stock_quarterly            — Saturday 02:00 CST, financials on SEO coverage
@@ -312,6 +313,58 @@ with DAG(
         mode="reschedule",
     )
 
+    # Stale-analysis regeneration: pages whose price moved >= 5% since their
+    # analysis was written, largest drift first, capped per day. Runs after
+    # SEO (which sets the flag); tomorrow's SEO publishes the new prose.
+    fetch_stale = SimpleHttpOperator(
+        task_id="fetch_stale_analysis_tickers",
+        method="GET",
+        http_conn_id="content-platform",
+        endpoint="/api/internal/stocks/stale-analysis-tickers?limit=100",
+        headers=_READ_AUTH_HEADERS,
+        response_check=lambda r: r.status_code == 200,
+        response_filter=lambda r: json.dumps(r.json()["tickers"]),
+        log_response=True,
+    )
+
+    stale_gate = ShortCircuitOperator(
+        task_id="stale_gate",
+        python_callable=lambda **ctx: bool(
+            json.loads(ctx["task_instance"].xcom_pull(task_ids="fetch_stale_analysis_tickers") or "[]")
+        ),
+    )
+
+    submit_regen = SimpleHttpOperator(
+        task_id="submit_regen_analysis",
+        method="POST",
+        http_conn_id="content-platform",
+        endpoint="/api/internal/stocks/submit-pipeline",
+        headers={
+            **_AUTH_HEADERS,
+            "Idempotency-Key": _IDEM_KEY,
+        },
+        data='{"plan_id": "stock_analysis", "tickers": {{ task_instance.xcom_pull(task_ids="fetch_stale_analysis_tickers") }}}',
+        extra_options={"timeout": 300},
+        response_check=lambda r: r.status_code in (200, 201),
+        response_filter=lambda r: ",".join(r.json()["batch_ids"]),
+        log_response=True,
+    )
+
+    poll_regen = HttpSensor(
+        task_id="poll_regen_analysis",
+        http_conn_id="content-platform",
+        endpoint="/api/internal/stocks/batch-status",
+        request_params={
+            "batch_ids": "{{ task_instance.xcom_pull(task_ids='submit_regen_analysis') }}",
+            "max_fail_pct": "15",
+        },
+        headers=_READ_AUTH_HEADERS,
+        response_check=lambda r: r.json().get("terminal", False),
+        poke_interval=30,
+        timeout=120 * 60,
+        mode="reschedule",
+    )
+
     # Metrics branch: SEO coverage (top 1000 + peers + kept pages)
     # ref poll_index_metrics (sensor terminal) — 不是 submit, 否则 submit_metrics
     # 在 stock_index_metrics pipeline 真正完成前就启动, 读到旧 stock.index_metrics
@@ -320,6 +373,8 @@ with DAG(
     # SEO branch: rollout-gated tickers
     fetch_tickers >> fetch_seo_tickers >> seo_gate
     [poll_industry, seo_gate] >> submit_seo >> poll_seo
+    # Regeneration branch: after SEO has flagged today's stale pages
+    poll_seo >> fetch_stale >> stale_gate >> submit_regen >> poll_regen
 
 
 # ===========================================================================
