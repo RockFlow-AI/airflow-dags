@@ -670,5 +670,5 @@ tiger_report_sync = tiger_report_sync_dag(
     "tiger_report_sync", '*/15 17-19 * * *', 'fileDate=' + TIGER_FILE_DATE, 1, timedelta(minutes=5))
 
 # 晚间兜底两轮，与尊嘉 statement_sync_file_2010 / _23 同一思路
-tiger_report_sync_late = tiger_report_sync_dag(
+tiger_report_sync_late = tiger_report_sync_dag (
     "tiger_report_sync_late", '50 20,23 * * *', 'fileDate=' + TIGER_FILE_DATE, 3, timedelta(minutes=30))
