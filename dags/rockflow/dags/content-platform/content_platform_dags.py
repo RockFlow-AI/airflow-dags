@@ -18,7 +18,7 @@ secret_file = Secret(
     deploy_target="/root/.ssh",
     secret="prod-ssh-secret" if ENV == "prod" else "devpod-ssh-secret",
 )
-image_tag = "61c3c35a6fbd58e87d756e81011f75b5144da0fc"
+image_tag = "6ce3046d458a4cbfee817cc62110c336ee83bf68"
 IMAGES = {
     "prod": f"rockflow-registry-vpc.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
     "airflow":  f"rockflow-registry.ap-southeast-1.cr.aliyuncs.com/packages/content-platform-airflow:{image_tag}",
@@ -118,6 +118,14 @@ make_dag(
     "press_releases",
     ["jobs/event_data_source/press_releases.py"],
     schedule_interval="00 20 * * *",
+)
+
+# TradeGPT 审核通过的新闻 → flow_event（news / macro_news），须早于 positions_card_daily_generate（美东 20:00）
+make_dag(
+    "tradegpt_news",
+    ["jobs/event_data_source/tradegpt_news.py", "--since-hours", "30"],
+    schedule_interval="30 19 * * *",
+    timezone="America/New_York",
 )
 
 
