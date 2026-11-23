@@ -144,26 +144,3 @@ SimpleHttpOperator(
     extra_options={"timeout": 600},
     dag=qyzj_statement_sync_file_23,
 )
-
-qyzj_admin_audit_reports = DAG(
-    "qyzj_admin_audit_reports",
-    catchup=False,
-    start_date=datetime(2026, 11, 23, 21, 0),
-    schedule_interval='0 21 * * 1-7',
-    default_args={
-        "owner": "yinxiang",
-        "depends_on_past": False,
-        "retries": 3,
-        "retry_delay": timedelta(minutes=1)
-    }
-)
-
-SimpleHttpOperator(
-    task_id='qyzj_admin_audit_reports',
-    method='POST',
-    http_conn_id='flow-statement.qyzj',
-    endpoint='/api/audit/reports/all?bizDate={date}'.format(date=datetime.now().strftime("%Y-%m-%d")),
-    response_check=lambda response: response.json()['code'] == 200,
-    extra_options={"timeout": 600},
-    dag=qyzj_admin_audit_reports,
-)
